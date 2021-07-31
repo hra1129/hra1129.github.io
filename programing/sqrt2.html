@@ -1,12 +1,12 @@
 <!DOCTYPE HTML>
 <html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-		<meta charset="Shift_JIS">
+		<meta charset="utf-8">
 		<title>HRA's room</title>
 		<link href="../mystyle.css" rel="stylesheet" type="text/css">
 	</head>
 	<body id="contents_main">
-		Z80�ŕ����������߂�ɂ́H<br>
+		Z80で平方根を求めるには？<br>
 		<hr>
 		<img src="./image/kaihei9.png" width=320><br>
 		<br>
@@ -18,15 +18,15 @@
 		<br>
 		<img src="./image/kaihei13.png" width=320><br>
 		<br>
-		������ 10000100 �����܂�܂����B<br>
-		����͓�i���Ȃ̂ŁA10�i���ɒ����� 132 �ł��B132*132 = 17424 �ɂȂ�܂��ˁB<br>
-		�Y��ɒ[���������܂�l���������߁A�r������l�� 0 �ɂȂ�܂����B<br>
-		�����������悤�ȕ��������ƁA0 �ɂȂ炸�ɑ����C���[�W�ł��B�K�v�Ȍ��܂ŌJ��Ԃ��v�Z�o���܂��B<br>
-		�v�Z��ł��؂�΁A����ȉ��̌���؂�̂Ă����ʂƂȂ�܂��B�l�̌ܓ����K�v�Ȃ� 1���]���ɋ��߂āA<br>
-		1�������Ă���J��グ��Ηǂ��ł��傤�B<br>
+		平方根 10000100 が求まりました。<br>
+		これは二進数なので、10進数に直すと 132 です。132*132 = 17424 になりますね。<br>
+		綺麗に端数無く求まる値だったため、途中から値が 0 になりました。<br>
+		小数部を持つような平方根だと、0 にならずに続くイメージです。必要な桁まで繰り返し計算出来ます。<br>
+		計算を打ち切れば、それ以下の桁を切り捨てた結果となります。四捨五入が必要なら 1桁余分に求めて、<br>
+		1が立ってたら繰り上げれば良いでしょう。<br>
 		<br>
-		�ƁA�v�Z���@�����������Ƃ���ŁA���x�͂���� Z80 �̃R�[�h�ɗ��Ƃ��Ă䂫�܂��B<br>
+		と、計算方法が分かったところで、今度はこれを Z80 のコードに落としてゆきます。<br>
 		<br>
-		<a href="./sqrt1.html">[�O��]</a><a href="./body.html">[�߂�]</a><a href="./sqrt3.html">[����]</a><br>
+		<a href="./sqrt1.html">[前へ]</a><a href="./body.html">[戻る]</a><a href="./sqrt3.html">[次へ]</a><br>
 	</body>
 </html>

@@ -1,0 +1,14 @@
+<!DOCTYPE HTML>
+<html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="Shift_JIS">
+		<title>HRA's room</title>
+		<link href="../mystyle.css" rel="stylesheet" type="text/css">
+	</head>
+	<body id="contents_main">
+		MSXでのプログラミングTipsを、気ままに追加していくページです。<br>
+		<br>
+		<hr>
+		<a href="./mainrom.html">[2020年12月09日] MAIN-ROMのスロット番号</a><br>
+	</body>
+</html>

@@ -1,0 +1,14 @@
+<!DOCTYPE HTML>
+<html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="Shift_JIS">
+		<title>HRA's room</title>
+		<link href="../mystyle.css" rel="stylesheet" type="text/css">
+	</head>
+	<body id="contents_main">
+		Carnivore2内蔵 FMPAC用 BIOS生成ツール<br>
+		<br>
+		<a href="./files/fmbios_patch.zip">[DOWNLOAD] fmbios_patch  (2020年11月12日 更新)</a><br>
+		<br>
+	</body>
+</html>

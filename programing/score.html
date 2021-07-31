@@ -1,23 +1,23 @@
 <!DOCTYPE HTML>
 <html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-		<meta charset="Shift_JIS">
+		<meta charset="utf-8">
 		<title>HRA's room</title>
 		<link href="../mystyle.css" rel="stylesheet" type="text/css">
 	</head>
 	<body id="contents_main">
-		HL�ɓ����Ă鐔�l�ɑΉ�����10�i���̕�����𓾂�ɂ́H<br>
+		HLに入ってる数値に対応する10進数の文字列を得るには？<br>
 		<hr>
-		�����͂��낢�날��Ǝv���܂����A�����ł͊e����2���@�ōi�荞��ł������@���Љ�܂��B<br>
+		やり方はいろいろあると思いますが、ここでは各桁を2分法で絞り込んでいく方法を紹介します。<br>
 		<br>
-		HL �� 0�`65535 �͈̔͂��Ƃ� 2byte �̐����Ȃ̂ŁA��ԏ�̌��� 0�`6 �̂����ꂩ���ƕ�����܂��B<br>
-		6 �́A60000 �̈Ӗ��Ȃ̂ŁA���̔����̒l 30000 �ȏ�̏ꍇ�́A���̌��� 3�ȏオ�m��B�������ꍇ�� 3�������m��B<br>
-		30000 �������Ă��܂��āA�c�肪����ɔ����i�����܂ň�ԏ�̌������ɒ��ڂ��Ă�̂ŁA30000 �̔����� 10000 �� 20000�B��������I�т܂��傤�B�j
-		�Ɣ�r�B��قǊm�肵���l�� 2 �����Z���邩���߂�B<br>
-		�܂������� 10000 �� 1�����Z���邩���߂�B<br>
-		����Ŗ��̌��� 0�`6 �ŋ��܂�܂��B<br>
-		���̐��l�Ƃ��� '0' �� ASCII�R�[�h�����Ă����܂��傤�B<br>
-		ASCII�R�[�h�́A'0' + 1 �� '1' �ɂȂ�悤�ɏ��Ԃɕ���ł��邽�߁A0�`9 �� '0' �𑫂��Ă��� '0'�`'9' �ɂȂ�܂��B<br>
+		HL は 0〜65535 の範囲をとる 2byte の整数なので、一番上の桁は 0〜6 のいずれかだと分かります。<br>
+		6 は、60000 の意味なので、その半分の値 30000 以上の場合は、その桁は 3以上が確定。小さい場合は 3未満が確定。<br>
+		30000 を引いてしまって、残りがさらに半分（あくまで一番上の桁だけに着目してるので、30000 の半分は 10000 か 20000。多い方を選びましょう。）
+		と比較。先ほど確定した値に 2 を加算するか決める。<br>
+		また半分の 10000 で 1を加算するか決める。<br>
+		これで万の桁が 0〜6 で求まります。<br>
+		桁の数値として '0' の ASCIIコードを入れておきましょう。<br>
+		ASCIIコードは、'0' + 1 は '1' になるように順番に並んでいるため、0〜9 に '0' を足してやれば '0'〜'9' になります。<br>
 		<table><td><tr>
 		<pre>
     temp1 = '0'
@@ -32,7 +32,7 @@
         HL = HL - 10000
 		</pre>
 		</tr></td></table>
-		���̌��� 0�`9 �� 10�ʂ肠��̂� 4���r����K�v������܂��B�����͓����ł��B<br>
+		次の桁は 0〜9 の 10通りあるので 4回比較する必要があります。やり方は同じです。<br>
 		<table><td><tr>
 		<pre>
     temp2 = '0'
@@ -50,10 +50,10 @@
         HL = HL - 1000
 		</pre>
 		</tr></td></table>
-		�Ȍ�A�J��Ԃ��Ηǂ��ł��ˁB<br>
-		�ł́A���̃y�[�W��Z80�̃R�[�h�ɂ��Ă݂܂��B<br>
+		以後、繰り返せば良いですね。<br>
+		では、次のページでZ80のコードにしてみます。<br>
 		<br>
-		2020�N8��25�� �X�V<br>
-		<a href="./score2.html">[����]</a><a href="./body.html">[�߂�]</a><br>
+		2020年8月25日 更新<br>
+		<a href="./score2.html">[次へ]</a><a href="./body.html">[戻る]</a><br>
 	</body>
 </html>

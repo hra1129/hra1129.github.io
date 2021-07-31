@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="Shift_JIS">
+		<title>HRA's room</title>
+		<link href="../mystyle.css" rel="stylesheet" type="text/css">
+	</head>
+	<body id="contents_main">
+		<img src="./image/mgsp_fdd.jpg" width=320><br>
+		[番外編] MGSPのフロッピーディスクラベルを印刷する<br>
+		<hr>
+		ローソンに置いてあるコピー機では、L判・2L判のシールを印刷できる機能があります。<br>
+		これを利用して、高品位なフロッピーディスクラベルを作ることが出来るので、MGSPのディスクラベルを作ってみたいと思います。<br>
+		<br>
+		VISIOでササッとデザイン。用紙サイズは L判にして、ディスクのラベル貼り付け位置サイズに合う寸法で描いていきます。<br>
+		出来上がったものを PDF として保存します。<br>
+		<br>
+		<a href="./files/MGSP2_DiskLabel.pdf">[出来上がったラベルPDF]</a><br>
+		<br>
+		これをスマホに転送しておきます。<br>
+		スマホには専用アプリをインストールしておく必要があります。詳しくは下記の公式サイトをご覧ください。<br>
+		<br>
+		<a href="https://www.lawson.co.jp/service/others/multicopy/#phone">[外部リンク] スマートフォンから印刷</a><br>
+		<br>
+		利用しようとしているローソンが、シール印刷に対応しているかどうかは、店舗検索から確認できます。<br>
+		<br>
+		<a href="https://networkprint.ne.jp/search_store/map.html">[外部リンク] 店舗検索</a><br>
+		<br>
+		スマホから、上記 PDF を転送して、それをシール印刷するだけです。<br>
+		注意点は、印刷開始時に「ピッタリ印刷」という部分がデフォルトで[する]になっています。<br>
+		これを[しない]に変更してください。原寸印刷になり、所望のサイズの印刷になります。<br>
+		「端が欠けるかもしれません」というメッセージが出てきますが、気にせず原寸印刷を選んでください。<br>
+		<br>
+		<img src="./image/mgsp_label.jpg" width=320><br>
+		<br>
+		二枚のシールの写真ですが、左が原寸印刷・右がピッタリ印刷です。<br>
+		ピッタリ印刷は一回り小さくなってますね。<br>
+		<br>
+		カッターで周囲をカットして、カドは<a href="https://www.amazon.co.jp/gp/product/B0076FJ7SS/ref=as_li_tl?ie=UTF8&tag=hrasroom-22&camp=247&creative=1211&linkCode=as2&creativeASIN=B0076FJ7SS&linkId=8fba4eb1c79aa275fc9f40cceb68039b">[外部リンク] かどまるくん</a>を使ってトリミングしてます。<br>
+		<br>
+		<img src="./image/mgsp_trimmed.jpg" width=320><br>
+		<br>
+		これを貼れば、一番上の写真のようになります。<br>
+		インクジェットプリンターで自宅印刷可能な時代ではありますが、このサービスで出力したシールは、<br>
+		かなり品位が高く、表面はベタ付きません。フロッピーラベルのように手が触れるような部分には、<br>
+		こちらを利用した方が長持ちすると思います。<br>
+		<br>
+	</body>
+</html>

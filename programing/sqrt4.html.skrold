@@ -1,0 +1,66 @@
+<!DOCTYPE HTML>
+<html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="Shift_JIS">
+		<title>HRA's room</title>
+		<link href="../mystyle.css" rel="stylesheet" type="text/css">
+	</head>
+	<body id="contents_main">
+		Z80で平方根を求めるには？<br>
+		<hr>
+		期待した演算通りのプログラムが組めたので、次は少しだけ最適化します。<br>
+		<table><td><tr>
+		<pre>
+SQRT_BC:
+    XOR     A
+    LD      D,A
+    LD      E,A
+    LD      L,A
+    LD      H,A
+    LD      (SQRT_BC_RESULT),A
+    LD      A,8
+SQRT_BC_LOOP:
+    ; BC の上位2bit を HL の下位に移動
+    RLC     C           ; 最下位にゴミが入るが気にしない。RL より RLC の方が速い。
+    RL      B
+    RL      L
+    RL      H
+    RLC     C           ; 最下位にゴミが入るが気にしない。RL より RLC の方が速い。
+    RL      B
+    RL      L
+    RL      H
+    ; DE を左1bit シフトして下位に 1 を立ててみる
+    RLC     E
+    RL      D           ; Cy = 0
+    SET     0,E         ; Cy不変
+    ; HL - DE を評価する
+    SBC     HL,DE       ; 試しに引いてみる
+    JP      NC,SQRT_BC_SKIP1
+    ADD     HL,DE       ; 引けなかった場合は足し戻す。必ず Cy = 1 になる。
+    DEC     DE          ; 上の SET 0,E をキャンセルする。Cy不変。
+    DEC     DE          ; 下の INC DE をキャンセルする。Cy不変。
+SQRT_BC_SKIP1:
+    INC     DE          ; 答えに 1 が立つ場合、DE に 1加算。Cy不変。
+    PUSH    HL
+    LD      HL,SQRT_BC_RESULT
+    RL      (HL)        ; 答えを SQRT_BC_RESULT の最下位に取り込む(期待する値の反転になっている)
+    POP     HL
+    DEC     A
+    JP      NZ,SQRT_BC_LOOP
+    LD      A,(SQRT_BC_RESULT)
+    CPL                 ; 全ビット期待する値の反転になっているので、全ビット反転。
+    RET
+SQRT_BC_RESULT:
+    DB      0
+		</pre>
+		</tr></td></table>
+		<br>
+		ループ内で毎回 CCF していたのをやめて、最後にまとめて CPL で反転するようにしました。<br>
+		CCF 8回が CPL 1回に減っています。<br>
+		さらに、PUSH BC, POP BC をやめて、PUSH HL, POP HL に変更。<br>
+		HL を使ってメモリ値を直接 RL するように変更。<br>
+		<br>
+		<br>
+		<a href="./sqrt3.html">[前へ]</a><a href="./body.html">[戻る]</a><br>
+	</body>
+</html>

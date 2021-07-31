@@ -1,33 +1,33 @@
 <!DOCTYPE HTML>
 <html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-		<meta charset="Shift_JIS">
+		<meta charset="utf-8">
 		<title>HRA's room</title>
 		<link href="../mystyle.css" rel="stylesheet" type="text/css">
 	</head>
 	<body>
-		1chipMSX��<br>
+		1chipMSX改<br>
 		<table><tr><td>
-		�ȑO�A�̔����ꂽ<a target="_top" href="http://www.msx.d4e.co.jp/1chipmsx.html">[�O�������N]OneChipMSX</a>�ɂ́AFPGA���ɏ������މ�H�f�U�C���̃\�[�X�t�@�C���ꎮ<br>
-		���t�����Ă��܂����B�������ł��B<br>
-		OneChipMSX(�ȉ�OCM�Əȗ�)�́AMSX2�݊��ł����A������ MSX2+ �� MSXturboR�̋@�\�̈ꕔ��ǉ�������������̕��ōs���܂����B<br>
-		���̌�A<a target="_top" href="http://caro.su/msx/ocm_de1.htm">[�O�������N]caro��</a>�ɂ���� Tarsic DE1 �ֈڐA����܂����B<br>
-		���̌�A<a target="_top" href="https://gnogni.altervista.org/">[�O�������N]KdL��</a>�̃����e�i���X��������ꂽ OCM-PLD �������[�X����܂����B<br>
-		<a target="_top" href="https://uniabis.net/pico/msx/deocmpldcv/">[�O�������N]uniabis��</a>�ɂ���� DE0-CV + DEOCM �̊��ֈڐA����܂����B<br>
+		以前、販売された<a target="_top" href="http://www.msx.d4e.co.jp/1chipmsx.html">[外部リンク]OneChipMSX</a>には、FPGA内に書き込む回路デザインのソースファイル一式<br>
+		が付属していました。太っ腹です。<br>
+		OneChipMSX(以下OCMと省略)は、MSX2互換ですが、ここに MSX2+ と MSXturboRの機能の一部を追加する改造を私の方で行いました。<br>
+		その後、<a target="_top" href="http://caro.su/msx/ocm_de1.htm">[外部リンク]caro氏</a>によって Tarsic DE1 へ移植されました。<br>
+		その後、<a target="_top" href="https://gnogni.altervista.org/">[外部リンク]KdL氏</a>のメンテナンスが加えられた OCM-PLD がリリースされました。<br>
+		<a target="_top" href="https://uniabis.net/pico/msx/deocmpldcv/">[外部リンク]uniabis氏</a>によって DE0-CV + DEOCM の環境へ移植されました。<br>
 		<br>
-		���́A10�N�ق�OCM�̉�����Ƃ���͗���Ă��܂������A���̊Ԃɑ吨�̕��i���� KdL���j�̂��s�͂ɂ��AMSX2+�݊������p���x���ɂȂ��Ă��܂��B<br>
-		�I���W�i���� OneChipMSX ������K�͂� FPGA �𓋍ڂ��� FPGA�]���{�[�h Terasic DE0-CV �ɁAMSX��I/O��ǉ�����{�[�h DEOCM ����肵�܂����̂ŁA<br>
-		�����ĊJ���邱�Ƃɂ��܂����B<br>
-		MSXturboR�����̋@�\������ڕW�Ƃ��܂��B<br>
+		私は、10年ほどOCMの改造作業からは離れていましたが、その間に大勢の方（特に KdL氏）のご尽力により、MSX2+互換が実用レベルになっています。<br>
+		オリジナルの OneChipMSX よりも大規模な FPGA を搭載した FPGA評価ボード Terasic DE0-CV に、MSXのI/Oを追加するボード DEOCM を入手しましたので、<br>
+		私も再開することにしました。<br>
+		MSXturboR相当の機能実現を目標とします。<br>
 		<br>
-		���̐g����ȓs���ɂ��OCM������Ƃ��痣�ꂽ�ɂ�������炸�A�������A���󂯓���Ă��ꂽ KdL���Ɋ��ӂł��B<br>
-		2020�N���ɂ́A�V����OneChipMSX�݊��@ SX-2 �� 8bits4ever���񂩂甭�\�ɂȂ�A2021�N4��7���ɂ� 1st���b�g�̃I�[�_�[���J�n���A2���Ŏ�t���������l�C�Ԃ�B<br>
-		���� SX-2 ���^�[�Q�b�g�Ƃ��Ă����܂��B<br>
+		私の身勝手な都合によりOCM改造作業から離れたにもかかわらず、快く復帰を受け入れてくれた KdL氏に感謝です。<br>
+		2020年末には、新しいOneChipMSX互換機 SX-2 が 8bits4everさんから発表になり、2021年4月7日には 1stロットのオーダーを開始し、2分で受付完了される人気ぶり。<br>
+		この SX-2 もターゲットとしていきます。<br>
 		<br>
 		TARGET: Tarsic DE0-CV + DEOCM, 8bits4ever SX-2<br>
 		<br>
 		<hr>
-		<a target="_top" href="https://github.com/hra1129/one-chip-msx-kai">����� github �Ń����e���܂�</a><br>
+		<a target="_top" href="https://github.com/hra1129/one-chip-msx-kai">今後は github でメンテします</a><br>
 		</td></tr></table>
 	</body>
 </html>

@@ -1,19 +1,19 @@
 <!DOCTYPE HTML>
 <html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-		<meta charset="Shift_JIS">
+		<meta charset="utf-8">
 		<title>HRA's room</title>
 		<link href="../mystyle.css" rel="stylesheet" type="text/css">
 	</head>
 	<body id="contents_main">
-		HL�ɓ����Ă鐔�l�ɑΉ�����10�i���̕�����𓾂�ɂ́H<br>
+		HLに入ってる数値に対応する10進数の文字列を得るには？<br>
 		<hr>
-		HL�Ɂu������ɕϊ����������l�v�ADE�Ɂu�ϊ�������������i�[����̈�(5byte)�̐擪�A�h���X�v�����ď������[�`����CALL���܂��B<br>
-		AF,BC,DE,HL���j�󂳂�܂��B<br>
+		HLに「文字列に変換したい数値」、DEに「変換した文字列を格納する領域(5byte)の先頭アドレス」を入れて書きルーチンをCALLします。<br>
+		AF,BC,DE,HLが破壊されます。<br>
 		<table><td><tr>
 		<pre>
-    ; ���̈�
-    OR  A         ; Cy�N���A
+    ; 万の位
+    OR  A         ; Cyクリア
     LD  A,'0'
     LD  BC,30000
     SBC HL,BC
@@ -47,7 +47,7 @@ SKIP1_5:
     LD  (DE),A
     INC DE
 
-    ; ��̈�
+    ; 千の位
     LD  A,'0'
     LD  BC,5000
     SBC HL,BC
@@ -91,7 +91,7 @@ SKIP2_7:
     LD  (DE),A
     INC DE
 
-    ; �S�̈�
+    ; 百の位
     LD  A,'0'
     LD  BC,500
     SBC HL,BC
@@ -135,7 +135,7 @@ SKIP3_7:
     LD  (DE),A
     INC DE
 
-    ; �\�̈�
+    ; 十の位
     LD  A,L
     SUB A,50
     JP  NC,SKIP4_0
@@ -183,7 +183,7 @@ SKIP4_7:
 		</pre>
 		</tr></td></table>
 		<br>
-		2020�N8��25�� �X�V<br>
-		<a href="./score.html">[�O��]</a><a href="./body.html">[�߂�]</a><br>
+		2020年8月25日 更新<br>
+		<a href="./score.html">[前へ]</a><a href="./body.html">[戻る]</a><br>
 	</body>
 </html>

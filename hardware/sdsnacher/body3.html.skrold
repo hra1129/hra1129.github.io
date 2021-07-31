@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="Shift_JIS">
+		<title>HRA's room</title>
+		<link href="../../mystyle.css" rel="stylesheet" type="text/css">
+	</head>
+	<body id="contents_main">
+		<a href="./body2.html">[前]</a><br>
+		<br>
+		<img src="./image/parts.jpg"><br>
+		無事開けることができました。<br>
+		基板には３つのICが付いていますが、大きいのが SCC です。<br>
+		SCC音源と、Konami8KバンクのMegaROMコントローラーの統合ICですね。<br>
+		<br>
+		小さい２つが 64Kword * 4bit の DRAM になります。２つ合わせて 64Kbyte になってます。<br>
+		この２つの DRAM の隣に、DRAMと同じサイズのICが取り付けられそうなランドが１組ありますが、
+		ここに DRAM を取り付けるだけで 128KB に増設できるのです。お手軽ですね。<br>
+		パスコンに相当する部品は、なぜか最初から付いてます。<br>
+		<br>
+		64Kword * 4bit の DRAM なんて、2020年現在新製品で使われることはないと思います。<br>
+		すでに入手困難な状況なのですが、ヤフオクに大量出品されてたので、そちらを利用しました。<br>
+		<br>
+		<img src="./image/handa.jpg"><br>
+		基板を見て分かるとおり、DRAMを取り付けようとしている部分は半田が詰められています。<br>
+		この半田を取り除いて、DRAMを正しい向きで差し込み、半田し直す、という手順になります。<br>
+		半田を取り除くのは、サンハヤトの「はんだシュッ太郎」を使いました。<br>
+		<br>
+		<br>
+		<a href="./body4.html">[次]</a><br>
+	</body>
+</html>

@@ -1,68 +1,68 @@
 <!DOCTYPE HTML>
 <html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-		<meta charset="Shift_JIS">
+		<meta charset="utf-8">
 		<title>HRA's room</title>
 		<link href="../mystyle.css" rel="stylesheet" type="text/css">
 	</head>
 	<body id="contents_main">
-		SD MapperMegaram512KB (BEEP-shop�̔���) �̎g�����Ɋւ�����Y�^<br>
+		SD MapperMegaram512KB (BEEP-shop販売版) の使い方に関する備忘録<br>
 		<br>
 		<hr>
-		���͂��߂�<br>
-		�@BEEP-shop�Ŕ����Ă��� SD MapperMegaram512KB �́A�i�����w���������̂́j�J�[�g���b�W���P�����Ă����݂̂�<br>
-		�@�������̗ނ��͎��y���ꖇ�������Ă��܂���ł����B<br>
-		�@���낢�뒲�ׂāA����Ȃ�Ɏg���郌�x���ɂȂ����̂ŁA�Y��Ȃ��悤�ɂ��邽�߂̔��Y�^�ł��B<br>
-		�@�܂��A������������g������������Ȃ��ĕ��u���Ă�����̎菕���ɂȂ邩������Ȃ��̂ŁA���J���Ă����܂��B<br>
+		■はじめに<br>
+		　BEEP-shopで売られていた SD MapperMegaram512KB は、（私が購入したものは）カートリッジが１つ入っていたのみで<br>
+		　説明書の類いは紙ペラ一枚も入っていませんでした。<br>
+		　いろいろ調べて、それなりに使えるレベルになったので、忘れないようにするための備忘録です。<br>
+		　また、もしかしたら使い方が分からなくて放置している方の手助けになるかもしれないので、公開しておきます。<br>
 		<br>
-		�@�������g�́ABEEP-shop��A���̃J�[�g���b�W�쐬�҂Ƃ͖��֌W�ł��̂ŁA�����ɋL�ڂ̓��e�� BEEP-shop���ɖ₢���킹��̂͂���߂��������B<br>
-		�@���܂��A�����ɋL�ڂ̓��e�����ׂĂ̓��J�[�g���b�W�ɓK�p�ł���ۏ؂͏o���܂���B<br>
+		　※私自身は、BEEP-shopや、このカートリッジ作成者とは無関係ですので、ここに記載の内容を BEEP-shop等に問い合わせるのはおやめください。<br>
+		　※また、ここに記載の内容がすべての同カートリッジに適用できる保証は出来ません。<br>
 		<br>
 		<hr>
-		�������<br>
+		■動作環境<br>
 		<img src="./image/sd_mapper_megaram_512kb.jpg" /><br>
-		���̂Ƃ���ł́A���L�œ��삷�邱�Ƃ��m�F���Ă��܂��B<br>
-		�@Panasonic FS-A1GT (MSXturboR)<br>
-		�@Casio MX-101 (MSX1)<br>
-		�@DE0CV + DEOCM �� OCM�� ���������񂾂��� (MSX1�݊�, MSX2�݊�, MSX2+�݊�)<br>
+		私のところでは、下記で動作することを確認しています。<br>
+		　Panasonic FS-A1GT (MSXturboR)<br>
+		　Casio MX-101 (MSX1)<br>
+		　DE0CV + DEOCM に OCM改 を書き込んだもの (MSX1互換, MSX2互換, MSX2+互換)<br>
 		<br>
-		MSX1�� RAM16KB �� MX-101 �ƁAI/O�M�����x���� 3.3V �� DEOCM �ł����삷��̂ŁA�����炭 MSX���@�Ȃ���삷��̂ł͖������Ǝv���܂��B<br>
-		�J�[�g���b�W������4�X���b�g�Ɋg�����Ă���̂ŁA��{�X���b�g�ɑ�������K�v������܂��B<br>
+		MSX1で RAM16KB の MX-101 と、I/O信号レベルが 3.3V の DEOCM でも動作するので、おそらく MSX実機なら大抵動作するのでは無いかと思います。<br>
+		カートリッジ内部で4スロットに拡張しているので、基本スロットに装着する必要があります。<br>
 		<hr>
-		��SD�J�[�h�̏���<br>
-		�@�J�[�g���b�W�㕔�ɂ� SD�J�[�h�X���b�g���Q�t���Ă��܂��B<br>
-		�@�����ɂ́ASD�J�[�h�܂���SDHC�J�[�h�𑕒����ė��p���܂��B<br>
-		�@SD�J�[�h�A�_�v�^�ɑ������� microSD/miniSD �ł��\���܂���B<br>
-		�@�Q��������� 1���ł��\���܂���B<br>
-		�@SDXC�J�[�h�͎g���Ȃ��Ǝv���܂�(���m�F)�B<br>
-		�@SD1 �� A:, SD2 �� B: �ɂȂ�܂��B<br>
+		■SDカードの準備<br>
+		　カートリッジ上部には SDカードスロットが２つ付いています。<br>
+		　ここには、SDカードまたはSDHCカードを装着して利用します。<br>
+		　SDカードアダプタに装着した microSD/miniSD でも構いません。<br>
+		　２枚無ければ 1枚でも構いません。<br>
+		　SDXCカードは使えないと思います(未確認)。<br>
+		　SD1 が A:, SD2 が B: になります。<br>
 		<br>
-		�@FAT12�t�H�[�}�b�g�� FAT16�t�H�[�}�b�g�ɂ����Ή����Ă��܂���BFAT32��ExFAT�Ńt�H�[�}�b�g����Ă���ꍇ�́AFAT12/FAT16 �Ńt�H�[�}�b�g<br>
-		�@�������K�v������܂��BFAT12�͍ő�32MB���������܂���̂ŁA�悭������Ȃ���� FAT16 �Ńt�H�[�}�b�g���Ă��������B<br>
-		�@SD�J�[�h���t�H�[�}�b�g����ꍇ�́AWindowsPC����t�H�[�}�b�g����ꍇ�AOS�W���̃t�H�[�}�b�g�@�\�ł͂Ȃ��APanasonic���񋟂��Ă���<br>
-		�@SD�J�[�h�t�H�[�}�b�^���g�����������ł��B<br>
-		�@<br>
-		�@<a href="https://www.sdcard.org/jp/downloads/formatter/">[�O���փ����N] Panasonic SD�J�[�h�t�H�[�}�b�^</a><br>
-		�@<br>
-		�@FAT16�́A�N���X�^�T�C�Y�Ȃǂ������I�ׂ�\���ɂȂ��Ă��܂����AMSX�����Ή��ł���N���X�^�T�C�Y�����肳��Ă����肷��̂�<br>
-		�@���Ǝ��R�ɃN���X�^�T�C�Y�����߂Ă��܂� Windows�W���̃t�H�[�}�b�g�@�\�͔����������ǂ��ł��B<br>
-		�@<br>
-		�@FAT16�͍ő�4GB���������܂���̂ŁA4GB���z���� SDHC�J�[�h�̏ꍇ�́A�p�[�e�B�V�����𕪂���K�v������܂��B<br>
-		�@�p�[�e�B�V���������́AMSX�ł������ȒP�ł��B<br>
-		�@SD1�X���b�g�ɁA�p�[�e�B�V��������������SDHC�J�[�h��}�����āAMSX-BASIC���� CALL FDISK �ƃ^�C�v���� [RETURN] �������Ă��������B<br>
-		�@����Ńp�[�e�B�V���������ł��܂�(���m�F)�B<br>
+		　FAT12フォーマットか FAT16フォーマットにしか対応していません。FAT32やExFATでフォーマットされている場合は、FAT12/FAT16 でフォーマット<br>
+		　し直す必要があります。FAT12は最大32MBしか扱えませんので、よく分からなければ FAT16 でフォーマットしてください。<br>
+		　SDカードをフォーマットする場合は、WindowsPCからフォーマットする場合、OS標準のフォーマット機能ではなく、Panasonicが提供している<br>
+		　SDカードフォーマッタを使う方がいいです。<br>
+		　<br>
+		　<a href="https://www.sdcard.org/jp/downloads/formatter/">[外部へリンク] Panasonic SDカードフォーマッタ</a><br>
+		　<br>
+		　FAT16は、クラスタサイズなどいくつか選べる構造になっていますが、MSX側が対応できるクラスタサイズが限定されていたりするので<br>
+		　割と自由にクラスタサイズを決めてしまう Windows標準のフォーマット機能は避けた方が良いです。<br>
+		　<br>
+		　FAT16は最大4GBしか扱えませんので、4GBを越える SDHCカードの場合は、パーティションを分ける必要があります。<br>
+		　パーティション分けは、MSXでやる方が簡単です。<br>
+		　SD1スロットに、パーティション分けしたいSDHCカードを挿入して、MSX-BASICから CALL FDISK とタイプして [RETURN] を押してください。<br>
+		　これでパーティション分けできます(未確認)。<br>
 		<br>
-		��MSX-DOS2�݊� NEXTOR-DOS<br>
-		�@���̃J�[�g���b�W�ɂ́AMSX-DOS2�݊��� NEXTOR-DOS ���������܂�Ă��܂��B<br>
-		�@�܂��A����ɕK�v�� 512KB �̃������}�b�p�[�Ή������������ڂ��Ă��܂��B<br>
-		�@�������}�b�p�[�̊Ǘ��� NEXTOR �����܂��̂ŁAMSX1 �ł��� MX-101 �ł����Ȃ��g���܂��B<br>
-		�@MSX-DOS2�݊��Ȃ̂ŁA���R�f�B���N�g�����������Ƃ��o���܂��B<br>
+		■MSX-DOS2互換 NEXTOR-DOS<br>
+		　このカートリッジには、MSX-DOS2互換の NEXTOR-DOS が書き込まれています。<br>
+		　また、動作に必要な 512KB のメモリマッパー対応メモリも搭載しています。<br>
+		　メモリマッパーの管理も NEXTOR がやりますので、MSX1 である MX-101 でも問題なく使えます。<br>
+		　MSX-DOS2互換なので、当然ディレクトリを扱うことも出来ます。<br>
 		<br>
-		�@NEXTOR�́A���L�̏ꏊ�Ō��J����Ă���t���[�\�t�g�ł��B<br>
+		　NEXTORは、下記の場所で公開されているフリーソフトです。<br>
 		<br>
-		�@<a href="https://www.konamiman.com/msx/msx-e.html">[�O���փ����N] Konamiman's MSX page</a><br>
+		　<a href="https://www.konamiman.com/msx/msx-e.html">[外部へリンク] Konamiman's MSX page</a><br>
 		<br>
-		<a href="./sd_mapper_megaram_512kb_002.html">[����]</a><br>
+		<a href="./sd_mapper_megaram_512kb_002.html">[次へ]</a><br>
 		<br>
 	</body>
 </html>

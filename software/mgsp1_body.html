@@ -1,35 +1,35 @@
 <!DOCTYPE HTML>
 <html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-		<meta charset="Shift_JIS">
+		<meta charset="utf-8">
 		<title>HRA's room</title>
 		<link href="../mystyle.css" rel="stylesheet" type="text/css">
 	</head>
 	<body id="contents_main">
-		�Ȉ�MGS�v���C���[ MGSP<br>
+		簡易MGSプレイヤー MGSP<br>
 		<br>
-		<a href="./files/MGSP.zip">[DOWNLOAD] MGSP v1.0  (2020�N9��18�� �X�V)</a><br>
+		<a href="./files/MGSP.zip">[DOWNLOAD] MGSP v1.0  (2020年9月18日 更新)</a><br>
 		<br>
-		�K�v��:<br>
-		�@MSX-DOS2 �܂��� Nextor �����삷�� MSX���@�܂��̓G�~�����[�^<br>
-		�@MGSDRV v3.20�ȍ~ (v3.20���O�̃o�[�W�����́A���삷�邩������܂��񂪖��m�F�ł��B)<br>
+		必要環境:<br>
+		　MSX-DOS2 または Nextor が動作する MSX実機またはエミュレータ<br>
+		　MGSDRV v3.20以降 (v3.20より前のバージョンは、動作するかもしれませんが未確認です。)<br>
 		<br>
-		�T�v:<br>
-		�@�������ɏ풓�����Ă��� MGSDRV �ɑ΂��āA�f�B�X�N����ǂݍ��񂾋ȃf�[�^���󂯓n���u���n���v�̂悤�Ȗ�����S���c�[���ł��B<br>
-		�@�t�@�C����ǂ�ŁA�Đ��E��~�̎w�����o�������̊ȒP�Ȏd���������܂��񂪁AGUI �������Ȃ��̂� MSX1 �ł����삷��̂���Ԃ̓����ł��B<br>
+		概要:<br>
+		　メモリに常駐させてある MGSDRV に対して、ディスクから読み込んだ曲データを受け渡す「橋渡し」のような役割を担うツールです。<br>
+		　ファイルを読んで、再生・停止の指示を出すだけの簡単な仕事しかしませんが、GUI を持たないので MSX1 でも動作するのが一番の特徴です。<br>
 		<br>
-		�g����:<br>
-		�@MGSDRV ���풓�����܂��BMGSDRV v3.20 �́AMSX2 ����ǉ����ꂽ BIOS���[�N�� FFF7h ���Q�Ƃ��Ă���AMSX1�ł͂������s��(DRAM�̏�ԁA�@��ɂ���č�������܂��B)�ł��B<br>
-		�@FCC1h �̓��e�� FFF7h �փR�s�[���邾���̃c�[�� MAINROMP.COM �𓯍����Ă���̂ŁAMSX1 �̏ꍇ�� MAINROMP.COM �����s���Ă��� MGSDRV /Z �����s����Ɗm���ł��B<br>
-		�@���̏�ԂŁAMGSP /P �ȃt�@�C���� �ōĐ��BMGSP /S �ōĐ���~���o���܂��B�͂��A���ꂾ���ł��B<br>
-		�@�Đ����A�R�}���h�v�����v�g�ɖ߂��Ă��܂��̂ŁA������x�ʂ̍�Ƃ��o�����肵�܂��B<br>
+		使い方:<br>
+		　MGSDRV を常駐させます。MGSDRV v3.20 は、MSX2 から追加された BIOSワークの FFF7h を参照しており、MSX1ではそこが不定(DRAMの状態、機種によって差があります。)です。<br>
+		　FCC1h の内容を FFF7h へコピーするだけのツール MAINROMP.COM を同梱しているので、MSX1 の場合は MAINROMP.COM を実行してから MGSDRV /Z を実行すると確実です。<br>
+		　その状態で、MGSP /P 曲ファイル名 で再生。MGSP /S で再生停止が出来ます。はい、それだけです。<br>
+		　再生中、コマンドプロンプトに戻ってきますので、ある程度別の作業が出来たりします。<br>
 		<br>
-		�⑫:<br>
-		�@2020�N�́A�V�^�R���i�����Ȃǂ̌������b�������ł����A�v���Ԃ�� MSX�̘b�肪�����o�Ă����N���Ǝv���܂��B<br>
-		�@������@�ɁA�����ꕔ�̐l����������������܂��񂪁A�܂� MSX�Ő���オ���[��S������ǂ��Ȃ��Ǝv���AMGSP.COM ���쐬���܂����B<br>
-		�@�܂��A���E�ɖڂ�������ƁAOPLL + SCC + 2ndPSG + MapperRAM + Nextor �ȃR���{�J�[�g���b�W���o����Ă��āA���������J�[�g���b�W�� MSX1 �ɑ�������ƁA<br>
-		�@���\���؂ȉ��y�Đ��Ȃǂ��o���Ă��܂���ł���ˁB���{���̃��W���[��MUSIC Driver �ł��� MGSDRV �� MSX1 �ł��g����悤�ɂ��邱�ƂŁA<br>
-		�@MSX1 �̊��p�̕����L����΁AMSX����グ�ɑ����v���ł��邩�ȂƎv���܂����B<br>
+		補足:<br>
+		　2020年は、新型コロナ発生などの厳しい話も多いですが、久方ぶりに MSXの話題が多く出てきた年だと思います。<br>
+		　これを機に、ごく一部の人たちだけかもしれませんが、また MSXで盛り上がる一端を担えたら良いなぁと思い、MGSP.COM を作成しました。<br>
+		　また、世界に目を向けると、OPLL + SCC + 2ndPSG + MapperRAM + Nextor なコンボカートリッジも出回っていて、そういうカートリッジを MSX1 に装着すると、<br>
+		　結構豪華な音楽再生などが出来てしまうんですよね。日本製のメジャーなMUSIC Driver である MGSDRV を MSX1 でも使えるようにすることで、<br>
+		　MSX1 の活用の幅が広がれば、MSX盛り上げに多少貢献できるかなと思いました。<br>
 		<br>
 	</body>
 </html>

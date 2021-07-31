@@ -1,41 +1,41 @@
 <!DOCTYPE HTML>
 <html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-		<meta charset="Shift_JIS">
+		<meta charset="utf-8">
 		<title>HRA's room</title>
 		<link href="../../mystyle.css" rel="stylesheet" type="text/css">
 	</head>
 	<body id="contents_main">
-		CASIO MX-101 �L�[�{�[�h�C�� (2020�N9��14������)<br>
+		CASIO MX-101 キーボード修復 (2020年9月14日現在)<br>
 		<br>
-		�����ƃ��b�`���O�����ɂ�������炸�A�t�B�����P�[�u���̓��d�̂����Ă��܂����̂ł��B<br>
+		ちゃんとラッチを外したにもかかわらず、フィルムケーブルの導電体が削れてしまったのです。<br>
 		<img width=480 src="./image/flat_cable_scratch2.jpg"><br>
-		�J�b�g�O�ɍ�ꂽ���d�̂��R�l�N�^�̃o�l�̕��ɒ���t���ă��X���̂悤�ȏ�ԂɂȂ��Ă����̂�������܂���B<br>
-		������ɂ��Ă��A������ƃJ�b�g���đΉ�����̂ł̓_���ŁA���{�I�ɉ��P���Ȃ��ƁA�C�y�ɕ����ł��Ȃ����Ƃ����炩�ɂȂ�܂����B<br>
-		�Ƃ������ƂŁA�������炪�傪����ȏC����Ƃ̎n�܂�ł������܂��B<br>
+		カット前に削れた導電体がコネクタのバネの方に張り付いてヤスリのような状態になっていたのかもしれません。<br>
+		いずれにしても、ちょっとカットして対応するのではダメで、根本的に改善しないと、気楽に分解できないことが明らかになりました。<br>
+		ということで、ここからが大がかりな修復作業の始まりでございます。<br>
 
-		�܂��A�}�U�[�{�[�h���̃R�l�N�^���������܂��B<br>
-		�����^�C�v�̃t���b�N�X��h���āA<a href="https://www.sunhayato.co.jp/material2/jtp03/item_1054">���c�V���b���YNEO</a>�ŋz�����܂����B<br>
-		�V���b���Y�̐�𓖂Ă��u�Ԃɔ��c���n���o���̂ŁA�葁���z������āA�}�U�[�{�[�h���ł����Ȃ��悤�ɒ��ӂ��Ă��������B<br>
+		まず、マザーボード側のコネクタを除去します。<br>
+		無洗浄タイプのフラックスを塗って、<a href="https://www.sunhayato.co.jp/material2/jtp03/item_1054">半田シュッ太郎NEO</a>で吸い取りました。<br>
+		シュッ太郎の先を当てた瞬間に半田が溶け出すので、手早く吸い取って、マザーボードを焦がさないように注意してください。<br>
 		<br>
-		RS�R���|�[�l���c�ɉ��L�̕��i����z�B<br>
+		RSコンポーネンツに下記の部品を手配。<br>
 		<br>
-		���R�l�N�^<br>
-		JST FPC/FFC �R�l�N�^, 26��, 1.25mm, �X���[�z�[�� (�^�� 26FE-BT-VK-N)<br>
+		■コネクタ<br>
+		JST FPC/FFC コネクタ, 26極, 1.25mm, スルーホール (型番 26FE-BT-VK-N)<br>
 		<br>
-		��FFC�P�[�u��<br>
-		Molex FFC�W�����p�P�[�u�� 152mm ,�s�b�`1.25mm PREMO-FLEX FFC JUMPER �V���[�Y (�^��98268-0331)<br>
+		■FFCケーブル<br>
+		Molex FFCジャンパケーブル 152mm ,ピッチ1.25mm PREMO-FLEX FFC JUMPER シリーズ (型番98268-0331)<br>
 		<br>
-		�L�[�{�[�h�R�l�N�^�� 25�ɂł����A25�ɂ̃R�l�N�^�͔���؂�EFFC�P�[�u���͖��������ł����B<br>
-		�Ȃ̂ŁA26�ɂ̃R�l�N�^���� 1�{��������� 25�ɂɁB26�ɂ� FFC�P�[�u���𗘗p���Ē[����1�ɖ��g�p�ł������Ƃɂ��܂����B<br>
-		FFC�P�[�u���́A���[�̒[�q���������������Ă���^�C�v�ł��B<br>
+		キーボードコネクタは 25極ですが、25極のコネクタは売り切れ・FFCケーブルは無さそうでした。<br>
+		なので、26極のコネクタから 1本抜き取って 25極に。26極の FFCケーブルを利用して端っこ1極未使用でいくことにしました。<br>
+		FFCケーブルは、両端の端子が同じ方を向いているタイプです。<br>
 		<br>
-		���L���A�R�l�N�^����1�{�����������Ԃł��B���̈ʒu�𔲂����ƁA���傤�� FFC�P�[�u���̒[�q���O���Ɍ����`�Ń}�U�[�{�[�h�Ɏ��t�����܂��B<br>
+		下記が、コネクタから1本抜き取った状態です。この位置を抜き取ると、ちょうど FFCケーブルの端子が外側に向く形でマザーボードに取り付けられます。<br>
 		<img width=480 src="./image/connector.jpg"><br>
 		<img width=480 src="./image/connector2.jpg"><br>
-		������A�}�U�[�{�[�h�Ɏ��t���܂��B<br>
+		これを、マザーボードに取り付けます。<br>
 		<img width=480 src="./image/connector3.jpg"><br>
-		<a href="./body.html">[�O��]</a><a href="./body3.html">[����]</a><br>
+		<a href="./body.html">[前へ]</a><a href="./body3.html">[次へ]</a><br>
 		<br>
 	</body>
 </html>

@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="Shift_JIS">
+		<title>HRA's room</title>
+		<link href="../../mystyle.css" rel="stylesheet" type="text/css">
+	</head>
+	<body id="contents_main">
+		SD Snacher Sound Cartridge DRAM増設<br>
+		<br>
+		<center>
+			<h1 id="contents_warning">
+				★お約束<br>
+				記載の情報の保証は出来ませんので、記載情報の利用によって、万が一何かしらの不利益・不具合が生じても、当方は一切責任を負いません。<br>
+			<h1>
+		</center>
+		<br>
+		Snacher/SD Snacher に付属のサウンドカートリッジは、SCC音源と 64KB DRAM を搭載したカートリッジになっています。<br>
+		Konami 8K ROM と同じ方法でバンク切り替えできるのですが、Snacherのサウンドカートリッジは小さい番号のバンクに、
+		SD Snacherのサウンドカートリッジは大きい番号のバンクに 64KB DRAM が接続されています。<br>
+		<br>
+		konamiゲームコレクションは、Snacherのサウンドカートリッジを付けていると BGM が SCC で再生されるらしいですが
+		SD Snacherのサウンドカートリッジには対応していません。<br>
+		DRAMバンクの番号が異なっているので弾かれるようです。<br>
+		<br>
+		今となってはプレミア価格になっている Snacher/SD Snacher ですが、SD Snacher のサウンドカートリッジだけ
+		入手できたので、DRAM を増設することによって 小さい番号のバンクにも DRAM を接続し、
+		合計 128KB の SCCサウンド+DRAM128KB なカートリッジに改造してみます。<br>
+		<br>
+		<img src="./image/sound_cartridge.jpg"<br>
+		<br>
+		まず、嵌め殺しで閉じられているカートリッジを開ける作業からです。<br>
+		カートリッジのラベルを剥がすと、カートリッジ下側の２つの爪の位置に穴が空いています。<br>
+		<br>
+		<img src="./image/hole.jpg"<br>
+		<br>
+		穴は左右に１つずつあるのですが、写真は向かって左側の穴（ラベルの左下角）になります。<br>
+		右側の穴は、ラベルの右下角の同様の位置にあります。<br>
+		<br>
+		<a href="./body2.html">[次]</a><br>
+		<br>
+	</body>
+</html>

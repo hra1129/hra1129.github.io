@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="Shift_JIS">
+		<title>HRA's room</title>
+		<link href="../mystyle.css" rel="stylesheet" type="text/css">
+	</head>
+	<body id="contents_main">
+		MGSプレイヤー MGSP v2.1.0 を BlueMSX で動作させるための手順<br>
+		<br>
+		(1) 必要なファイルを揃える<br>
+		　　[1] <a href="./files/MGSP2.1.0.zip">MGSP v2.1.0 プログラムファイル</a><br>
+		　　[2] <a target="_top" href="https://gigamix.hatenablog.com/entry/mgsdrv/">[外部リンク] MGSDRVファイル (GIGAMIXさんのサイト)</a><br>
+		　　[3] MSXDOS2のシステムファイル (MSXDOS2.SYSとCOMMAND2.COM)<br>
+		<br>
+		(2) 新しいディスクイメージを作成する<br>
+		　　BlueMSXを起動し、エミュレーションを [MSXturboR] にする。<br>
+		　　ディスクドライブA, B ともに何も挿入せずに起動する。<br>
+		　　MSX-BASIC が立ち上がり、DISK BASIC version 2.01 になっていることを確認する。<br>
+		　　[ファイル]→[ディスクドライブA]→[新規ディスクイメージを挿入]→ディスクイメージを保存<br>
+		　　MSX-BASIC の方で、CALL FORMAT を実行する。A, 2 と順に入力してディスクイメージを初期化する。<br>
+		<br>
+		(3) 適当な場所にフォルダを作成する<br>
+		　　(1)で集めてきた下記のファイルをそのフォルダにコピーする。<br>
+		　　MSXDOS2.SYS, COMMAND2.COM, MGSP.COM, MGSP.INI, KFONT.BIN, MGSDRV.COM<br>
+		　　ついでに演奏したい MGSファイルもコピーする。<br>
+		　　（合計 720KBを越えないようにして下さい。)<br>
+		　　[ファイル]→[ディスクドライブB]→[ディレクトリ挿入]→上記フォルダを選択<br>
+		　　FILES "B:" で、上記ディレクトリの内容が表示されるのを確認する。<br>
+		　　COPY "B:*.*" TO "A:*.*" を実行してファイルをディスクイメージにコピーする。<br>
+		　　FILES "A:" で、コピーしたファイルが表示されることを確認する。
+		<br>
+		(4) ディスクイメージから起動する<br>
+		　　[ファイル]→[ROMスロット1]→[特殊カートリッジ]→[SCCカートリッジ] で SCCカートリッジを装着する<br>
+		　　[ファイル]→[ディスクドライブB]→[取り出し:xxxx] で、ディレクトリ挿入を解除<br>
+		　　F12キーを押してリセットすると、MSX-DOS2のコマンドプロンプトになる。<br>
+		　　MGSPとタイプして実行。<br>
+	</body>
+</html>
