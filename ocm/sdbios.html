@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="utf-8">
+		<title>HRA's room</title>
+		<link href="../mystyle.css" rel="stylesheet" type="text/css">
+	</head>
+	<body align="center">
+		SDBIOSに関する注意点をまとめておきます<br>
+		<br>
+		<hr>
+		まず、OCM-PLDとOCM改のSDBIOSファイルには互換性がありませんのでご注意下さい。<br>
+		<br>
+		SDBIOSファイルを用意します。<br>
+		これをSDカードに書き込んで BIOSとして利用するのですが、書き込みには注意が必要です。<br>
+		<br>
+		(1) SDカードをFAT16フォーマットする<br>
+		　MegaSD は、SDカードまたはSDHCカードに対応していますが、FAT12/FAT16 にしか対応していません。<br>
+		　4GBを越えるSDカードの場合、4GBを越える部分を諦めるか、パーティションを切って 4GB以下のパーティションに分けて利用することになります。<br>
+		　OCM-PLD/OCM改では、SDカード内の最初のパーティションの最初に書かれたファイルを SDBIOS として認識します。<br>
+		<br>
+		(2) Windows10対策<br>
+		　Windows10では、ディスクメディアを時々チェックして、「System Volume Information」という隠しフォルダを自動的に生成します。<br>
+		　SDカードも例外では無く、フォーマットした後に勝手に作られてしまいます。<br>
+		　すると、「System Volume Information」フォルダが「最初に書かれたファイル」になってしまうため、OCMとしては都合が悪い。<br>
+		　これを回避するために下記のようにします。<br>
+		<br>
+		　(2)-a SDカードをフォーマットする<br>
+		　(2)-b [Win]+[R] で CMD と入力。コマンドプロンプトを立ち上げる。<br>
+		　(2)-c 「D:」等とSDカードのドライブ名を打ち込み、そのドライブへ移動する。<br>
+		　(2)-d 「DIR /AH」と打ち込み「System Volume Information」が出てくることを確認する。<br>
+		　(2)-e 「attrib -S -H -R "System Volume Information"」と入力して、システム属性・隠し属性・読み取り専用属性を解除します。<br>
+		　(2)-f 「rmdir /S "System Volume Information"」と入力して、「System Volume Information」を削除します。<br>
+		　(2)-g このタイミングで、SDBIOS を書き込んで下さい。ファイルエクスプローラーでコピーしてもOKです。<br>
+		<br>
+		(3) SDBIOS更新<br>
+		　SDBIOSを別のモノに変えたくなった場合は、SDカード上に書き込まれているSDBIOSと同じファイル名にして上書きコピーすればOKです。<br>
+		<br>
+		(4) SDBIOS無効化<br>
+		　SDBIOSを読み込む IPL-ROM は、あまり真面目に FATを処理していません。そのため、SDカード上で削除しただけではSDBIOSから起動してしまう場合があります。<br>
+		　ダミーのSDBIOSを用意して上書きコピーすれば OK です。<br>
+		　ダミーは、先頭が "AB" でなければ何でも良いですが、「また SDBIOSを有効にするかもしれない」のであれば、SDBIOSと同じサイズのファイルにすることをオススメします。<br>
+		<br>
+		　再度、SDBIOSを有効にする場合、また SDBIOSファイルに (3)の手順で上書きするわけです。<br>
+		　無効化の時に小さいファイルで上書きして、その後、SDカードに別のファイルを書き込むと、「フォーマット直後に書き込んだSDBIOS領域」が別のファイルに浸食されます。<br>
+		　浸食された状態で上書きしても、新たな領域に書き込まれてしまい、SDBIOSファイルが分断されます。<br>
+		　分断されると、正常に起動できなくなりますのでフォーマットからやり直して下さい。<br>
+		　そのようにならないためにも、SDBIOSを無効化する場合はSDBIOSと同じサイズのファイルで上書きをお願いします。<br>
+		<br>
+		[memo]<br>
+		　IPL-ROMでちゃんとFAT処理すれば良いじゃん！面倒くさい！と思われるかもしれませんが、理由があります。<br>
+		　IPL-ROMは、FPGA内の貴重なSRAMリソースを使って実装されてます。つまり回路として実装されています。<br>
+		　そのおかげで、FPGAに形成された回路からみると、最初から存在する ROM のように振る舞うことが出来ます。<br>
+		　初期の OCM では 256byte, その後改良で 512byte, 最新では OCM-PLD は 1024byte, OCM改では 2048byte になっています。<br>
+		　このサイズのプログラムで FAT をちゃんと処理すると他に何も出来なくなってしまいますので、「最初のファイル限定」で処理しています。<br>
+		　また、ちゃんと処理すると起動速度に影響を及ぼす問題もありますので、この問題を解決しようというモチベーションはありません。<br>
+		<br>
+	</body>
+</html>
