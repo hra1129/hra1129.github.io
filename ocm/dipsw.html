@@ -1,0 +1,250 @@
+<!DOCTYPE HTML>
+<html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="utf-8">
+		<title>HRA's room</title>
+		<link href="../mystyle.css" rel="stylesheet" type="text/css">
+	</head>
+	<body align="center">
+		ディップスイッチの説明です。SX-2(OCM-PLD)とOCM改では若干異なります。<br>
+		<br>
+		SX-2(OCM-PLD) DIP Switch<br>
+		<table id="table_switch_title" border=1>
+			<tr id="table_switch_title">
+				<td>
+					DIP-SW
+				</td>
+				<td>
+					機能
+				</td>
+				<td>
+					詳細
+				</td>
+			</tr>
+			<tr id="table_switch_light">
+				<td id="table_switch_title">
+					1
+				</td>
+				<td>
+					CPUクロック
+				</td>
+				<td>
+					OFF: 標準の 3.58MHz動作<br>
+					ON : カスタムスピードモード (4.10MHz～8.06MHz)<br>
+					　- [F12]を押す度にクロックが変化します。(3.58MHz→5.37MHz→カスタム→3.58MHz)<br>
+					　- カートリッジスロットに出力されるクロックも変化するのでご注意下さい。<br>
+					　- 5.37MHz動作時は、PanasonicのMSX2+に搭載された高速モードのようにふるまいます。<br>
+					　- 高速MegaSDモードが有効になります。<br>
+				</td>
+			</tr>
+			<tr id="table_switch_dark">
+				<td id="table_switch_title">
+					2, 3
+				</td>
+				<td>
+					VIDEO出力
+				</td>
+				<td>
+					OFF, OFF: コンポジットビデオ/Sビデオ出力 (非推奨)<br>
+					　- 15kHz, 50Hz(NTSC)・60Hz(PAL), インターレースビデオ出力。<br>
+					　- VGAコネクタから独自のピンアサインで出力されるため、VGA→ビデオ変換ケーブルを自作する必要があります。<br>
+					　- SX-2の基準クロックが理想値より若干速いため、規格から若干ずれた信号を出力します。モニターによっては正常に表示できない場合があります。<br>
+					OFF, ON : RGB with AudioOut (非推奨)<br>
+					　- 15kHz, 50Hz(NTSC)・60Hz(PAL), インターレースビデオ出力。<br>
+					　- VGAコネクタから独自のピンアサインで出力されるため、VGA→RGB21ピン変換ケーブルを自作する必要があります。<br>
+					　- SX-2の基準クロックが理想値より若干速いため、規格から若干ずれた信号を出力します。モニターによっては正常に表示できない場合があります。<br>
+					ON, OFF : VGA出力 for 液晶モニター (推奨)<br>
+					　- 31kHzにアップスキャンされたVGA出力です。<br>
+					　- 液晶モニターで水平位置によってドットサイズが変化する問題を軽減しています。<br>
+					ON, ON : VGA出力 for CRTモニター (非推奨)<br>
+					　- 31kHzにアップスキャンされたVGA出力です。<br>
+				</td>
+			</tr>
+			<tr id="table_switch_light">
+				<td id="table_switch_title">
+					4
+				</td>
+				<td>
+					カートリッジスロット1と背面スロット3の設定
+				</td>
+				<td>
+					OFF: カートリッジスロット1 と背面スロット3は有効。<br>
+					ON : カートリッジスロット1 と背面スロット3は無効。<br>
+					　- スロット1には、内蔵の似非SCC+ (1MB) が装着されている状態になります。<br>
+					　　　- 似非SCC+ (1MB) は、スロット2の似非RAM/SCC 2MB の後半 1MB とシェアしています。<br>
+					　- [Scroll lock]キーで OPL3 の ON/OFF をトグルできます。デフォルトは OFF です。<br>
+					　- OPL3 は SETSMART.COMコマンドで管理できます。<br>
+					　　　- 無効: SETSMART -87<br>
+					　　　- 有効: SETSMART -88<br>
+				</td>
+			</tr>
+			<tr id="table_switch_dark">
+				<td id="table_switch_title">
+					5, 6
+				</td>
+				<td>
+					カートリッジスロット2の設定
+				</td>
+				<td>
+					OFF, OFF: カートリッジスロット2 は有効。<br>
+					OFF, ON : カートリッジスロット2 は無効。スロット2は 内蔵 似非RAM ASCII-8K 1MB。<br>
+					ON , OFF: カートリッジスロット2 は無効。スロット2は 内蔵 似非SCC 2MB。<br>
+					ON , ON : カートリッジスロット2 は無効。スロット2は 内蔵 似非RAM ASCII-16K 2MB。<br>
+				</td>
+			</tr>
+			<tr id="table_switch_light">
+				<td id="table_switch_title">
+					7
+				</td>
+				<td>
+					内蔵マッパーRAMの設定
+				</td>
+				<td>
+					OFF: マッパーRAMは 2MB。SDBIOS無効時には 1st EPBIOS から起動。<br>
+					OFF: マッパーRAMは 4MB。SDBIOS無効時には 2nd EPBIOS から起動。<br>
+				</td>
+			</tr>
+			<tr id="table_switch_dark">
+				<td id="table_switch_title">
+					8
+				</td>
+				<td>
+					内蔵 MegaSD の設定
+				</td>
+				<td>
+					OFF: 無効。<br>
+					ON : 有効 (推奨)<br>
+				</td>
+			</tr>
+		</table>
+		<br>
+		OCM改 DIP Switch for DE0CV+DEOCM<br>
+		<table id="table_switch_title" border=1>
+			<tr id="table_switch_title">
+				<td>
+					DIP-SW
+				</td>
+				<td>
+					機能
+				</td>
+				<td>
+					詳細
+				</td>
+			</tr>
+			<tr id="table_switch_light">
+				<td id="table_switch_title">
+					1
+				</td>
+				<td>
+					CPUクロック
+				</td>
+				<td>
+					OFF: 標準の 3.58MHz動作<br>
+					ON : カスタムスピードモード (4.10MHz～8.06MHz)<br>
+					　- [F12]を押す度にクロックが変化します。(3.58MHz→5.37MHz→カスタム→3.58MHz)<br>
+					　- カートリッジスロットに出力されるクロックも変化するのでご注意下さい。<br>
+					　- 5.37MHz動作時は、PanasonicのMSX2+に搭載された高速モードのようにふるまいます。<br>
+					　- 高速MegaSDモードが有効になります。<br>
+				</td>
+			</tr>
+			<tr id="table_switch_dark">
+				<td id="table_switch_title">
+					2, 3
+				</td>
+				<td>
+					VIDEO出力
+				</td>
+				<td>
+					OFF, OFF: コンポジットビデオ/Sビデオ出力 (未確認)<br>
+					　- 15kHz, 50Hz(NTSC)・60Hz(PAL), インターレースビデオ出力。<br>
+					　- VGAコネクタから独自のピンアサインで出力されるため、VGA→ビデオ変換ケーブルを自作する必要があります。<br>
+					　- SX-2の基準クロックが理想値より若干速いため、規格から若干ずれた信号を出力します。モニターによっては正常に表示できない場合があります。<br>
+					OFF, ON : RGB with AudioOut (未確認)<br>
+					　- 15kHz, 50Hz(NTSC)・60Hz(PAL), インターレースビデオ出力。<br>
+					　- VGAコネクタから独自のピンアサインで出力されるため、VGA→RGB21ピン変換ケーブルを自作する必要があります。<br>
+					　- SX-2の基準クロックが理想値より若干速いため、規格から若干ずれた信号を出力します。モニターによっては正常に表示できない場合があります。<br>
+					ON, OFF : VGA出力 for 液晶モニター (推奨)<br>
+					　- 31kHzにアップスキャンされたVGA出力です。<br>
+					　- 液晶モニターで水平位置によってドットサイズが変化する問題を軽減しています。<br>
+					ON, ON : VGA出力 for CRTモニター (未確認)<br>
+					　- 31kHzにアップスキャンされたVGA出力です。<br>
+				</td>
+			</tr>
+			<tr id="table_switch_light">
+				<td id="table_switch_title">
+					4
+				</td>
+				<td>
+					カートリッジスロット1の設定
+				</td>
+				<td>
+					OFF: カートリッジスロット1は有効。<br>
+					ON : カートリッジスロット1は無効。<br>
+					　- スロット1には、内蔵の似非SCC+ (2MB) が装着されている状態になります。<br>
+					　　　- 似非SCC+ (2MB) は、スロット2の似非RAM/SCC と独立しています。RAMをシェアしていません。<br>
+				</td>
+			</tr>
+			<tr id="table_switch_dark">
+				<td id="table_switch_title">
+					5, 6
+				</td>
+				<td>
+					カートリッジスロット2の設定
+				</td>
+				<td>
+					OFF, OFF: カートリッジスロット2 は有効。<br>
+					OFF, ON : カートリッジスロット2 は無効。スロット2は 内蔵 似非RAM ASCII-8K 1MB。<br>
+					ON , OFF: カートリッジスロット2 は無効。スロット2は 内蔵 似非SCC 2MB。<br>
+					ON , ON : カートリッジスロット2 は無効。スロット2は 内蔵 似非RAM ASCII-16K 2MB。<br>
+				</td>
+			</tr>
+			<tr id="table_switch_light">
+				<td id="table_switch_title">
+					7
+				</td>
+				<td>
+					内蔵マッパーRAMの設定
+				</td>
+				<td>
+					OFF: マッパーRAMは 2MB。<br>
+					OFF: マッパーRAMは 4MB。<br>
+				</td>
+			</tr>
+			<tr id="table_switch_dark">
+				<td id="table_switch_title">
+					8
+				</td>
+				<td>
+					内蔵 MegaSD の設定
+				</td>
+				<td>
+					OFF: 無効。<br>
+					ON : 有効 (推奨)<br>
+				</td>
+			</tr>
+			<tr id="table_switch_light">
+				<td id="table_switch_title">
+					9
+				</td>
+				<td>
+					N/A
+				</td>
+				<td>
+				</td>
+			</tr>
+			<tr id="table_switch_dark">
+				<td id="table_switch_title">
+					10
+				</td>
+				<td>
+					内蔵ソフトウェアスイッチ<br>
+					(Panasonic A1ST/A1GT互換)
+				</td>
+				<td>
+					ON : 内蔵ソフトウェアON<br>
+					OFF: 内蔵ソフトウェアOFF<br>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>

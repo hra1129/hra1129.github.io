@@ -26,6 +26,24 @@ table {
 	margin-right: auto;
 }
 
+#table_switch_title {
+	color: white;
+	background-color: darkturquoise;
+	text-align: center;
+}
+
+#table_switch_light {
+	color: black;
+	background-color: powderblue;
+	text-align: left;
+}
+
+#table_switch_dark {
+	color: black;
+	background-color: lightcyan;
+	text-align: left;
+}
+
 a {
 	color: #F0E000;
 	text-decoration: underline;
