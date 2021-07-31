@@ -1,0 +1,82 @@
+<!DOCTYPE HTML>
+<html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="utf-8">
+		<title>HRA's room</title>
+		<link href="../mystyle.css" rel="stylesheet" type="text/css">
+	</head>
+	<body align="center">
+		1chipMSX関連の用語集です<br>
+		<br>
+		<table id="table_switch_title" border=1>
+			<tr id="table_switch_title">
+				<td>
+					用語
+				</td>
+				<td>
+					詳細
+				</td>
+			</tr>
+			<tr id="table_switch_light">
+				<td id="table_switch_title">
+					OCM
+				</td>
+				<td>
+					おーしーえむ。OneChipMSXの略称。
+				</td>
+			</tr>
+			<tr id="table_switch_dark">
+				<td id="table_switch_title">
+					EPBIOS
+				</td>
+				<td>
+					1chipMSXの本体に記録されているBIOSデータを指します。<br>
+					FPGAのコンフィグROMである EPCS に記録されていることから SDBIOS と区別するために EPBIOS と呼んでいます。<br>
+				</td>
+			</tr>
+			<tr id="table_switch_light">
+				<td id="table_switch_title">
+					SDBIOS
+				</td>
+				<td>
+					SDカード上に記録されているBIOSデータを指します。<br>
+					EPBIOS と区別するために SDBIOS と呼んでいます。<br>
+				</td>
+			</tr>
+			<tr id="table_switch_dark">
+				<td id="table_switch_title">
+					MegaSD/MegaSDHC
+				</td>
+				<td>
+					メガROM構造の中に構築されたSDカードアクセス用のカートリッジを指します。<br>
+					1chipMSX系MSX互換機には、このMegaSDが内蔵されており、それに対応した MSX-DOS2やNextorDOSを、BIOSとしてメガROM部分に書き込むことでディスクアクセスを実現しています。<br>
+					MemoryMapped I/O の仕組みで SDカードにアクセスします。<br>
+				</td>
+			</tr>
+			<tr id="table_switch_light">
+				<td id="table_switch_title">
+					OCM-PLD
+				</td>
+				<td>
+					KdL氏がメンテしている 1chipMSX系のFPGAデザインデータです。<br>
+					現在出回っている 1chipMSX系MSX互換機の回路デザインは、これそのものか、これをベースとした派生物になります。<br>
+				</td>
+			</tr>
+			<tr id="table_switch_dark">
+				<td id="table_switch_title">
+					1chipMSX改
+				</td>
+				<td>
+					私がメンテしている 1chipMSX系のFPGAデザインデータです。<br>
+					オリジナルの 1chipMSXが発売されてすぐに公開して、そこから OCM-PLDが派生して生まれました。<br>
+					しかし、1chipMSX改は 2008年ころに一度開発を終了しました。<br>
+					2019年になり、今度は OCM-PLDをベースにして新生1chipMSX改に生まれ変わりました。<br>
+					KdL氏と連携して、1chipMSX改で実験的な修正作業を行いテストは簡素に高速リリース。<br>
+					その中でKdL氏が良好と判断した修正を取り込んで、じっくりテストしたものが OCM-PLD としてリリースされる、<br>
+					という棲み分けになっています。<br>
+				</td>
+			</tr>
+		</table>
+		<br>
+	</body>
+</html>
