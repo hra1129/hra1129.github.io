@@ -1,0 +1,58 @@
+; -----------------------------------------------------------------------------
+; STAGE 8 BGM " MILLION SHOWER " by michelan-gelo.
+; -----------------------------------------------------------------------------
+
+
+; -----------------------------------------------------------------------------
+; sound font data
+; -----------------------------------------------------------------------------
+{
+
+	; @0 ----------------------------------------------------------------------
+	0	1	2	2	2	0	-2	-3	-3	-3	-2	0	2	2	2	1	
+	0	-2	-3	-3	-3	-1	1	2	3	2	1	-1	-3	-3	-3	-2	
+	255					; AR
+	2					; DR
+	224					; SL
+	1					; SR
+	30					; RR
+	20					; ビブラート遅延時間
+	0					; ノイズ周波数
+	0					; ドラム用基準周波数
+
+}
+
+
+; -----------------------------------------------------------------------------
+; ch.0 (main part)
+; -----------------------------------------------------------------------------
+{
+	q8@0v15t188l16
+	$
+	o5agabo6co5agabo6co5bo6dedo5be agabo6co5bfdedefegeg ao6co5badfegagecdgeb o6co5ao6co5bo6do5agfeao6co5bo6co5bae
+	agegagao6cedo5bgegbg aeao6co5baegagfdo6co5bo6co5b agabo6co5aegao6co5babegb ao6co5babgbgagegbeo6eo5b
+	a1r1r1o6a1
+	o5ao3abo5co3geo5bgao3geo4feo6co3eo4g ao5go3eo4go5ao4eo5go3bo5ao4gao3bo6co5bo3go4b
+	o3ao5bao4bco6eo5do3bo5co3bo5ago4eo3go5eo4g ao3bo6co5bo4go3fo5ego3ao4bo6co3fo4eo5go3eo4g 
+	o5agfdeo4bo5co4eafefedo3bg aegbao4dcefedfgegb ao5cdcecebagfdedeb ageo4badeo3bao4cecego5cg
+	a1r1r1r1
+}
+
+; -----------------------------------------------------------------------------
+; ch.1 (back part)
+; -----------------------------------------------------------------------------
+{
+	q8@0v14t188l16o2
+	$
+	arar8.ararar8.ar grgr8.grgrgr8.gr frfr8.frfrfrdrfr grgr8.grgrgregrg
+	arar8.ararararar grgr8.grgrgrgrgr frfr8.frfrfrdrfr grgr8.grgrgregrg
+	arar8.ararar8.ar arar8.ararar8.ar arar8.ararar8.ar arar8.ararararar
+	arar8.ararar8.ar grgr8.grgrgr8.gr frfr8.frfrfrdrfr grgr8.grgrgregrg
+	arar8.ararararar grgr8.grgrgrgrgr frfr8.frfrfrdrfr grgr8.grgrgregrg
+	arar8.ararar8.ar grgr8.grgrgr8.gr frfr8.frgrgr8.gr a2r8erbrgr
+}
+; -----------------------------------------------------------------------------
+; ch.2 (void)
+; -----------------------------------------------------------------------------
+{
+}

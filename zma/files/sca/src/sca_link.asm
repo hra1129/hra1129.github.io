@@ -1,0 +1,39 @@
+; -----------------------------------------------------------------------------
+;	BSAVEƒwƒbƒ_
+; -----------------------------------------------------------------------------
+		db		0xFE
+		dw		sca_main
+		dw		sca_end_of_program - 1
+		dw		sca_main
+
+	include	"sca_config.asm"
+	include	"sca_info.asm"
+	include	"bgmdriver_d.asm"
+	include "sca_main.asm"
+	include "sca_player.asm"
+	include "sca_shot.asm"
+	include "sca_sprite.asm"
+	include "sca_enemy_man.asm"
+	include "sca_enemy1.asm"
+	include "sca_enemy2.asm"
+	include "sca_enemy3.asm"
+	include "sca_enemy4.asm"
+	include "sca_enemy5.asm"
+	include "sca_enemy_boss1.asm"
+	include "sca_enemy_boss2.asm"
+	include "sca_enemy_boss3.asm"
+	include "sca_enemy_boss4.asm"
+	include "sca_enemy_boss5.asm"
+	include "sca_enemy_boss6.asm"
+	include "sca_enemy_boss7.asm"
+	include "sca_enemy_boss8.asm"
+	include "sca_enemy_bomb.asm"
+	include "sca_clash.asm"
+	include "sca_background.asm"
+	include "sca_random.asm"
+	include "sca_vsync.asm"
+	include "sca_title.asm"
+	include "sca_score.asm"
+	include "bgmdriver.asm"
+	include "sca_palette.asm"
+sca_end_of_program:

@@ -1,0 +1,100 @@
+[#]
+[Condition]     症状
+[Machine]       発生機種
+[MGSP Version]  問題発生のバージョン
+[State]         現在の状況
+--------------------------------------------------------------------------------
+[#] 023
+[Condition]
+	MGSファイルが一つも存在しないときに、ファイル一覧にゴミが表示される。
+	Garbage is displayed in the file list when none of the MGS files exist.
+
+[Machine]
+	all
+
+[MGSP Version]
+	20201029_0710
+
+[State]
+	修正済み (20201101_2315)
+	Fixed it
+
+--------------------------------------------------------------------------------
+[#] 024
+[Condition]
+	MGSファイルが一つも存在しないときに、ファイル一覧に再生中の強調表示がでる。
+	When none of the MGS files are present, "playing" is highlighted in the file list.
+
+[Machine]
+	all
+
+[MGSP Version]
+	20201029_0710
+
+[State]
+	修正済み (20201101_2315)
+	Fixed it
+
+--------------------------------------------------------------------------------
+[#] 025
+[Condition]
+	ジョイパッドのBボタンが効かない。
+	The B button on the joypad does not work.
+
+[Machine]
+	all
+
+[MGSP Version]
+	20201029_0710
+
+[State]
+	修正済み (20201101_2315)
+	Fixed it
+
+--------------------------------------------------------------------------------
+[#] 026
+[Condition]
+	再生が強制的に停止される場合に、鍵盤やレベルメーターに表示の残骸が残るバグを修正
+	Fixed a bug that left remnants of the display on the keyboard and level meter when playback is forced to stop.
+
+[Machine]
+	all
+
+[MGSP Version]
+	20201105_2300
+
+[State]
+	修正済み (20201109_0611)
+	Fixed it
+
+--------------------------------------------------------------------------------
+[#] 027
+[Condition]
+	INIファイルの最後の行がコメント行だとフリーズしてしまう
+	If the last line of the INI file is a comment line, it will freeze.
+
+[Machine]
+	all
+
+[MGSP Version]
+	20201120_0632
+
+[State]
+	修正済み (20201128_0710)
+	Fixed it
+
+--------------------------------------------------------------------------------
+[#] 028
+[Condition]
+	漢字フォントの一部の文字が化ける
+	Some characters in the kanji font are corrupted.
+
+[Machine]
+	all
+
+[MGSP Version]
+	all
+
+[State]
+	修正済み (20201128_0710)
+	Fixed it

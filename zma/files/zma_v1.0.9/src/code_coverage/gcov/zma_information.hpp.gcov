@@ -1,0 +1,201 @@
+        -:    0:Source:../zma_information.hpp
+        -:    0:Programs:4
+        -:    1:// --------------------------------------------------------------------
+        -:    2://	Z80 Macro Assembler dictionary
+        -:    3:// ====================================================================
+        -:    4://	2019/05/05	t.hara
+        -:    5:// --------------------------------------------------------------------
+        -:    6:
+        -:    7:#pragma once
+        -:    8:
+        -:    9:#include <string>
+        -:   10:#include <map>
+        -:   11:#include <vector>
+        -:   12:#include <fstream>
+        -:   13:#include <iomanip>
+        -:   14:
+      251:   15:class CVALUE {
+        -:   16:public:
+        -:   17:	enum {
+        -:   18:		CV_UNKNOWN,
+        -:   19:		CV_INTEGER,
+        -:   20:		CV_STRING,
+        -:   21:	} type;
+        -:   22:
+        -:   23:	int			i;
+        -:   24:	std::string	s;
+        -:   25:
+    88755:   26:	CVALUE(): type( CV_UNKNOWN ), i( 0 ), s( "" ) {
+    88755:   27:	}
+        -:   28:};
+        -:   29:
+      175:   30:class CZMA_MACRO_ARG {
+        -:   31:public:
+        -:   32:	std::string						name;
+        -:   33:	bool							is_through;
+        -:   34:
+       86:   35:	CZMA_MACRO_ARG(): name( "" ), is_through( false ) {
+       86:   36:	}
+        -:   37:};
+        -:   38:
+       33:   39:class CZMA_MACRO {
+        -:   40:public:
+        -:   41:	std::vector< CZMA_MACRO_ARG >	parameter_name_list;
+        -:   42:	std::vector<class CZMA_PARSE*>	m_text;
+        -:   43:};
+        -:   44:
+        -:   45:class CZMA_REPEAT_T {
+        -:   46:public:
+        -:   47:	std::string						counter_symbol;
+        -:   48:	int								counter_end;
+        -:   49:	bool							is_counter_end_fixed;
+        -:   50:	std::string						scope_name;
+        -:   51:	std::vector<class CZMA_PARSE*>	m_text;
+        -:   52:
+       22:   53:	CZMA_REPEAT_T(): counter_symbol( "" ), counter_end( 0 ), is_counter_end_fixed( false ), scope_name( "" ) {
+       22:   54:	}
+        -:   55:};
+        -:   56:
+       58:   57:class CZMA_IF_SUB_T {
+        -:   58:public:
+        -:   59:	bool							is_condition_fixed = false;
+        -:   60:	bool							is_condition = false;
+        -:   61:	class CZMA_PARSE_IF				*p_if = nullptr;
+        -:   62:	class CZMA_TEXT					*p_text = nullptr;
+        -:   63:};
+        -:   64:
+       31:   65:class CZMA_IF_T {
+        -:   66:public:
+        -:   67:	std::vector<CZMA_IF_SUB_T*>		m_sub;
+        -:   68:};
+        -:   69:
+        -:   70:class CZMA_INFORMATION {
+        -:   71:public:
+        -:   72:	std::map< std::string, CVALUE >	dict;
+        -:   73:	std::map< std::string, int >	sss_or_ddd_id { { "B", 0 }, { "C", 1 }, { "D", 2 }, { "E", 3 }, { "H", 4 }, { "L", 5 }, { "A", 7 }, };
+        -:   74:	std::map< std::string, int >	ix_hl{ { "IXH", 4 }, { "IXL", 5 }, };
+        -:   75:	std::map< std::string, int >	iy_hl{ { "IYH", 4 }, { "IYL", 5 }, };
+        -:   76:	std::map< std::string, int >	rp_id { { "BC", 0 }, { "DE", 1 }, { "HL", 2 }, { "SP", 3 }, };
+        -:   77:	std::map< std::string, int >	rp_with_af_id{ { "BC", 0 }, { "DE", 1 }, { "HL", 2 }, {"AF", 3 }, };
+        -:   78:	std::map< std::string, int >	ccc_id{ { "NZ", 0 }, { "Z", 1 }, { "NC", 2 }, { "C", 3 }, { "PO", 4 }, { "PE", 5 }, { "P", 6 }, { "M", 7 }, };
+        -:   79:	std::map< std::string, int >	cc2_id{ { "NZ", 0 }, { "Z", 1 }, { "NC", 2 }, { "C", 3 }, };
+        -:   80:	std::vector< std::string >		scope;
+        -:   81:	std::ofstream					log;
+        -:   82:	std::vector< std::string >		include_path;
+        -:   83:
+        -:   84:	unsigned int auto_label_index;
+        -:   85:
+        -:   86:	typedef enum {
+        -:   87:		CZMA_INFO_UNKNOWN,
+        -:   88:		CZMA_INFO_MACRO_BLOCK,
+        -:   89:		CZMA_INFO_REPEAT_BLOCK,
+        -:   90:		CZMA_INFO_IF_BLOCK,
+        -:   91:	} BLOCK_TYPE_T;
+        -:   92:	std::map< std::string, BLOCK_TYPE_T >	block_begin_table{ { "REPEAT", { CZMA_INFO_REPEAT_BLOCK } },
+        -:   93:													{ "ELSEIF", CZMA_INFO_IF_BLOCK }, { "ELSE", CZMA_INFO_IF_BLOCK }, { "IF", { CZMA_INFO_IF_BLOCK } } };
+        -:   94:	std::map< std::string, BLOCK_TYPE_T >	block_end_table{ { "ENDM", CZMA_INFO_MACRO_BLOCK }, { "ENDR", CZMA_INFO_REPEAT_BLOCK },
+        -:   95:													{ "ELSEIF", CZMA_INFO_IF_BLOCK }, { "ELSE", CZMA_INFO_IF_BLOCK }, { "ENDIF", CZMA_INFO_IF_BLOCK }  };
+        -:   96:	bool is_updated;
+        -:   97:	bool is_block_processing;
+        -:   98:	BLOCK_TYPE_T block_type;
+        -:   99:	std::vector<class CZMA_PARSE*>			*p_text;
+        -:  100:
+        -:  101:	CZMA_MACRO* p_macro;
+        -:  102:	std::map< std::string, CZMA_MACRO* >	macro_list;
+        -:  103:	std::map< std::string, std::string >	parameter_list;
+        -:  104:
+        -:  105:	CZMA_REPEAT_T*							p_repeat;
+        -:  106:
+        -:  107:	CZMA_IF_T*								p_if;
+        -:  108:
+        -:  109:	CZMA_INFORMATION(): is_updated( false ), is_block_processing( false ), block_type( CZMA_INFO_UNKNOWN  ), auto_label_index( 0 ), p_text( nullptr ), p_macro( nullptr ), p_if( nullptr ), p_repeat( nullptr ) {
+        -:  110:	}
+        -:  111:
+      348:  112:	unsigned int get_auto_label_index( void ) {
+      348:  113:		return auto_label_index++;
+        -:  114:	}
+        -:  115:
+      243:  116:	std::string get_scope_path( void ) const {
+      243:  117:		std::string r = "";
+      566:  118:		for( std::string s : scope ) {
+      323:  119:			r = r + s + ":";
+        -:  120:		}
+      243:  121:		return r;
+        -:  122:	}
+        -:  123:
+      397:  124:	bool get_label_value( CVALUE& result, std::string word ) {
+        -:  125:		int i, l;
+      794:  126:		std::string s;
+        -:  127:
+      714:  128:		for( l = scope.size(); l >= 0; l-- ) {
+      464:  129:			s = "";
+      669:  130:			for( i = 0; i < l; i++ ) {
+      205:  131:				s = s + scope[i] + ":";
+        -:  132:			}
+      464:  133:			s = s + word;
+      464:  134:			if( this->dict.count( s ) ) {
+      147:  135:				result = this->dict[s];
+      147:  136:				return true;
+        -:  137:			}
+        -:  138:		}
+      250:  139:		result.type = CVALUE::CV_UNKNOWN;
+      250:  140:		return false;
+        -:  141:	}
+        -:  142:
+     4375:  143:	bool is_sss_or_ddd( std::string word ) const {
+     4375:  144:		int d = sss_or_ddd_id.count( word );
+     4375:  145:		return d;
+        -:  146:	}
+        -:  147:
+     1577:  148:	bool is_ix_hl( std::string word ) const {
+     1577:  149:		int d = ix_hl.count( word );
+     1577:  150:		return d;
+        -:  151:	}
+        -:  152:
+     1021:  153:	bool is_iy_hl( std::string word ) const {
+     1021:  154:		int d = iy_hl.count( word );
+     1021:  155:		return d;
+        -:  156:	}
+        -:  157:
+      957:  158:	bool is_rp( std::string word ) const {
+      957:  159:		return rp_id.count( word );
+        -:  160:	}
+        -:  161:
+       36:  162:	bool is_rp_with_af( std::string word ) const {
+       36:  163:		return rp_with_af_id.count( word );
+        -:  164:	}
+        -:  165:
+       81:  166:	bool is_ccc( std::string word ) const {
+       81:  167:		return ccc_id.count( word );
+        -:  168:	}
+        -:  169:
+       15:  170:	bool is_cc2( std::string word ) const {
+       15:  171:		return cc2_id.count( word );
+        -:  172:	}
+        -:  173:
+        -:  174:	void add_include_path( const char* p_path, const char *p_sub_path = "" ) {
+        -:  175:		std::string s = p_path;
+        -:  176:
+        -:  177:		for( int i = s.size() - 1; i >= 0; i-- ) {
+        -:  178:			if( s[i] == '/' || s[i] == '\\' ) {
+        -:  179:				s = s.substr( 0, i );
+        -:  180:				break;
+        -:  181:			}
+        -:  182:		}
+        -:  183:		include_path.push_back( s + "/" + p_sub_path );
+        -:  184:	}
+       53:  185:	void write( void ) {
+       53:  186:		log << "<< label >>" << std::endl;
+      106:  187:		for( auto item : dict ) { 
+       53:  188:			if( item.second.type == item.second.CV_INTEGER ) {
+       50:  189:				log << item.first << " " << std::dec << item.second.i << " ( 0x" << std::hex << item.second.i << " )" << std::endl;
+        -:  190:			}
+        3:  191:			else if( item.second.type == item.second.CV_STRING ) {
+        1:  192:				log << item.first << " \"" << item.second.s << "\"" << std::endl;
+        -:  193:			}
+        -:  194:			else {
+        2:  195:				log << item.first << " ????" << std::endl;
+        -:  196:			}
+        -:  197:		}
+       53:  198:	}
+        -:  199:};

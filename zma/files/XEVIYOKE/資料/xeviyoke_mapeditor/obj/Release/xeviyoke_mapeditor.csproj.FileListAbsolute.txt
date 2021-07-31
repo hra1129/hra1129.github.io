@@ -1,0 +1,14 @@
+C:\Users\hra\Documents\git\cpp\zma\web\sample\vdp_004\資料\xeviyoke_mapeditor\bin\Release\xeviyoke_mapeditor.exe.config
+C:\Users\hra\Documents\git\cpp\zma\web\sample\vdp_004\資料\xeviyoke_mapeditor\bin\Release\xeviyoke_mapeditor.exe
+C:\Users\hra\Documents\git\cpp\zma\web\sample\vdp_004\資料\xeviyoke_mapeditor\bin\Release\xeviyoke_mapeditor.pdb
+C:\Users\hra\Documents\git\cpp\zma\web\sample\vdp_004\資料\xeviyoke_mapeditor\obj\Release\MainWindow.g.cs
+C:\Users\hra\Documents\git\cpp\zma\web\sample\vdp_004\資料\xeviyoke_mapeditor\obj\Release\App.g.cs
+C:\Users\hra\Documents\git\cpp\zma\web\sample\vdp_004\資料\xeviyoke_mapeditor\obj\Release\xeviyoke_mapeditor_MarkupCompile.cache
+C:\Users\hra\Documents\git\cpp\zma\web\sample\vdp_004\資料\xeviyoke_mapeditor\obj\Release\xeviyoke_mapeditor_MarkupCompile.lref
+C:\Users\hra\Documents\git\cpp\zma\web\sample\vdp_004\資料\xeviyoke_mapeditor\obj\Release\MainWindow.baml
+C:\Users\hra\Documents\git\cpp\zma\web\sample\vdp_004\資料\xeviyoke_mapeditor\obj\Release\xeviyoke_mapeditor.g.resources
+C:\Users\hra\Documents\git\cpp\zma\web\sample\vdp_004\資料\xeviyoke_mapeditor\obj\Release\xeviyoke_mapeditor.Properties.Resources.resources
+C:\Users\hra\Documents\git\cpp\zma\web\sample\vdp_004\資料\xeviyoke_mapeditor\obj\Release\xeviyoke_mapeditor.csproj.GenerateResource.cache
+C:\Users\hra\Documents\git\cpp\zma\web\sample\vdp_004\資料\xeviyoke_mapeditor\obj\Release\xeviyoke_mapeditor.csproj.CoreCompileInputs.cache
+C:\Users\hra\Documents\git\cpp\zma\web\sample\vdp_004\資料\xeviyoke_mapeditor\obj\Release\xeviyoke_mapeditor.exe
+C:\Users\hra\Documents\git\cpp\zma\web\sample\vdp_004\資料\xeviyoke_mapeditor\obj\Release\xeviyoke_mapeditor.pdb

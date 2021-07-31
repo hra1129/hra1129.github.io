@@ -1,0 +1,3629 @@
+        -:    0:Source:../zma_parse_process.cpp
+        -:    0:Programs:4
+        -:    1:// --------------------------------------------------------------------
+        -:    2://	Z80 Macro Assembler parse
+        -:    3:// ====================================================================
+        -:    4://	2019/05/04	t.hara
+        -:    5:// --------------------------------------------------------------------
+        -:    6:
+        -:    7:#include "zma_parse.hpp"
+        -:    8:#include "zma_text.hpp"
+        -:    9:#include <string>
+        -:   10:#include <cctype>
+        -:   11:#include <iostream>
+        -:   12:#include <fstream>
+        -:   13:#include <sstream>
+        -:   14:#include <algorithm>
+        -:   15:
+        -:   16:#define CLASS_CZMA_PARSE( name ) \
+        -:   17:	class CZMA_PARSE_##name: public CZMA_PARSE {													\
+        -:   18:	public:																							\
+        -:   19:		using CZMA_PARSE::CZMA_PARSE;																\
+        -:   20:		bool process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line = nullptr ) override;			\
+        -:   21:	};
+        -:   22:
+       11:   23:CLASS_CZMA_PARSE( USER_ERROR );
+       66:   24:CLASS_CZMA_PARSE( USER_MESSAGE );
+        5:   25:CLASS_CZMA_PARSE( ADD_INCLUDE_PATH );
+     3370:   26:CLASS_CZMA_PARSE( BLANK );
+       28:   27:CLASS_CZMA_PARSE( MACRO );
+       30:   28:CLASS_CZMA_PARSE( LABEL );
+        6:   29:CLASS_CZMA_PARSE( GLOBAL_LABEL );
+       12:   30:CLASS_CZMA_PARSE( SYMBOL );
+        8:   31:CLASS_CZMA_PARSE( GLOBAL_SYMBOL );
+       20:   32:CLASS_CZMA_PARSE( SCOPE );
+       14:   33:CLASS_CZMA_PARSE( ENDSCOPE );
+     1251:   34:CLASS_CZMA_PARSE( DEFB );
+      473:   35:CLASS_CZMA_PARSE( DEFW );
+        8:   36:CLASS_CZMA_PARSE( DEFD );
+       20:   37:CLASS_CZMA_PARSE( DEFS );
+       19:   38:CLASS_CZMA_PARSE( ORG );
+      378:   39:CLASS_CZMA_PARSE( LD );
+        2:   40:CLASS_CZMA_PARSE( LDI );
+        2:   41:CLASS_CZMA_PARSE( LDIR );
+        2:   42:CLASS_CZMA_PARSE( LDD );
+        2:   43:CLASS_CZMA_PARSE( LDDR );
+        7:   44:CLASS_CZMA_PARSE( EX );
+        2:   45:CLASS_CZMA_PARSE( EXX );
+        7:   46:CLASS_CZMA_PARSE( PUSH );
+        7:   47:CLASS_CZMA_PARSE( POP );
+        2:   48:CLASS_CZMA_PARSE( RLCA );
+        2:   49:CLASS_CZMA_PARSE( RLA );
+       11:   50:CLASS_CZMA_PARSE( RLC );
+       11:   51:CLASS_CZMA_PARSE( RL );
+        2:   52:CLASS_CZMA_PARSE( RRCA );
+        2:   53:CLASS_CZMA_PARSE( RRA );
+       11:   54:CLASS_CZMA_PARSE( RRC );
+       11:   55:CLASS_CZMA_PARSE( RR );
+       11:   56:CLASS_CZMA_PARSE( SLA );
+       11:   57:CLASS_CZMA_PARSE( SRA );
+       11:   58:CLASS_CZMA_PARSE( SRL );
+       31:   59:CLASS_CZMA_PARSE( ADD );
+       20:   60:CLASS_CZMA_PARSE( ADC );
+       39:   61:CLASS_CZMA_PARSE( INC );
+       16:   62:CLASS_CZMA_PARSE( SUB );
+       20:   63:CLASS_CZMA_PARSE( SBC );
+       21:   64:CLASS_CZMA_PARSE( DEC );
+       16:   65:CLASS_CZMA_PARSE( AND );
+       16:   66:CLASS_CZMA_PARSE( OR );
+       16:   67:CLASS_CZMA_PARSE( XOR );
+        2:   68:CLASS_CZMA_PARSE( CPL );
+        2:   69:CLASS_CZMA_PARSE( NEG );
+        2:   70:CLASS_CZMA_PARSE( CCF );
+        2:   71:CLASS_CZMA_PARSE( SCF );
+       81:   72:CLASS_CZMA_PARSE( BIT );
+       81:   73:CLASS_CZMA_PARSE( SET );
+       81:   74:CLASS_CZMA_PARSE( RES );
+        2:   75:CLASS_CZMA_PARSE( CPI );
+        2:   76:CLASS_CZMA_PARSE( CPIR );
+        2:   77:CLASS_CZMA_PARSE( CPD );
+        2:   78:CLASS_CZMA_PARSE( CPDR );
+       20:   79:CLASS_CZMA_PARSE( CP );
+       15:   80:CLASS_CZMA_PARSE( JP );
+       10:   81:CLASS_CZMA_PARSE( JR );
+        5:   82:CLASS_CZMA_PARSE( DJNZ );
+       12:   83:CLASS_CZMA_PARSE( CALL );
+       11:   84:CLASS_CZMA_PARSE( RET );
+        2:   85:CLASS_CZMA_PARSE( RETI );
+        2:   86:CLASS_CZMA_PARSE( RETN );
+       13:   87:CLASS_CZMA_PARSE( RST );
+     1574:   88:CLASS_CZMA_PARSE( NOP );
+        2:   89:CLASS_CZMA_PARSE( HALT );
+        2:   90:CLASS_CZMA_PARSE( DI );
+        2:   91:CLASS_CZMA_PARSE( EI );
+        2:   92:CLASS_CZMA_PARSE( IM0 );
+        2:   93:CLASS_CZMA_PARSE( IM1 );
+        2:   94:CLASS_CZMA_PARSE( IM2 );
+        9:   95:CLASS_CZMA_PARSE( IN );
+        2:   96:CLASS_CZMA_PARSE( INI );
+        2:   97:CLASS_CZMA_PARSE( INIR );
+        2:   98:CLASS_CZMA_PARSE( IND );
+        2:   99:CLASS_CZMA_PARSE( INDR );
+        9:  100:CLASS_CZMA_PARSE( OUT );
+        2:  101:CLASS_CZMA_PARSE( OUTI );
+        2:  102:CLASS_CZMA_PARSE( OTIR );
+        2:  103:CLASS_CZMA_PARSE( OUTD );
+        2:  104:CLASS_CZMA_PARSE( OTDR );
+        2:  105:CLASS_CZMA_PARSE( DAA );
+        2:  106:CLASS_CZMA_PARSE( RLD );
+        2:  107:CLASS_CZMA_PARSE( RRD );
+        5:  108:CLASS_CZMA_PARSE( MULUB );
+        3:  109:CLASS_CZMA_PARSE( MULUW );
+       64:  110:CLASS_CZMA_PARSE( IF );
+        -:  111:
+        -:  112:// --------------------------------------------------------------------
+        -:  113:class CZMA_PARSE_ERROR: public CZMA_PARSE {
+        -:  114:public:
+        -:  115:	CZMA_REPEAT_T* p_repeat = nullptr;
+        -:  116:
+       18:  117:	using CZMA_PARSE::CZMA_PARSE;
+        -:  118:	bool process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line = nullptr ) override;
+       26:  119:	virtual bool is_parse_error( void ) {
+       26:  120:		return true;
+        -:  121:	}
+        -:  122:};
+        -:  123:
+        -:  124:// --------------------------------------------------------------------
+        -:  125:class CZMA_PARSE_REPEAT: public CZMA_PARSE {
+        -:  126:public:
+        -:  127:	CZMA_REPEAT_T *p_repeat = nullptr;
+        -:  128:
+       26:  129:	using CZMA_PARSE::CZMA_PARSE;
+        -:  130:	bool process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line = nullptr ) override;
+        -:  131:};
+        -:  132:
+        -:  133:// --------------------------------------------------------------------
+        -:  134:class CZMA_PARSE_ELSEIF: public CZMA_PARSE_IF {
+        -:  135:public:
+        9:  136:	using CZMA_PARSE_IF::CZMA_PARSE_IF;
+        -:  137:	bool process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line = nullptr ) override;
+        -:  138:};
+        -:  139:
+        -:  140:// --------------------------------------------------------------------
+        -:  141:class CZMA_PARSE_ELSE: public CZMA_PARSE_IF {
+        -:  142:public:
+       21:  143:	using CZMA_PARSE_IF::CZMA_PARSE_IF;
+        -:  144:	bool process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line = nullptr ) override;
+        -:  145:};
+        -:  146:
+        -:  147:// --------------------------------------------------------------------
+        -:  148:class CZMA_PARSE_ENDIF: public CZMA_PARSE {
+        -:  149:public:
+        -:  150:	CZMA_IF_T* p_if = nullptr;
+        -:  151:	bool is_loaded = false;
+        -:  152:
+       36:  153:	using CZMA_PARSE::CZMA_PARSE;
+        -:  154:	bool process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line = nullptr ) override;
+        -:  155:	bool write( CZMA_INFORMATION& info, std::ofstream* f ) override;
+        -:  156:};
+        -:  157:
+        -:  158:// --------------------------------------------------------------------
+        -:  159:class CZMA_PARSE_INCLUDE: public CZMA_PARSE {
+        -:  160:public:
+        -:  161:	CZMA_TEXT text;
+        -:  162:	bool is_loaded = false;
+        -:  163:	std::string s_file_name;
+        -:  164:
+       19:  165:	using CZMA_PARSE::CZMA_PARSE;
+        -:  166:	bool process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line = nullptr ) override;
+        -:  167:	bool write( CZMA_INFORMATION& info, std::ofstream* f ) override;
+        -:  168:};
+        -:  169:
+        -:  170:// --------------------------------------------------------------------
+       18:  171:bool CZMA_PARSE_INCLUDE::write( CZMA_INFORMATION& info, std::ofstream* f ) {
+        -:  172:
+       36:  173:	for( auto line : log ) {
+       18:  174:		info.log << line << " begin" << std::endl;
+        -:  175:	}
+       18:  176:	bool result = this->text.write( info, f );
+       36:  177:	for( auto line : log ) {
+       18:  178:		info.log << line << " end" << std::endl;
+       18:  179:		info.log << std::endl;
+        -:  180:	}
+       18:  181:	return result;
+        -:  182:}
+        -:  183:
+        -:  184:// --------------------------------------------------------------------
+        -:  185:class CZMA_PARSE_ENDR: public CZMA_PARSE {
+        -:  186:public:
+        -:  187:	std::vector< CZMA_TEXT* > text_list;
+        -:  188:	CZMA_REPEAT_T* p_repeat = nullptr;
+        -:  189:	bool is_loaded = false;
+        -:  190:
+       26:  191:	using CZMA_PARSE::CZMA_PARSE;
+        -:  192:	bool process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line = nullptr ) override;
+        -:  193:	bool write( CZMA_INFORMATION& info, std::ofstream* f ) override;
+        -:  194:};
+        -:  195:
+        -:  196:// --------------------------------------------------------------------
+        -:  197:class CZMA_PARSE_ENDM: public CZMA_PARSE {
+        -:  198:public:
+        -:  199:	CZMA_MACRO* p_macro = nullptr;
+        -:  200:	bool is_loaded = false;
+        -:  201:
+       27:  202:	using CZMA_PARSE::CZMA_PARSE;
+        -:  203:	bool process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line = nullptr ) override;
+        -:  204:};
+        -:  205:
+        -:  206:// --------------------------------------------------------------------
+       21:  207:bool CZMA_PARSE_ENDR::write( CZMA_INFORMATION& info, std::ofstream* f ) {
+        -:  208:	bool result;
+        -:  209:
+       21:  210:	info.log << "\trepeat begin" << std::endl;
+       21:  211:	for( auto line : log ) {
+        -:  212:	}
+       21:  213:	result = true;
+      131:  214:	for( auto text : this->text_list ) {
+      110:  215:		result = result & text->write( info, f );
+        -:  216:	}
+       21:  217:	info.log << "\trepeat end" << std::endl;
+       59:  218:	for( auto line : log ) {
+       38:  219:		info.log << line << std::endl;
+       38:  220:		info.log << std::endl;
+        -:  221:	}
+       21:  222:	return result;
+        -:  223:}
+        -:  224:
+        -:  225:// --------------------------------------------------------------------
+        -:  226:class CZMA_PARSE_MACRO_INS: public CZMA_PARSE {
+        -:  227:public:
+        -:  228:	CZMA_TEXT text;
+        -:  229:	bool is_loaded = false;
+        -:  230:
+       97:  231:	using CZMA_PARSE::CZMA_PARSE;
+        -:  232:	bool process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line = nullptr ) override;
+        -:  233:	bool write( CZMA_INFORMATION& info, std::ofstream* f ) override;
+        -:  234:};
+        -:  235:
+        -:  236:// --------------------------------------------------------------------
+       94:  237:bool CZMA_PARSE_MACRO_INS::write( CZMA_INFORMATION& info, std::ofstream* f ) {
+       94:  238:	bool result = true;
+        -:  239:
+      282:  240:	for( auto line : log ) {
+      188:  241:		info.log << line << std::endl;
+        -:  242:	}
+       94:  243:	text.write( info, f );
+       94:  244:	return result;
+        -:  245:}
+        -:  246:
+        -:  247:// --------------------------------------------------------------------
+        -:  248:typedef enum {
+        -:  249:	CZMA_ERROR, CZMA_BLANK, CZMA_INCLUDE, CZMA_ADD_INCLUDE_PATH, CZMA_USER_ERROR, CZMA_USER_MESSAGE, CZMA_LABEL, CZMA_GLOBAL_LABEL, 
+        -:  250:	CZMA_SCOPE, CZMA_ENDSCOPE, CZMA_IF, CZMA_ELSEIF, CZMA_ELSE, CZMA_ENDIF, CZMA_ENDM,
+        -:  251:	CZMA_REPEAT, CZMA_ENDR, CZMA_ORG, CZMA_GLOBAL_SYMBOL, CZMA_DEFB, CZMA_DEFW, CZMA_DEFD, CZMA_DEFS,
+        -:  252:	CZMA_LD, CZMA_LDI, CZMA_LDIR, CZMA_LDD, CZMA_LDDR, CZMA_EX, CZMA_EXX, CZMA_PUSH, CZMA_POP, 
+        -:  253:	CZMA_RLCA, CZMA_RLA, CZMA_RLC, CZMA_RL, CZMA_RRCA, CZMA_RRA, CZMA_RRC, CZMA_RR,
+        -:  254:	CZMA_SLA, CZMA_SRA, CZMA_SRL, CZMA_ADD, CZMA_ADC, CZMA_INC, CZMA_SUB, CZMA_SBC,
+        -:  255:	CZMA_DEC, CZMA_AND, CZMA_OR, CZMA_XOR, CZMA_CPL, CZMA_NEG, CZMA_CCF, CZMA_SCF,
+        -:  256:	CZMA_BIT, CZMA_RES, CZMA_SET, CZMA_CPI, CZMA_CPIR, CZMA_CPD, CZMA_CPDR, CZMA_CP, 
+        -:  257:	CZMA_JP, CZMA_JR, CZMA_DJNZ, CZMA_CALL, CZMA_RET, CZMA_RETI, CZMA_RETN, CZMA_RST, 
+        -:  258:	CZMA_NOP, CZMA_HALT, CZMA_DI, CZMA_EI, CZMA_IM0, CZMA_IM1, CZMA_IM2, CZMA_IN, 
+        -:  259:	CZMA_INI, CZMA_INIR, CZMA_IND, CZMA_INDR, CZMA_OUT, CZMA_OUTI, CZMA_OTIR, 
+        -:  260:	CZMA_OUTD, CZMA_OTDR, CZMA_DAA, CZMA_RLD, CZMA_RRD, CZMA_MULUB, CZMA_MULUW,
+        -:  261:} CZMA_COMMAND_TYPE;
+        -:  262:
+        -:  263:int CZMA_PARSE::number_of_error = 0;
+        -:  264:
+        -:  265:// --------------------------------------------------------------------
+     4982:  266:static std::map< std::string, CZMA_COMMAND_TYPE > command_list = {
+        -:  267:	{ "REPEAT", CZMA_REPEAT },
+        -:  268:	{ "ENDR", CZMA_ENDR },
+        -:  269:	{ "ENDM", CZMA_ENDM },
+        -:  270:	{ "IF", CZMA_IF },
+        -:  271:	{ "ELSEIF", CZMA_ELSEIF },
+        -:  272:	{ "ELSE", CZMA_ELSE },
+        -:  273:	{ "ENDIF", CZMA_ENDIF },
+        -:  274:	{ "ORG", CZMA_ORG },
+        -:  275:	{ "INCLUDE", CZMA_INCLUDE },
+        -:  276:	{ "ADD_INCLUDE_PATH", CZMA_ADD_INCLUDE_PATH },
+        -:  277:	{ "ERROR", CZMA_USER_ERROR },
+        -:  278:	{ "MESSAGE", CZMA_USER_MESSAGE },
+        -:  279:	{ "SCOPE", CZMA_SCOPE },
+        -:  280:	{ "ENDSCOPE", CZMA_ENDSCOPE },
+        -:  281:	{ "DEFB", CZMA_DEFB },
+        -:  282:	{ "DEFW", CZMA_DEFW },
+        -:  283:	{ "DEFD", CZMA_DEFD },
+        -:  284:	{ "DEFS", CZMA_DEFS },
+        -:  285:	{ "DB", CZMA_DEFB },
+        -:  286:	{ "DW", CZMA_DEFW },
+        -:  287:	{ "DD", CZMA_DEFD },
+        -:  288:	{ "DS", CZMA_DEFS },
+        -:  289:	{ "LD", CZMA_LD },
+        -:  290:	{ "LDI", CZMA_LDI }, 
+        -:  291:	{ "LDIR", CZMA_LDIR },
+        -:  292:	{ "LDD", CZMA_LDD }, 
+        -:  293:	{ "LDDR", CZMA_LDDR },
+        -:  294:	{ "EX", CZMA_EX },
+        -:  295:	{ "EXX", CZMA_EXX },
+        -:  296:	{ "PUSH", CZMA_PUSH },
+        -:  297:	{ "POP", CZMA_POP },
+        -:  298:	{ "RLCA", CZMA_RLCA },
+        -:  299:	{ "RLA", CZMA_RLA },
+        -:  300:	{ "RLC", CZMA_RLC },
+        -:  301:	{ "RL", CZMA_RL },
+        -:  302:	{ "RRCA", CZMA_RRCA },
+        -:  303:	{ "RRA", CZMA_RRA },
+        -:  304:	{ "RRC", CZMA_RRC },
+        -:  305:	{ "RR", CZMA_RR },
+        -:  306:	{ "SLA", CZMA_SLA },
+        -:  307:	{ "SRA", CZMA_SRA },
+        -:  308:	{ "SRL", CZMA_SRL },
+        -:  309:	{ "ADD", CZMA_ADD },
+        -:  310:	{ "ADC", CZMA_ADC },
+        -:  311:	{ "INC", CZMA_INC },
+        -:  312:	{ "SUB", CZMA_SUB },
+        -:  313:	{ "SBC", CZMA_SBC },
+        -:  314:	{ "DEC", CZMA_DEC },
+        -:  315:	{ "AND", CZMA_AND },
+        -:  316:	{ "OR", CZMA_OR },
+        -:  317:	{ "XOR", CZMA_XOR },
+        -:  318:	{ "CPL", CZMA_CPL },
+        -:  319:	{ "NEG", CZMA_NEG },
+        -:  320:	{ "CCF", CZMA_CCF },
+        -:  321:	{ "SCF", CZMA_SCF },
+        -:  322:	{ "BIT", CZMA_BIT },
+        -:  323:	{ "RES", CZMA_RES },
+        -:  324:	{ "SET", CZMA_SET },
+        -:  325:	{ "CPI", CZMA_CPI },
+        -:  326:	{ "CPIR", CZMA_CPIR },
+        -:  327:	{ "CPD", CZMA_CPD },
+        -:  328:	{ "CPDR", CZMA_CPDR },
+        -:  329:	{ "CP", CZMA_CP },
+        -:  330:	{ "JP", CZMA_JP },
+        -:  331:	{ "JR", CZMA_JR },
+        -:  332:	{ "DJNZ", CZMA_DJNZ },
+        -:  333:	{ "CALL", CZMA_CALL },
+        -:  334:	{ "RET", CZMA_RET },
+        -:  335:	{ "RETI", CZMA_RETI },
+        -:  336:	{ "RETN", CZMA_RETN },
+        -:  337:	{ "RST", CZMA_RST },
+        -:  338:	{ "NOP", CZMA_NOP },
+        -:  339:	{ "HALT", CZMA_HALT },
+        -:  340:	{ "DI", CZMA_DI },
+        -:  341:	{ "EI", CZMA_EI },
+        -:  342:	{ "IM0", CZMA_IM0 },
+        -:  343:	{ "IM1", CZMA_IM1 },
+        -:  344:	{ "IM2", CZMA_IM2 },
+        -:  345:	{ "IN", CZMA_IN },
+        -:  346:	{ "INI", CZMA_INI },
+        -:  347:	{ "INIR", CZMA_INIR },
+        -:  348:	{ "IND", CZMA_IND },
+        -:  349:	{ "INDR", CZMA_INDR },
+        -:  350:	{ "OUT", CZMA_OUT },
+        -:  351:	{ "OUTI", CZMA_OUTI },
+        -:  352:	{ "OTIR", CZMA_OTIR },
+        -:  353:	{ "OUTD", CZMA_OUTD },
+        -:  354:	{ "OTDR", CZMA_OTDR },
+        -:  355:	{ "DAA", CZMA_DAA },
+        -:  356:	{ "RLD", CZMA_RLD },
+        -:  357:	{ "RRD", CZMA_RRD },
+        -:  358:	{ "MULUB", CZMA_MULUB },
+        -:  359:	{ "MULUW", CZMA_MULUW },
+     4929:  360:};
+        -:  361:
+        -:  362:// --------------------------------------------------------------------
+        -:  363:#define OPE_CASE( operation )																			\
+        -:  364:	case CZMA_##operation:																			\
+        -:  365:		return reinterpret_cast<CZMA_PARSE*> (new CZMA_PARSE_##operation( words, p_file_name, line_no ))
+        -:  366:
+        -:  367:// --------------------------------------------------------------------
+     8326:  368:CZMA_PARSE* CZMA_PARSE::create( CZMA_INFORMATION& info, std::vector<std::string> words, const char* p_file_name, int line_no ) {
+        -:  369:
+     8326:  370:	if( words.size() == 0 ) {
+     3370:  371:		return reinterpret_cast<CZMA_PARSE*> (new CZMA_PARSE_BLANK( words, p_file_name, line_no ));
+        -:  372:	}
+     4956:  373:	if( words.size() == 2 && words[1] == ":" ) {
+       30:  374:		return reinterpret_cast<CZMA_PARSE*> (new CZMA_PARSE_LABEL( words, p_file_name, line_no ));
+        -:  375:	}
+     4926:  376:	if( words.size() == 2 && words[1] == "::" ) {
+        6:  377:		return reinterpret_cast<CZMA_PARSE*> (new CZMA_PARSE_GLOBAL_LABEL( words, p_file_name, line_no ));
+        -:  378:	}
+     4920:  379:	if( words.size() >= 3 && words[1] == "=" ) {
+       12:  380:		return reinterpret_cast<CZMA_PARSE*> (new CZMA_PARSE_SYMBOL( words, p_file_name, line_no ));
+        -:  381:	}
+     4908:  382:	if( words.size() >= 3 && words[1] == ":=" ) {
+        8:  383:		return reinterpret_cast<CZMA_PARSE*> (new CZMA_PARSE_GLOBAL_SYMBOL( words, p_file_name, line_no ));
+        -:  384:	}
+     4900:  385:	if( words.size() >= 2 && words[1] == "MACRO" ) {
+       28:  386:		info.macro_list[words[0]] = nullptr;
+       28:  387:		return reinterpret_cast<CZMA_PARSE*> (new CZMA_PARSE_MACRO( words, p_file_name, line_no ));
+        -:  388:	}
+     4872:  389:	if( words.size() >= 1 && info.macro_list.count( words[0] ) ) {
+       97:  390:		return reinterpret_cast<CZMA_PARSE*> (new CZMA_PARSE_MACRO_INS( words, p_file_name, line_no ));
+        -:  391:	}
+     4775:  392:	switch( command_list[words[0]] ) {
+       19:  393:		OPE_CASE( ORG );
+       19:  394:		OPE_CASE( INCLUDE );
+        5:  395:		OPE_CASE( ADD_INCLUDE_PATH );
+       26:  396:		OPE_CASE( REPEAT );
+       26:  397:		OPE_CASE( ENDR );
+       27:  398:		OPE_CASE( ENDM );
+       34:  399:		OPE_CASE( IF );
+        9:  400:		OPE_CASE( ELSEIF );
+       21:  401:		OPE_CASE( ELSE );
+       36:  402:		OPE_CASE( ENDIF );
+       11:  403:		OPE_CASE( USER_ERROR );
+       66:  404:		OPE_CASE( USER_MESSAGE );
+       20:  405:		OPE_CASE( SCOPE );
+       14:  406:		OPE_CASE( ENDSCOPE );
+     1251:  407:		OPE_CASE( DEFB );
+      473:  408:		OPE_CASE( DEFW );
+        8:  409:		OPE_CASE( DEFD );
+       20:  410:		OPE_CASE( DEFS );
+      378:  411:		OPE_CASE( LD );
+        7:  412:		OPE_CASE( PUSH );
+        7:  413:		OPE_CASE( POP );
+        7:  414:		OPE_CASE( EX );
+        2:  415:		OPE_CASE( EXX );
+        2:  416:		OPE_CASE( LDI );
+        2:  417:		OPE_CASE( LDIR );
+        2:  418:		OPE_CASE( LDD );
+        2:  419:		OPE_CASE( LDDR );
+        2:  420:		OPE_CASE( RLCA );
+        2:  421:		OPE_CASE( RLA );
+       11:  422:		OPE_CASE( RLC );
+       11:  423:		OPE_CASE( RL );
+        2:  424:		OPE_CASE( RRCA );
+        2:  425:		OPE_CASE( RRA );
+       11:  426:		OPE_CASE( RRC );
+       11:  427:		OPE_CASE( RR );
+       11:  428:		OPE_CASE( SLA );
+       11:  429:		OPE_CASE( SRA );
+       11:  430:		OPE_CASE( SRL );
+       31:  431:		OPE_CASE( ADD );
+       20:  432:		OPE_CASE( ADC );
+       39:  433:		OPE_CASE( INC );
+       16:  434:		OPE_CASE( SUB );
+       20:  435:		OPE_CASE( SBC );
+       21:  436:		OPE_CASE( DEC );
+       16:  437:		OPE_CASE( AND );
+       16:  438:		OPE_CASE( OR );
+       16:  439:		OPE_CASE( XOR );
+        2:  440:		OPE_CASE( CPL );
+        2:  441:		OPE_CASE( NEG );
+        2:  442:		OPE_CASE( CCF );
+        2:  443:		OPE_CASE( SCF );
+       81:  444:		OPE_CASE( BIT );
+       81:  445:		OPE_CASE( RES );
+       81:  446:		OPE_CASE( SET );
+        2:  447:		OPE_CASE( CPI );
+        2:  448:		OPE_CASE( CPIR );
+        2:  449:		OPE_CASE( CPD );
+        2:  450:		OPE_CASE( CPDR );
+       20:  451:		OPE_CASE( CP );
+       15:  452:		OPE_CASE( JP );
+       10:  453:		OPE_CASE( JR );
+        5:  454:		OPE_CASE( DJNZ );
+       12:  455:		OPE_CASE( CALL );
+       11:  456:		OPE_CASE( RET );
+        2:  457:		OPE_CASE( RETI );
+        2:  458:		OPE_CASE( RETN );
+       13:  459:		OPE_CASE( RST );
+     1574:  460:		OPE_CASE( NOP );
+        2:  461:		OPE_CASE( HALT );
+        2:  462:		OPE_CASE( EI );
+        2:  463:		OPE_CASE( DI );
+        2:  464:		OPE_CASE( IM0 );
+        2:  465:		OPE_CASE( IM1 );
+        2:  466:		OPE_CASE( IM2 );
+        9:  467:		OPE_CASE( IN );
+        2:  468:		OPE_CASE( INI );
+        2:  469:		OPE_CASE( INIR );
+        2:  470:		OPE_CASE( IND );
+        2:  471:		OPE_CASE( INDR );
+        9:  472:		OPE_CASE( OUT );
+        2:  473:		OPE_CASE( OUTI );
+        2:  474:		OPE_CASE( OTIR );
+        2:  475:		OPE_CASE( OUTD );
+        2:  476:		OPE_CASE( OTDR );
+        2:  477:		OPE_CASE( DAA );
+        2:  478:		OPE_CASE( RLD );
+        2:  479:		OPE_CASE( RRD );
+        5:  480:		OPE_CASE( MULUB );
+        3:  481:		OPE_CASE( MULUW );
+       18:  482:	default:
+       18:  483:		break;
+        -:  484:	}
+       18:  485:	return reinterpret_cast<CZMA_PARSE*> (new CZMA_PARSE_ERROR( words, p_file_name, line_no ));
+        -:  486:}
+        -:  487:
+        -:  488:// --------------------------------------------------------------------
+     4131:  489:void CZMA_PARSE::log_data_dump( void ) {
+        -:  490:	int address, count;
+     8262:  491:	std::stringstream line;
+     4131:  492:	address = this->get_code_address();
+     4131:  493:	count = 0;
+     4131:  494:	line.str("");
+    29259:  495:	for( auto d : data ) {
+    25128:  496:		if( count == 0 ) {
+     6198:  497:			line << std::hex << std::setw( 6 ) << std::setfill( '0' ) << address << ":";
+        -:  498:		}
+    25128:  499:		line << " " << std::hex << std::setw( 2 ) << std::setfill( '0' ) << (int)d;
+    25128:  500:		address++;
+    25128:  501:		count++;
+    25128:  502:		if( count == 8 ) {
+     2069:  503:			log.push_back( line.str() );
+     2069:  504:			line.str( "" );
+     2069:  505:			count = 0;
+        -:  506:		}
+        -:  507:	}
+     4131:  508:	if( count != 0 ) {
+     4129:  509:		log.push_back( line.str() );
+        -:  510:	}
+     4131:  511:}
+        -:  512:
+        -:  513:// --------------------------------------------------------------------
+     4440:  514:std::string CZMA_PARSE::get_line( void ) {
+     8880:  515:	std::string r, ss;
+        -:  516:
+     4440:  517:	r = "";
+    20019:  518:	for( auto s : words ) {
+    15579:  519:		if( s.size() > 0 && s[0] == '\"' ) {
+       30:  520:			ss = "\"";
+      125:  521:			for( int i = 1; i < (int)s.size(); i++ ) {
+       95:  522:				switch( s[i] ) {
+    #####:  523:				case '\a':	ss = ss + "\\a";	break;
+    #####:  524:				case '\b':	ss = ss + "\\b";	break;
+    #####:  525:				case '\f':	ss = ss + "\\f";	break;
+        1:  526:				case '\n':	ss = ss + "\\n";	break;
+        1:  527:				case '\r':	ss = ss + "\\r";	break;
+    #####:  528:				case '\t':	ss = ss + "\\t";	break;
+    #####:  529:				case '\\':	ss = ss + "\\\\";	break;
+    #####:  530:				case '\'':	ss = ss + "\\'";	break;
+    #####:  531:				case '\"':	ss = ss + "\\\"";	break;
+       93:  532:				default:	ss = ss + s[i];		break;
+        -:  533:				}
+        -:  534:			}
+       30:  535:			ss = ss + '\"';
+        -:  536:		}
+        -:  537:		else {
+    15549:  538:			ss = s;
+        -:  539:		}
+    15579:  540:		if( r == "" ) {
+     4440:  541:			r = ss;
+        -:  542:		}
+        -:  543:		else {
+    11139:  544:			r = r + " " + ss;
+        -:  545:		}
+        -:  546:	}
+     8880:  547:	return r;
+        -:  548:}
+        -:  549:
+        -:  550:// --------------------------------------------------------------------
+     7566:  551:CZMA_PARSE* CZMA_PARSE::create( CZMA_INFORMATION& info, std::string s, const char* p_file_name, int line_no ) {
+    15132:  552:	std::vector<std::string> words;
+        -:  553:
+     7566:  554:	words = CZMA_PARSE::get_word_split( s );
+    15132:  555:	return create( info, words, p_file_name, line_no );
+        -:  556:}
+        -:  557:
+        -:  558:// --------------------------------------------------------------------
+    10131:  559:bool CZMA_PARSE_BLANK::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -:  560:
+    10131:  561:	this->is_data_fixed = true;
+    10131:  562:	update_flags( &info, p_last_line );
+    10131:  563:	this->set_code_size( &info, 0 );
+    10131:  564:	return this->check_all_fixed();
+        -:  565:}
+        -:  566:
+        -:  567:// --------------------------------------------------------------------
+       86:  568:bool CZMA_PARSE_MACRO::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+      172:  569:	std::string label;
+        -:  570:	CZMA_MACRO* p_macro;
+      172:  571:	CZMA_MACRO_ARG arg;
+        -:  572:	int i;
+        -:  573:
+       86:  574:	bool result = update_flags( &info, p_last_line );
+       86:  575:	if( !this->is_data_fixed ) {
+       36:  576:		if( info.macro_list.count( words[0] ) && info.macro_list[words[0]] != nullptr ) {
+        -:  577:			//	同じ名前のマクロを宣言することはできない
+        3:  578:			put_error( std::string( "There are declarations of the same macro '" ) + words[0] + "' in multiple places." );
+        3:  579:			return false;
+        -:  580:		}
+        -:  581:		//	引数抽出処理
+       33:  582:		p_macro = new CZMA_MACRO;
+       58:  583:		for( i = 2; i < ( int) words.size(); ) {
+       34:  584:			if( words[i] == "@" ) {
+        6:  585:				arg.is_through = true;
+        6:  586:				i++;
+        -:  587:			}
+        -:  588:			else {
+       28:  589:				arg.is_through = false;
+        -:  590:			}
+       34:  591:			if( i >= (int)words.size() ) {
+        3:  592:				put_error( "Illegal argument." );
+        3:  593:				return false;
+        -:  594:			}
+       31:  595:			arg.name = words[i];
+       31:  596:			if( (i + 1) < (int)words.size() && words[ i + 1 ] != "," ) {
+        3:  597:				put_error( "Illegal argument." );
+        3:  598:				return false;
+        -:  599:			}
+       44:  600:			for( auto s : p_macro->parameter_name_list ) {
+       19:  601:				if( s.name == words[i] ) {
+        3:  602:					put_error( std::string( "Multiple arguments of the same name '" + words[i] + "' exist." ) );
+        3:  603:					return false;
+        -:  604:				}
+        -:  605:			}
+       25:  606:			i = i + 2;
+       25:  607:			p_macro->parameter_name_list.push_back( arg );
+        -:  608:		}
+       24:  609:		info.block_type = info.CZMA_INFO_MACRO_BLOCK;
+       24:  610:		info.is_block_processing = true;
+       24:  611:		info.p_macro = p_macro;
+       24:  612:		info.p_text = &(info.p_macro->m_text);
+       24:  613:		this->is_data_fixed = true;
+       24:  614:		this->set_code_size( &info, 0 );
+       24:  615:		info.macro_list[words[0]] = p_macro;
+        -:  616:	}
+        -:  617:	//	log
+       74:  618:	if( !is_analyze_phase ) {
+       24:  619:		log.push_back( "Define macro {" + get_line() + "}" );
+       24:  620:		log.push_back( "" );
+        -:  621:	}
+       74:  622:	return result;
+        -:  623:}
+        -:  624:
+        -:  625:// --------------------------------------------------------------------
+       85:  626:bool CZMA_PARSE_ENDM::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -:  627:
+       85:  628:	update_flags( &info, p_last_line );
+       85:  629:	info.is_block_processing = false;
+       85:  630:	this->is_data_fixed = true;
+       85:  631:	this->set_code_size( &info, 0 );
+       85:  632:	return check_all_fixed();
+        -:  633:}
+        -:  634:
+        -:  635:// --------------------------------------------------------------------
+       72:  636:bool CZMA_PARSE_REPEAT::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+      144:  637:	std::string label;
+      144:  638:	CVALUE v;
+        -:  639:	int index;
+        -:  640:
+       72:  641:	update_flags( &info, p_last_line );
+       72:  642:	this->set_code_size( &info, 0 );
+       72:  643:	if( p_repeat == nullptr ) {
+       22:  644:		p_repeat = new CZMA_REPEAT_T;
+        -:  645:	}
+       72:  646:	if( !p_repeat->is_counter_end_fixed ) {
+       30:  647:		if( words.size() < 4 ) {
+        -:  648:			//	REPEAT 変数名 , 値 で、少なくとも 4[word] なければならない
+        3:  649:			put_error( "Illegal parameter." );
+        3:  650:			return false;
+        -:  651:		}
+       27:  652:		if( words[2] != "," ) {
+        3:  653:			put_error( "Illegal parameter." );
+        3:  654:			return false;
+        -:  655:		}
+        -:  656:
+       24:  657:		info.block_type = info.CZMA_INFO_REPEAT_BLOCK;
+       24:  658:		info.p_repeat = p_repeat;
+       24:  659:		info.is_block_processing = true;
+       24:  660:		info.p_text = &(info.p_repeat->m_text);
+        -:  661:
+       24:  662:		index = this->expression( info, 3, v );
+       24:  663:		if( index == 0 ) {
+        4:  664:			put_error( "Illegal expression." );
+        4:  665:			return false;
+        -:  666:		}
+       20:  667:		if( index < ( int) words.size() ) {
+        2:  668:			put_error( "Illegal expression." );
+        2:  669:			return false;
+        -:  670:		}
+       18:  671:		if( v.type != CVALUE::CV_INTEGER ) {
+        2:  672:			put_error( "Illegal parameter." );
+        2:  673:			return false;
+        -:  674:		}
+       16:  675:		p_repeat->counter_end = v.i;
+       16:  676:		p_repeat->is_counter_end_fixed = true;
+       16:  677:		p_repeat->scope_name = "@REPEAT" + std::to_string( info.get_auto_label_index() );
+       16:  678:		info.scope.push_back( p_repeat->scope_name );
+       16:  679:		p_repeat->counter_symbol = info.get_scope_path() + words[1];
+       16:  680:		v.type = CVALUE::CV_INTEGER;
+       16:  681:		v.i = 0;
+       16:  682:		info.dict[p_repeat->counter_symbol] = v;
+        -:  683:
+       16:  684:		this->is_data_fixed = true;
+       16:  685:		info.is_updated = true;
+        -:  686:	}
+        -:  687:	else {
+       42:  688:		info.scope.push_back( p_repeat->scope_name );
+        -:  689:
+       42:  690:		p_repeat->counter_symbol = info.get_scope_path() + words[1];
+        -:  691:	}
+        -:  692:
+        -:  693:	//	log
+       58:  694:	if( !is_analyze_phase ) {
+       16:  695:		log.push_back( "[" + get_line() + "]" );
+       16:  696:		log.push_back( "\tScope path: " + info.get_scope_path() );
+       16:  697:		log.push_back( "" );
+        -:  698:	}
+       58:  699:	return check_all_fixed();
+        -:  700:}
+        -:  701:
+        -:  702:// --------------------------------------------------------------------
+       97:  703:bool CZMA_PARSE_IF::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+      194:  704:	std::string label;
+        -:  705:	CZMA_IF_T* p_if;
+        -:  706:	CZMA_IF_SUB_T* p_if_sub;
+        -:  707:
+       97:  708:	update_flags( &info, p_last_line );
+       97:  709:	if( !this->is_data_fixed ) {
+        -:  710:		//	条件式を取り込む
+       31:  711:		p_if				= new CZMA_IF_T;
+       31:  712:		p_if_sub			= new CZMA_IF_SUB_T;
+       31:  713:		p_if_sub->p_if		= this;
+       31:  714:		p_if->m_sub.push_back( p_if_sub );
+       31:  715:		p_if_sub->p_text	= new CZMA_TEXT;
+       31:  716:		info.block_type				= info.CZMA_INFO_IF_BLOCK;
+       31:  717:		info.is_block_processing	= true;
+       31:  718:		info.p_if					= p_if;
+       31:  719:		info.p_text					= &(p_if_sub->p_text->m_text);
+       31:  720:		this->is_data_fixed			= true;
+       31:  721:		this->set_code_size( &info, 0 );
+        -:  722:	}
+        -:  723:	//	log
+       97:  724:	if( !is_analyze_phase ) {
+       31:  725:		log.push_back( "[" + get_line() + "]" );
+       31:  726:		log.push_back( "" );
+        -:  727:	}
+      194:  728:	return check_all_fixed();
+        -:  729:}
+        -:  730:
+        -:  731:// --------------------------------------------------------------------
+       27:  732:bool CZMA_PARSE_ELSEIF::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+       54:  733:	std::string label;
+        -:  734:	CZMA_IF_T* p_if;
+        -:  735:	CZMA_IF_SUB_T* p_if_sub;
+        -:  736:
+       27:  737:	update_flags( &info, p_last_line );
+       27:  738:	if( !this->is_data_fixed ) {
+       11:  739:		if( !info.is_block_processing || info.block_type != info.CZMA_INFO_IF_BLOCK ) {
+        3:  740:			put_error( "There is an ELSEIF description at an incorrect position." );
+        3:  741:			return false;
+        -:  742:		}
+        -:  743:		//	条件式を取り込む
+        8:  744:		p_if = info.p_if;
+        8:  745:		p_if_sub = new CZMA_IF_SUB_T;
+        8:  746:		p_if_sub->p_if = this;
+        8:  747:		p_if->m_sub.push_back( p_if_sub );
+        8:  748:		p_if_sub->p_text = new CZMA_TEXT;
+        8:  749:		info.p_text = &(p_if_sub->p_text->m_text);
+        8:  750:		this->is_data_fixed = true;
+        8:  751:		this->set_code_size( &info, 0 );
+        -:  752:	}
+        -:  753:	//	log
+       24:  754:	if( !is_analyze_phase ) {
+        8:  755:		log.push_back( "[" + get_line() + "]" );
+        8:  756:		log.push_back( "" );
+        -:  757:	}
+       24:  758:	return check_all_fixed();
+        -:  759:}
+        -:  760:
+        -:  761:// --------------------------------------------------------------------
+       62:  762:bool CZMA_PARSE_ELSE::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+      124:  763:	std::string label;
+        -:  764:	CZMA_IF_T* p_if;
+        -:  765:	CZMA_IF_SUB_T* p_if_sub;
+        -:  766:
+       62:  767:	update_flags( &info, p_last_line );
+       62:  768:	if( !this->is_data_fixed ) {
+       22:  769:		if( !info.is_block_processing || info.block_type != info.CZMA_INFO_IF_BLOCK ) {
+        3:  770:			put_error( "There is an ELSE description at an incorrect position." );
+        3:  771:			return false;
+        -:  772:		}
+        -:  773:		//	条件式を取り込む
+       19:  774:		p_if = info.p_if;
+       19:  775:		p_if_sub = new CZMA_IF_SUB_T;
+       19:  776:		p_if_sub->p_if = this;
+       19:  777:		p_if->m_sub.push_back( p_if_sub );
+       19:  778:		p_if_sub->p_text = new CZMA_TEXT;
+       19:  779:		info.p_text = &(p_if_sub->p_text->m_text);
+       19:  780:		this->is_data_fixed = true;
+       19:  781:		this->set_code_size( &info, 0 );
+        -:  782:	}
+       59:  783:	if( words.size() != 1 ) {
+        3:  784:		put_error( "ELSE is not need parameters." );
+        3:  785:		return false;
+        -:  786:	}
+        -:  787:	//	log
+       56:  788:	if( !is_analyze_phase ) {
+       18:  789:		log.push_back( "[" + get_line() + "]" );
+       18:  790:		log.push_back( "" );
+        -:  791:	}
+       56:  792:	return check_all_fixed();
+        -:  793:}
+        -:  794:
+        -:  795:// --------------------------------------------------------------------
+      102:  796:bool CZMA_PARSE_ENDIF::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+      204:  797:	CVALUE v;
+        -:  798:	unsigned int sub_success_count;
+        -:  799:	bool result;
+        -:  800:	bool do_process;
+        -:  801:	bool has_else, no_fixed;
+      102:  802:	CZMA_PARSE_IF* p_selected_if = nullptr;
+        -:  803:	int index, current_next_code_address;
+        -:  804:	CZMA_PARSE* p_last_line_backup;
+        -:  805:
+      102:  806:	update_flags( &info, p_last_line );
+      102:  807:	if( !this->is_loaded ) {
+       33:  808:		p_if = info.p_if;
+       33:  809:		info.p_if = nullptr;
+       33:  810:		this->is_loaded = true;
+       33:  811:		info.is_updated = true;
+        -:  812:	}
+      102:  813:	if( p_if == nullptr ) {
+        7:  814:		put_error( "Illegal ENDIF." );
+        7:  815:		return false;
+        -:  816:	}
+       95:  817:	info.is_block_processing = false;
+       95:  818:	if( words.size() != 1 ) {
+        3:  819:		put_error( "ENDIF is not need parameters." );
+        3:  820:		return false;
+        -:  821:	}
+        -:  822:	//	コードサイズを求める処理
+       92:  823:	if( this->next_code_address == -1 ) {
+       64:  824:		current_next_code_address = -1;
+       64:  825:		p_last_line_backup = p_last_line;
+       64:  826:		has_else = false;
+       64:  827:		no_fixed = false;
+       99:  828:		for( auto i : p_if->m_sub ) {
+       77:  829:			if( i->p_if->words[0] == "ELSE" ) {
+       10:  830:				has_else = true;
+        -:  831:			}
+       77:  832:			p_last_line = i->p_text->process( info, sub_success_count, p_last_line_backup, false );
+       77:  833:			if( current_next_code_address == -1 ) {
+       64:  834:				if( p_last_line->get_next_code_address() == -1 ) {
+       42:  835:					no_fixed = true;
+       42:  836:					break;
+        -:  837:				}
+       22:  838:				current_next_code_address = p_last_line->get_next_code_address();
+        -:  839:			}
+        -:  840:			else {
+       13:  841:				if( p_last_line->get_next_code_address() != current_next_code_address ) {
+    #####:  842:					no_fixed = true;
+    #####:  843:					break;
+        -:  844:				}
+        -:  845:			}
+        -:  846:		}
+        -:  847:		//	else句を持っており、かつすべての句の中身のサイズが同じであれば、中身のコードが確定していなくても、サイズを確定させる
+       64:  848:		if( current_next_code_address != -1 && has_else && !no_fixed ) {
+       10:  849:			this->set_code_size( &info, 0 );
+       10:  850:			this->next_code_address = current_next_code_address;
+       10:  851:			info.is_updated = true;
+        -:  852:		}
+       64:  853:		p_last_line = p_last_line_backup;
+        -:  854:	}
+        -:  855:	//	実際に条件分岐を判断する
+       92:  856:	result = true;
+       92:  857:	do_process = false;
+      128:  858:	for( auto i : p_if->m_sub ) {
+      125:  859:		if( i->p_if->words[0] == "ELSE" ) {
+        -:  860:			//	ELSE なら 常に条件は true
+       15:  861:			v.type = v.CV_INTEGER;
+       15:  862:			v.i = 1;
+        -:  863:		}
+        -:  864:		else {
+        -:  865:			//	IF 又は ELSEIF なら、条件式を評価
+      110:  866:			index = i->p_if->expression( info, 1, v );
+      110:  867:			if( index != 0 && index < (int)i->p_if->words.size() ) {
+       12:  868:				i->p_if->put_error( "Illegal expression." );
+       62:  869:				return false;
+        -:  870:			}
+        -:  871:		}
+      113:  872:		if( v.type != v.CV_INTEGER ) {
+        7:  873:			put_error( "Illegal condition." );
+        7:  874:			return false;
+        -:  875:		}
+      106:  876:		i->is_condition_fixed = true;
+      106:  877:		if( !v.i ) {
+       36:  878:			continue;
+        -:  879:		}
+       70:  880:		i->is_condition = true;
+       70:  881:		p_last_line = i->p_text->process( info, sub_success_count, p_last_line, !is_analyze_phase );
+       70:  882:		if( sub_success_count != i->p_text->m_text.size() ) {
+       31:  883:			return false;
+        -:  884:		}
+       39:  885:		p_selected_if = i->p_if;
+       39:  886:		do_process = true;
+       39:  887:		break;
+        -:  888:	}
+       42:  889:	if( !this->is_data_fixed ) {
+       14:  890:		this->is_data_fixed = true;
+       14:  891:		info.is_updated = true;
+        -:  892:	}
+       42:  893:	if( this->next_code_address == -1 && p_last_line->get_next_code_address() != -1 ) {
+        3:  894:		this->next_code_address = p_last_line->get_next_code_address();
+        3:  895:		info.is_updated = true;
+        -:  896:	}
+        -:  897:
+       42:  898:	if( !is_analyze_phase ) {
+       14:  899:		log.push_back( "[" + get_line() + "]" );
+       14:  900:		if( do_process ) {
+       13:  901:			log.push_back( "\tSelected {" + p_selected_if->get_line() + "} block." );
+        -:  902:		}
+        -:  903:		else {
+        1:  904:			log.push_back( "\tAll condition is not selected." );
+        -:  905:		}
+       14:  906:		log.push_back( "" );
+        -:  907:	}
+       42:  908:	return check_all_fixed();
+        -:  909:}
+        -:  910:
+        -:  911:// --------------------------------------------------------------------
+       33:  912:bool CZMA_PARSE_ENDIF::write( CZMA_INFORMATION& info, std::ofstream* f ) {
+        -:  913:	bool result;
+       66:  914:	CVALUE v;
+        -:  915:
+       33:  916:	if( p_if == nullptr ) {
+        3:  917:		return false;
+        -:  918:	}
+       30:  919:	result = true;
+       56:  920:	for( auto i : p_if->m_sub ) {
+       48:  921:		if( !i->is_condition_fixed || !i->is_condition ) {
+       26:  922:			continue;
+        -:  923:		}
+       22:  924:		result = i->p_text->write( info, f );
+       22:  925:		break;
+        -:  926:	}
+       75:  927:	for( auto line : log ) {
+       45:  928:		info.log << line << std::endl;
+        -:  929:	}
+       30:  930:	info.log << std::endl;
+       30:  931:	return result;
+        -:  932:}
+        -:  933:
+        -:  934:// --------------------------------------------------------------------
+       72:  935:bool CZMA_PARSE_ENDR::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -:  936:	CZMA_TEXT* p_text;
+        -:  937:	int i;
+        -:  938:	unsigned int sub_success_count;
+        -:  939:
+       72:  940:	update_flags( &info, p_last_line );
+       72:  941:	if( !this->is_loaded ) {
+       32:  942:		p_repeat = info.p_repeat;
+       32:  943:		if( p_repeat == nullptr ) {
+        9:  944:			put_error( "Illegal ENDR." );
+        9:  945:			return false;
+        -:  946:		}
+       23:  947:		if( !p_repeat->is_counter_end_fixed ) {
+        8:  948:			put_error( "REPEAT counter is not fixed." );
+        8:  949:			return false;
+        -:  950:		}
+      125:  951:		for( i = 0; i < p_repeat->counter_end; i++ ) {
+      110:  952:			info.dict[p_repeat->counter_symbol].i = i;
+      110:  953:			p_text = new CZMA_TEXT;
+      240:  954:			for( auto ins_p : p_repeat->m_text ) {
+      130:  955:				p_text->m_text.push_back( CZMA_PARSE::create( info, ins_p->words, ins_p->get_file_name(), ins_p->get_line_no() ) );
+        -:  956:			}
+      110:  957:			this->text_list.push_back( p_text );
+        -:  958:		}
+       15:  959:		this->is_loaded = true;
+       15:  960:		info.is_updated = true;
+        -:  961:	}
+       55:  962:	info.is_block_processing = false;
+      470:  963:	for( i = 0; i < p_repeat->counter_end; i++ ) {
+      415:  964:		info.dict[p_repeat->counter_symbol].i = i;
+      415:  965:		p_last_line = this->text_list[i]->process( info, sub_success_count, p_last_line, !is_analyze_phase );
+        -:  966:	}
+       55:  967:	if( !this->is_data_fixed ) {
+      470:  968:		for( auto p_text : this->text_list ) {
+      875:  969:			for( auto p : p_text->m_text ) {
+      460:  970:				this->is_data_fixed = this->is_data_fixed && p->get_fixed_code_size();
+        -:  971:			}
+        -:  972:		}
+       55:  973:		if( this->is_data_fixed ) {
+    #####:  974:			info.is_updated = true;
+        -:  975:		}
+        -:  976:	}
+       55:  977:	if( this->code_size == -1 ) {
+       15:  978:		this->code_size = 0;
+      125:  979:		for( auto p_text : this->text_list ) {
+      235:  980:			for( auto p : p_text->m_text ) {
+      125:  981:				if( this->code_size != -1 && p->get_fixed_code_size() ) {
+      125:  982:					this->code_size = this->code_size + p->get_code_size();
+        -:  983:				}
+        -:  984:				else {
+    #####:  985:					this->code_size = -1;
+        -:  986:				}
+        -:  987:			}
+        -:  988:		}
+       15:  989:		if( this->code_size != -1 ) {
+       15:  990:			info.is_updated = true;
+        -:  991:		}
+        -:  992:	}
+       55:  993:	if( info.scope.size() == 0 ) {
+        1:  994:		put_error( "Scope of ENDR does not exist." );
+        1:  995:		return false;
+        -:  996:	}
+       54:  997:	if( info.scope[info.scope.size() - 1] != p_repeat->scope_name ) {
+        4:  998:		put_error( "Scope of ENDR does not exist." );
+        4:  999:		return false;
+        -: 1000:	}
+       50: 1001:	info.scope.pop_back();
+        -: 1002:
+       50: 1003:	if( words.size() != 1 ) {
+        2: 1004:		put_error( "ENDR is not need parameters." );
+        2: 1005:		return false;
+        -: 1006:	}
+        -: 1007:	//	log
+       48: 1008:	if( !is_analyze_phase ) {
+       12: 1009:		log.push_back( "\tScope path: " + info.get_scope_path() );
+       12: 1010:		log.push_back( "" );
+        -: 1011:	}
+       48: 1012:	return check_all_fixed();
+        -: 1013:}
+        -: 1014:
+        -: 1015:// --------------------------------------------------------------------
+      338: 1016:bool CZMA_PARSE_MACRO_INS::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 1017:	CZMA_MACRO* p_macro;
+      676: 1018:	std::map< std::string, std::vector< std::string > > argument;
+      676: 1019:	std::vector< std::string > parameter, insert_line;
+      676: 1020:	std::string replace_name, arg_name;
+        -: 1021:	int i, j, id;
+        -: 1022:	unsigned int success_count;
+      338: 1023:	bool result = true;
+      338: 1024:	update_flags( &info, p_last_line );
+      338: 1025:	if( !this->is_loaded ) {
+       98: 1026:		p_macro = info.macro_list[words[0]];	//	※必ず存在する
+        -: 1027:		//	引数を取り込む
+       98: 1028:		id = 0;
+      133: 1029:		for( i = 1; i < (int)words.size(); i++ ) {
+       38: 1030:			parameter.clear();
+       38: 1031:			if( id >= (int)p_macro->parameter_name_list.size() ) {
+        3: 1032:				put_error( "Too many arguments for " + words[0] + "." );
+        3: 1033:				return false;
+        -: 1034:			}
+       35: 1035:			if( p_macro->parameter_name_list[id].is_through ) {
+        3: 1036:				arg_name = "\"";
+       10: 1037:				for( j = i; j < ( int) words.size() && words[j] != ","; j++ ) {
+        7: 1038:					arg_name = arg_name + words[j];
+        7: 1039:					if( (j + 1) < ( int) words.size() && words[j + 1] != "," ) {
+        4: 1040:						arg_name = arg_name + " ";
+        -: 1041:					}
+        -: 1042:				}
+        3: 1043:				parameter.push_back( arg_name );
+        -: 1044:			}
+        -: 1045:			else {
+       68: 1046:				for( j = i; j < ( int) words.size() && words[j] != ","; j++ ) {
+       36: 1047:					parameter.push_back( words[j] );
+        -: 1048:				}
+        -: 1049:			}
+       35: 1050:			argument[p_macro->parameter_name_list[id].name] = parameter;		//	argument[ 引数名 ] = 実際の引数
+       35: 1051:			i = j;
+       35: 1052:			id++;
+        -: 1053:		}
+       95: 1054:		if( id != (int)p_macro->parameter_name_list.size() ) {
+        3: 1055:			put_error( "Mismatched number of arguments." );
+        3: 1056:			return false;
+        -: 1057:		}
+        -: 1058:		//	m_text に macro の展開内容をコピーする
+      722: 1059:		for( auto p : p_macro->m_text ) {
+      630: 1060:			insert_line = p->words;
+     2018: 1061:			for( auto word = insert_line.begin(); word != insert_line.end(); ) {
+     1388: 1062:				replace_name = *word;
+     1388: 1063:				if( argument.count( replace_name ) ) {
+        -: 1064:					//	マクロの仮引数を見つけた場合、指定されている式に置き換える
+       32: 1065:					word = insert_line.erase( word );
+       68: 1066:					for( auto insert_word : argument[replace_name] ) {
+       36: 1067:						word = insert_line.insert( word, insert_word );
+       36: 1068:						++word;
+        -: 1069:					}
+        -: 1070:				}
+        -: 1071:				else {
+     1356: 1072:					++word;
+        -: 1073:				}
+        -: 1074:			}
+      630: 1075:			text.m_text.push_back( CZMA_PARSE::create( info, insert_line, this->p_file_name, this->line_no ) );
+        -: 1076:		}
+       92: 1077:		this->is_loaded = true;
+       92: 1078:		info.is_updated = true;
+        -: 1079:	}
+      332: 1080:	info.scope.push_back( "@MACRO" + std::to_string( info.get_auto_label_index() ) );
+        -: 1081:	//	log
+      332: 1082:	if( !is_analyze_phase ) {
+       92: 1083:		log.push_back( "((" + get_line() + "))" );
+       92: 1084:		log.push_back( "\tScope path: " + info.get_scope_path() );
+        -: 1085:	}
+      332: 1086:	p_last_line = text.process( info, success_count, p_last_line, !this->is_analyze_phase );
+      332: 1087:	if( !this->is_data_fixed ) {
+     2778: 1088:		for( auto p : text.m_text ) {
+     2446: 1089:			this->is_data_fixed = this->is_data_fixed && p->get_fixed_code_size();
+        -: 1090:		}
+      332: 1091:		if( this->is_data_fixed ) {
+    #####: 1092:			info.is_updated = true;
+        -: 1093:		}
+        -: 1094:	}
+      332: 1095:	if( this->code_size == -1 ) {
+       97: 1096:		this->code_size = 0;
+      724: 1097:		for( auto p : text.m_text ) {
+      627: 1098:			if( this->code_size != -1 && p->get_fixed_code_size() ) {
+      619: 1099:				this->code_size = this->code_size + p->get_code_size();
+        -: 1100:			}
+        -: 1101:			else {
+        8: 1102:				this->code_size = -1;
+        -: 1103:			}
+        -: 1104:		}
+       97: 1105:		if( this->code_size != -1 ) {
+       89: 1106:			info.is_updated = true;
+        -: 1107:		}
+        -: 1108:	}
+      332: 1109:	if( info.scope.size() > 0 ) {
+      332: 1110:		info.scope.pop_back();
+        -: 1111:	}
+      332: 1112:	this->next_code_address = p_last_line->get_next_code_address();
+      332: 1113:	return result && check_all_fixed();
+        -: 1114:}
+        -: 1115:
+        -: 1116:// --------------------------------------------------------------------
+       93: 1117:bool CZMA_PARSE_LABEL::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+      186: 1118:	std::string label;
+      186: 1119:	CVALUE v;
+        -: 1120:
+       93: 1121:	update_flags( &info, p_last_line );
+        -: 1122:	//	log
+       93: 1123:	if( !this->is_analyze_phase ) {
+       58: 1124:		std::stringstream s;
+       29: 1125:		s << "0x" << std::hex << std::setw( 6 ) << std::setfill( '0' ) << this->get_code_address();
+       29: 1126:		log.push_back( "[" + get_line() + "]" );
+       29: 1127:		log.push_back( "\tlabel address: " + s.str() );
+       29: 1128:		log.push_back( "" );
+        -: 1129:	}
+       93: 1130:	if( this->is_data_fixed ) {
+       52: 1131:		return check_all_fixed();
+        -: 1132:	}
+       41: 1133:	this->set_code_size( &info, 0 );
+       41: 1134:	update_flags( &info, p_last_line );
+       41: 1135:	if( words[0][0] == '\"' ) {
+        3: 1136:		put_error( "Label name cannot be string." );
+        3: 1137:		return false;
+        -: 1138:	}
+       38: 1139:	if( this->get_fixed_code_address() ) {
+       27: 1140:		label = info.get_scope_path() + words[0];
+       27: 1141:		if( info.dict.count( label ) ) {
+        3: 1142:			put_error( std::string("There are declarations of the same label '") + label + "' in multiple places." );
+        3: 1143:			return false;
+        -: 1144:		}
+        -: 1145:		else {
+       24: 1146:			this->is_data_fixed = true;
+       24: 1147:			v.type = CVALUE::CV_INTEGER;
+       24: 1148:			v.i = this->get_code_address();
+       24: 1149:			info.dict[label] = v;
+       24: 1150:			info.is_updated = true;
+        -: 1151:		}
+        -: 1152:	}
+        -: 1153:	else {
+       11: 1154:		put_error( std::string( "Label '" ) + words[0] + "' is indeterminate." );
+       11: 1155:		return false;
+        -: 1156:	}
+       24: 1157:	return check_all_fixed();
+        -: 1158:}
+        -: 1159:
+        -: 1160:// --------------------------------------------------------------------
+       18: 1161:bool CZMA_PARSE_GLOBAL_LABEL::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+       36: 1162:	std::string label;
+       36: 1163:	CVALUE v;
+        -: 1164:
+       18: 1165:	update_flags( &info, p_last_line );
+        -: 1166:	//	log
+       18: 1167:	if( !this->is_analyze_phase ) {
+       12: 1168:		std::stringstream s;
+        6: 1169:		s << "0x" << std::hex << std::setw( 6 ) << std::setfill( '0' ) << this->get_code_address();
+        6: 1170:		log.push_back( "[" + get_line() + "]" );
+        6: 1171:		log.push_back( "\tglobal label address: " + s.str() );
+        6: 1172:		log.push_back( "" );
+        -: 1173:	}
+       18: 1174:	if( this->is_data_fixed ) {
+        6: 1175:		return check_all_fixed();
+        -: 1176:	}
+       12: 1177:	this->set_code_size( &info, 0 );
+       12: 1178:	if( words[0][0] == '\"' ) {
+        3: 1179:		put_error( "Label name cannot be string." );
+        3: 1180:		return false;
+        -: 1181:	}
+        9: 1182:	if( this->get_fixed_code_address() ) {
+        6: 1183:		label = words[0];
+        6: 1184:		if( info.dict.count( label ) ) {
+        3: 1185:			put_error( std::string( "There are declarations of the same label '" ) + label + "' in multiple places." );
+        3: 1186:			return false;
+        -: 1187:		}
+        -: 1188:		else {
+        3: 1189:			this->is_data_fixed = true;
+        3: 1190:			v.type = CVALUE::CV_INTEGER;
+        3: 1191:			v.i = this->get_code_address();
+        3: 1192:			info.dict[label] = v;
+        3: 1193:			info.is_updated = true;
+        -: 1194:		}
+        -: 1195:	}
+        -: 1196:	else {
+        3: 1197:		put_error( std::string( "Label '" ) + words[0] + "' is indeterminate." );
+        3: 1198:		return false;
+        -: 1199:	}
+        3: 1200:	return check_all_fixed();
+        -: 1201:}
+        -: 1202:
+        -: 1203:// --------------------------------------------------------------------
+       36: 1204:bool CZMA_PARSE_SYMBOL::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+       72: 1205:	std::string label;
+       72: 1206:	CVALUE v;
+        -: 1207:
+       36: 1208:	update_flags( &info, p_last_line );
+       36: 1209:	if( this->is_data_fixed ) {
+       12: 1210:		return check_all_fixed();
+        -: 1211:	}
+       24: 1212:	this->set_code_size( &info, 0 );
+       24: 1213:	if( words[0][0] == '\"' ) {
+        3: 1214:		put_error( "Label name cannot be string." );
+        3: 1215:		return false;
+        -: 1216:	}
+       21: 1217:	if( this->expression( info, 2, v ) ) {
+       18: 1218:		if( v.type == CVALUE::CV_UNKNOWN ) {
+        6: 1219:			put_error( "Illegal expression." );
+        6: 1220:			return false;
+        -: 1221:		}
+       12: 1222:		label = info.get_scope_path() + words[0];
+       12: 1223:		if( info.dict.count( label ) ) {
+        6: 1224:			put_error( std::string( "There are declarations of the same label '" ) + label + "' in multiple places." );
+        6: 1225:			return false;
+        -: 1226:		}
+        -: 1227:		else {
+        6: 1228:			this->is_data_fixed = true;
+        6: 1229:			info.dict[label] = v;
+        6: 1230:			info.is_updated = true;
+        -: 1231:		}
+        -: 1232:	}
+        -: 1233:	else {
+        3: 1234:		put_error( std::string( "Label '" ) + words[0] + "' is indeterminate." );
+        3: 1235:		return false;
+        -: 1236:	}
+        6: 1237:	return check_all_fixed();
+        -: 1238:}
+        -: 1239:
+        -: 1240:// --------------------------------------------------------------------
+       24: 1241:bool CZMA_PARSE_GLOBAL_SYMBOL::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+       48: 1242:	std::string label;
+       48: 1243:	CVALUE v;
+        -: 1244:
+       24: 1245:	update_flags( &info, p_last_line );
+       24: 1246:	if( this->is_data_fixed ) {
+        4: 1247:		return check_all_fixed();
+        -: 1248:	}
+       20: 1249:	this->set_code_size( &info, 0 );
+       20: 1250:	if( words[0][0] == '\"' ) {
+        3: 1251:		put_error( "Label name cannot be string." );
+        3: 1252:		return false;
+        -: 1253:	}
+       17: 1254:	if( this->expression( info, 2, v ) ) {
+       14: 1255:		if( v.type != CVALUE::CV_INTEGER ) {
+        6: 1256:			put_error( "Illegal expression." );
+        6: 1257:			return false;
+        -: 1258:		}
+        8: 1259:		label = words[0];
+        8: 1260:		if( info.dict.count( label ) ) {
+        6: 1261:			put_error( std::string( "There are declarations of the same label '" ) + label + "' in multiple places." );
+        6: 1262:			return false;
+        -: 1263:		}
+        -: 1264:		else {
+        2: 1265:			this->is_data_fixed = true;
+        2: 1266:			info.dict[label] = v;
+        2: 1267:			info.is_updated = true;
+        -: 1268:		}
+        -: 1269:	}
+        -: 1270:	else {
+        3: 1271:		put_error( std::string( "Label '" ) + words[0] + "' is indeterminate." );
+        3: 1272:		return false;
+        -: 1273:	}
+        2: 1274:	return check_all_fixed();
+        -: 1275:}
+        -: 1276:
+        -: 1277:// --------------------------------------------------------------------
+       64: 1278:bool CZMA_PARSE_ORG::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+      128: 1279:	CVALUE address;
+        -: 1280:	int index;
+        -: 1281:
+       64: 1282:	update_flags( &info, p_last_line );
+       64: 1283:	index = this->expression( info, 1, address );
+       64: 1284:	this->code_size = 0;
+       64: 1285:	if( index == 0 ) {
+        8: 1286:		put_error( "Illegal expression." );
+        8: 1287:		return false;
+        -: 1288:	}
+       56: 1289:	if( address.type != CVALUE::CV_INTEGER ) {
+        4: 1290:		put_error( "Illegal parameter." );
+        4: 1291:		return false;
+        -: 1292:	}
+       52: 1293:	if( index < (int)words.size() ) {
+        4: 1294:		put_error( "Illegal parameter." );
+        4: 1295:		return false;
+        -: 1296:	}
+       48: 1297:	this->is_data_fixed = true;
+       48: 1298:	this->code_address = address.i;
+       48: 1299:	this->next_code_address = address.i;
+        -: 1300:	//	log
+       48: 1301:	if( !this->is_analyze_phase ) {
+       30: 1302:		std::stringstream s;
+       15: 1303:		s << "0x" << std::hex << std::setw( 6 ) << std::setfill( '0' ) << this->get_code_address();
+       15: 1304:		log.push_back( "[\t" + get_line() + "]" );
+       15: 1305:		log.push_back( "\tcode address: " + s.str() );
+       15: 1306:		log.push_back( "" );
+        -: 1307:	}
+       48: 1308:	return check_all_fixed();
+        -: 1309:}
+        -: 1310:
+        -: 1311:// --------------------------------------------------------------------
+     3777: 1312:bool CZMA_PARSE_DEFB::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 1313:	int i, count;
+     7554: 1314:	CVALUE v;
+        -: 1315:
+     3777: 1316:	update_flags( &info, p_last_line );
+     3777: 1317:	if( !this->get_fixed_code_size() ) {
+     1205: 1318:		count = 1;
+     8352: 1319:		for( i = 1; i < (int)words.size(); i++ ) {
+     7147: 1320:			if( words[i] == "," ) {
+     2961: 1321:				count++;
+        -: 1322:			}
+        -: 1323:		}
+     1205: 1324:		this->set_code_size( &info, count );
+        -: 1325:	}
+     3777: 1326:	if( !this->is_data_fixed ) {
+     1242: 1327:		i = 1;
+     5404: 1328:		for( count = 0; count < this->get_code_size(); count++ ) {
+     4207: 1329:			i = this->expression( info, i, v );
+     4207: 1330:			if( i == 0 ) {
+       39: 1331:				put_error( std::string( "Cannot evaluate the expression(" ) + std::to_string( count + 1 ) + ")" );
+       39: 1332:				data.clear();
+       39: 1333:				return false;
+        -: 1334:			}
+     4168: 1335:			if( v.type != CVALUE::CV_INTEGER ) {
+        3: 1336:				put_error( "Illegal expression." );
+        3: 1337:				return false;
+        -: 1338:			}
+     4165: 1339:			if( i < ( int) words.size() && words[i] != "," ) {
+        3: 1340:				put_error( std::string( "Illegal expression." ) );
+        3: 1341:				data.clear();
+        3: 1342:				return false;
+        -: 1343:			}
+     4162: 1344:			i++;
+     4162: 1345:			data.push_back( v.i & 255 );
+        -: 1346:		}
+     1197: 1347:		this->is_data_fixed = true;
+        -: 1348:	}
+        -: 1349:	//	log
+     3732: 1350:	if( !this->is_analyze_phase ) {
+     1184: 1351:		log.push_back( "[\t" + get_line() + "]" );
+     1184: 1352:		this->log_data_dump();
+     1184: 1353:		log.push_back( "" );
+        -: 1354:	}
+     3732: 1355:	return check_all_fixed();
+        -: 1356:}
+        -: 1357:
+        -: 1358:// --------------------------------------------------------------------
+     1828: 1359:bool CZMA_PARSE_DEFW::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 1360:	int i, count;
+     3656: 1361:	CVALUE v;
+        -: 1362:
+     1828: 1363:	update_flags( &info, p_last_line );
+     1828: 1364:	if( !this->get_fixed_code_size() ) {
+      459: 1365:		count = 1;
+      956: 1366:		for( i = 1; i < ( int) words.size(); i++ ) {
+      497: 1367:			if( words[i] == "," ) {
+       19: 1368:				count++;
+        -: 1369:			}
+        -: 1370:		}
+      459: 1371:		this->set_code_size( &info, count * 2 );
+        -: 1372:	}
+     1828: 1373:	if( !this->is_data_fixed ) {
+      472: 1374:		i = 1;
+      952: 1375:		for( count = 0; (count * 2) < this->get_code_size(); count++ ) {
+      498: 1376:			i = this->expression( info, i, v );
+      498: 1377:			if( i == 0 ) {
+       12: 1378:				put_error( std::string( "Cannot evaluate the expression(" ) + std::to_string( count + 1 ) + ")" );
+       12: 1379:				data.clear();
+       12: 1380:				return false;
+        -: 1381:			}
+      486: 1382:			if( v.type != CVALUE::CV_INTEGER ) {
+        3: 1383:				put_error( "Illegal expression." );
+        3: 1384:				return false;
+        -: 1385:			}
+      483: 1386:			if( i < ( int) words.size() && words[i] != "," ) {
+        3: 1387:				put_error( std::string( "Illegal expression." ) );
+        3: 1388:				data.clear();
+        3: 1389:				return false;
+        -: 1390:			}
+      480: 1391:			i++;
+      480: 1392:			data.push_back( v.i & 255 );
+      480: 1393:			data.push_back( (v.i >> 8) & 255 );
+        -: 1394:		}
+      454: 1395:		this->is_data_fixed = true;
+        -: 1396:	}
+        -: 1397:	//	log
+     1810: 1398:	if( !this->is_analyze_phase ) {
+      454: 1399:		log.push_back( "[\t" + get_line() + "]" );
+      454: 1400:		this->log_data_dump();
+      454: 1401:		log.push_back( "" );
+        -: 1402:	}
+     1810: 1403:	return check_all_fixed();
+        -: 1404:}
+        -: 1405:
+        -: 1406:// --------------------------------------------------------------------
+       24: 1407:bool CZMA_PARSE_DEFD::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 1408:	int i, count;
+       48: 1409:	CVALUE v;
+        -: 1410:
+       24: 1411:	update_flags( &info, p_last_line );
+       24: 1412:	if( !this->get_fixed_code_size() ) {
+        8: 1413:		count = 1;
+       54: 1414:		for( i = 1; i < ( int) words.size(); i++ ) {
+       46: 1415:			if( words[i] == "," ) {
+       19: 1416:				count++;
+        -: 1417:			}
+        -: 1418:		}
+        8: 1419:		this->set_code_size( &info, count * 4 );
+        -: 1420:	}
+       24: 1421:	if( !this->is_data_fixed ) {
+       19: 1422:		i = 1;
+       48: 1423:		for( count = 0; (count * 4) < this->get_code_size(); count++ ) {
+       45: 1424:			i = this->expression( info, i, v );
+       45: 1425:			if( i == 0 ) {
+       10: 1426:				put_error( std::string( "Cannot evaluate the expression(" ) + std::to_string( count + 1 ) + ")" );
+       10: 1427:				data.clear();
+       10: 1428:				return false;
+        -: 1429:			}
+       35: 1430:			if( v.type != CVALUE::CV_INTEGER ) {
+        3: 1431:				put_error( "Illegal expression." );
+        3: 1432:				return false;
+        -: 1433:			}
+       32: 1434:			if( i < ( int) words.size() && words[i] != "," ) {
+        3: 1435:				put_error( std::string( "Illegal expression." ) );
+        3: 1436:				data.clear();
+        3: 1437:				return false;
+        -: 1438:			}
+       29: 1439:			i++;
+       29: 1440:			data.push_back( v.i & 255 );
+       29: 1441:			data.push_back( (v.i >> 8) & 255 );
+       29: 1442:			data.push_back( (v.i >> 16) & 255 );
+       29: 1443:			data.push_back( (v.i >> 24) & 255 );
+        -: 1444:		}
+        3: 1445:		this->is_data_fixed = true;
+        -: 1446:	}
+        -: 1447:	//	log
+        8: 1448:	if( !this->is_analyze_phase ) {
+        3: 1449:		log.push_back( "[\t" + get_line() + "]" );
+        3: 1450:		this->log_data_dump();
+        3: 1451:		log.push_back( "" );
+        -: 1452:	}
+        8: 1453:	return check_all_fixed();
+        -: 1454:}
+        -: 1455:
+        -: 1456:// --------------------------------------------------------------------
+       52: 1457:bool CZMA_PARSE_DEFS::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+      104: 1458:	CVALUE v;
+        -: 1459:	int index;
+        -: 1460:
+       52: 1461:	update_flags( &info, p_last_line );
+       52: 1462:	index = this->expression( info, 1, v );
+       52: 1463:	if( index == 0 ) {
+       12: 1464:		put_error( "Illegal expression." );
+       12: 1465:		return false;
+        -: 1466:	}
+       40: 1467:	if( index < ( int) words.size() ) {
+        3: 1468:		put_error( "Illegal parameter." );
+        3: 1469:		return false;
+        -: 1470:	}
+       37: 1471:	if( v.type == CVALUE::CV_INTEGER ) {
+        3: 1472:		v.type = CVALUE::CV_STRING;
+        3: 1473:		v.s = std::to_string( v.i );
+        -: 1474:	}
+       37: 1475:	this->set_code_size( &info, v.s.size() );
+       37: 1476:	if( !this->is_data_fixed ) {
+    16492: 1477:		for( auto c : v.s ) {
+    16480: 1478:			data.push_back( c );
+        -: 1479:		}
+       12: 1480:		this->is_data_fixed = true;
+        -: 1481:	}
+        -: 1482:	//	log
+       37: 1483:	if( !this->is_analyze_phase ) {
+       12: 1484:		log.push_back( "[\t" + get_line() + "]" );
+       12: 1485:		this->log_data_dump();
+       12: 1486:		log.push_back( "" );
+        -: 1487:	}
+       37: 1488:	return check_all_fixed();
+        -: 1489:}
+        -: 1490:
+        -: 1491:// --------------------------------------------------------------------
+       58: 1492:bool CZMA_PARSE_INCLUDE::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+      116: 1493:	std::string s;
+        -: 1494:	int i;
+        -: 1495:	unsigned int success_count;
+      116: 1496:	CVALUE path;
+      116: 1497:	std::ifstream f;
+        -: 1498:	bool is_open;
+        -: 1499:
+       58: 1500:	update_flags( &info, p_last_line );
+       58: 1501:	if( words.size() < 2 ) {
+        3: 1502:		put_error( "Must be set include file name." );
+        3: 1503:		return false;
+        -: 1504:	}
+       55: 1505:	i = this->expression( info, 1, path );
+       55: 1506:	if( i == 0 ) {
+        3: 1507:		put_error( "Invalid expression." );
+        3: 1508:		return false;
+        -: 1509:	}
+       52: 1510:	if( path.type != CVALUE::CV_STRING ) {
+        3: 1511:		put_error( "Invalid parameter." );
+        3: 1512:		return false;
+        -: 1513:	}
+       49: 1514:	if( i < (int)words.size() ) {
+        3: 1515:		put_error( "INCLUDE command has only one parameter." );
+        3: 1516:		return false;
+        -: 1517:	}
+       46: 1518:	if( !this->is_loaded ) {
+       16: 1519:		is_open = false;
+       27: 1520:		for( auto include_path : info.include_path ) {
+       24: 1521:			s = include_path + "/" + path.s;
+       24: 1522:			f.open( s.c_str() );
+       24: 1523:			if( f ) {
+       13: 1524:				f.close();
+       13: 1525:				this->s_file_name = s;
+       13: 1526:				if( this->text.load( info, this->s_file_name.c_str() ) ) {
+       13: 1527:					this->is_loaded = true;
+       13: 1528:					is_open = true;
+       13: 1529:					break;
+        -: 1530:				}
+        -: 1531:			}
+        -: 1532:		}
+       16: 1533:		if( !is_open ) {
+        3: 1534:			put_error( std::string( "Cannot open include file '" ) + path.s + "'." );
+        3: 1535:			return false;
+        -: 1536:		}
+       13: 1537:		info.is_updated = true;
+        -: 1538:	}
+        -: 1539:	//	log
+       43: 1540:	if( !this->is_analyze_phase ) {
+       13: 1541:		log.push_back( "[\tINCLUDE \"" + this->s_file_name + "\"]" );
+        -: 1542:	}
+       43: 1543:	if( p_last_line->get_fixed_file_address() && p_last_line->get_fixed_code_size() ) {
+       16: 1544:		this->file_address = p_last_line->get_file_address() + p_last_line->get_code_size();
+        -: 1545:	}
+       43: 1546:	p_last_line = this->text.process( info, success_count, p_last_line, !this->is_analyze_phase );
+       43: 1547:	if( p_last_line->get_fixed_next_code_address() ) {
+       36: 1548:		this->next_code_address = p_last_line->get_next_code_address();
+        -: 1549:	}
+       43: 1550:	if( !this->is_data_fixed ) {
+      275: 1551:		for( auto p : text.m_text ) {
+      232: 1552:			this->is_data_fixed = this->is_data_fixed && p->check_data_fixed();
+        -: 1553:		}
+       43: 1554:		if( this->is_data_fixed ) {
+    #####: 1555:			info.is_updated = true;
+        -: 1556:		}
+        -: 1557:	}
+       43: 1558:	if( this->code_size == -1 ) {
+      275: 1559:		for( auto p : text.m_text ) {
+      232: 1560:			if( this->code_size != -1 && p->get_fixed_code_size() ) {
+    #####: 1561:				this->code_size = this->code_size + p->get_code_size();
+        -: 1562:			}
+        -: 1563:			else {
+      232: 1564:				this->code_size = -1;
+        -: 1565:			}
+        -: 1566:		}
+       43: 1567:		if( this->code_size != -1 ) {
+    #####: 1568:			info.is_updated = true;
+        -: 1569:		}
+        -: 1570:	}
+       43: 1571:	if( success_count < this->text.m_text.size() ) {
+       32: 1572:		return false;
+        -: 1573:	}
+       11: 1574:	return check_all_fixed();
+        -: 1575:}
+        -: 1576:
+        -: 1577:// --------------------------------------------------------------------
+       63: 1578:bool CZMA_PARSE_SCOPE::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 1579:
+       63: 1580:	update_flags( &info, p_last_line );
+       63: 1581:	if( words.size() < 2 ) {
+        3: 1582:		put_error( "Must be set scope name." );
+        3: 1583:		return false;
+        -: 1584:	}
+       60: 1585:	if( words.size() > 2 ) {
+        3: 1586:		put_error( "SCOPE command has only one parameter." );
+        3: 1587:		return false;
+        -: 1588:	}
+       57: 1589:	this->is_data_fixed = true;
+       57: 1590:	this->set_code_size( &info, 0 );
+       57: 1591:	info.scope.push_back( words[1] );
+        -: 1592:
+        -: 1593:	//	log
+       57: 1594:	if( !is_analyze_phase ) {
+       17: 1595:		log.push_back( "[\t" + get_line() + "]" );
+       17: 1596:		log.push_back( "\tScope path: " + info.get_scope_path() );
+       17: 1597:		log.push_back( "" );
+        -: 1598:	}
+       57: 1599:	return check_all_fixed();
+        -: 1600:}
+        -: 1601:
+        -: 1602:// --------------------------------------------------------------------
+       43: 1603:bool CZMA_PARSE_ENDSCOPE::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+       86: 1604:	std::string s;
+        -: 1605:
+       43: 1606:	update_flags( &info, p_last_line );
+       43: 1607:	if( words.size() > 1 ) {
+        3: 1608:		put_error( "ENDSCOPE command has not parameter." );
+        3: 1609:		return false;
+        -: 1610:	}
+       40: 1611:	this->is_data_fixed = true;
+       40: 1612:	this->set_code_size( &info, 0 );
+       40: 1613:	if( info.scope.size() < 1 ) {
+        6: 1614:		put_error( "ENDSCOPE in wrong position." );
+        6: 1615:		return false;
+        -: 1616:	}
+       34: 1617:	if( info.scope[ info.scope.size() - 1 ][0] == '@' ) {
+        3: 1618:		put_error( "ENDSCOPE in wrong position." );
+        3: 1619:		return false;
+        -: 1620:	}
+       31: 1621:	info.scope.pop_back();
+        -: 1622:
+        -: 1623:	//	log
+       31: 1624:	if( !is_analyze_phase ) {
+        9: 1625:		log.push_back( "[\t" + get_line() + "]" );
+        9: 1626:		log.push_back( "\tScope path: " + info.get_scope_path() );
+        9: 1627:		log.push_back( "" );
+        -: 1628:	}
+       31: 1629:	return check_all_fixed();
+        -: 1630:}
+        -: 1631:
+        -: 1632:// --------------------------------------------------------------------
+     1113: 1633:bool CZMA_PARSE_LD::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 1634:
+     1113: 1635:	update_flags( &info, p_last_line );
+     1113: 1636:	if( opecode_a_i_r( info ) ) {						//	ld {A|I|R}, {A|I|R} line
+        -: 1637:		//	log
+       12: 1638:		if( !is_analyze_phase ) {
+        4: 1639:			log.push_back( "[\t" + get_line() + "] Z80:11cyc, R800:2cyc" );			//	ld	{A|I|R}, {A|I|R}
+        -: 1640:		}
+        -: 1641:	}
+     1101: 1642:	else if( opecode_ddd_sss( info, 0x40 ) ) {				//	ld <reg8>, <reg8> line
+        -: 1643:		//	log
+      314: 1644:		if( !is_analyze_phase ) {
+      104: 1645:			if( this->code_size == 1 ) {
+       56: 1646:				log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:2cyc" );		//	ld <reg8>, reg8>
+        -: 1647:			}
+        -: 1648:			else {
+       48: 1649:				log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:2cyc" );		//	ld <reg8>, ixh
+        -: 1650:			}
+        -: 1651:		}
+        -: 1652:	}
+      787: 1653:	else if( opecode_ddd_ref_hl( info, 0x46 ) ) {			//	ld <reg8>, [HL] line
+        -: 1654:		//	log
+       72: 1655:		if( !is_analyze_phase ) {
+       24: 1656:			if( this->code_size == 1 ) {
+        8: 1657:				log.push_back( "[\t" + get_line() + "] Z80:8cyc, R800:4cyc" );		//	ld	<reg8>, [hl]
+        -: 1658:			}
+        -: 1659:			else {
+       16: 1660:				log.push_back( "[\t" + get_line() + "] Z80:21cyc, R800:7cyc" );		//	ld	<reg8>, [ix+d]
+        -: 1661:			}
+        -: 1662:		}
+        -: 1663:	}
+      715: 1664:	else if( opecode_a_ref_bc( info, 0x0A ) ) {				//	ld a, [bc/de/nn] line
+        -: 1665:		//	log
+        9: 1666:		if( !is_analyze_phase ) {
+        3: 1667:			if( this->code_size == 1 ) {
+        2: 1668:				log.push_back( "[\t" + get_line() + "] Z80:8cyc, R800:4cyc" );		//	ld	a, [bc/de]
+        -: 1669:			}
+        -: 1670:			else {
+        1: 1671:				log.push_back( "[\t" + get_line() + "] Z80:14cyc, R800:6cyc" );		//	ld	a, [nn]
+        -: 1672:			}
+        -: 1673:		}
+        -: 1674:	}
+      706: 1675:	else if( opecode_ddd_n( info, 0x06 ) ) {					//	ld <reg8>, imm8 line
+        -: 1676:		//	log
+       58: 1677:		if( !is_analyze_phase ) {
+       19: 1678:			if( this->code_size == 2 ) {
+       15: 1679:				log.push_back( "[\t" + get_line() + "] Z80:8cyc, R800:2cyc" );		//	ld	<reg8>, imm8
+        -: 1680:			}
+        -: 1681:			else {
+        4: 1682:				log.push_back( "[\t" + get_line() + "] Z80:13cyc, R800:3cyc" );		//	ld	ixh, imm8
+        -: 1683:			}
+        -: 1684:		}
+        -: 1685:	}
+      648: 1686:	else if( opecode_sp_hl( info, 0xF9 ) ) {					//	ld sp, hl/ix/iy line
+        -: 1687:		//	log
+        9: 1688:		if( !is_analyze_phase ) {
+        3: 1689:			if( this->code_size == 1 ) {
+        1: 1690:				log.push_back( "[\t" + get_line() + "] Z80:7cyc, R800:1cyc" );		//	ld	sp, hl
+        -: 1691:			}
+        -: 1692:			else {
+        2: 1693:				log.push_back( "[\t" + get_line() + "] Z80:12cyc, R800:2cyc" );		//	ld	sp, ix
+        -: 1694:			}
+        -: 1695:		}
+        -: 1696:	}
+      639: 1697:	else if( opecode_rp_nn( info, 0x01 ) ) {					//	ld <reg16>, imm16 line
+        -: 1698:		//	log
+      266: 1699:		if( !is_analyze_phase ) {
+       89: 1700:			if( this->code_size == 3 ) {
+       87: 1701:				log.push_back( "[\t" + get_line() + "] Z80:11cyc, R800:3cyc" );		//	ld	<reg16>, imm16
+        -: 1702:			}
+        -: 1703:			else {
+        2: 1704:				log.push_back( "[\t" + get_line() + "] Z80:16cyc, R800:4cyc" );		//	ld	ix, imm16
+        -: 1705:			}
+        -: 1706:		}
+        -: 1707:	}
+      373: 1708:	else if( opecode_rp_ref_nn( info, 0x2A, 0x4B ) ) {		//	ld <reg16>, [nn] line
+        -: 1709:		//	log
+       18: 1710:		if( !is_analyze_phase ) {
+        6: 1711:			if( this->code_size == 3 ) {
+        1: 1712:				log.push_back( "[\t" + get_line() + "] Z80:17cyc, R800:7cyc" );		//	ld	hl, [nn]
+        -: 1713:			}
+        -: 1714:			else {
+        5: 1715:				log.push_back( "[\t" + get_line() + "] Z80:22cyc, R800:8cyc" );		//	ld	de/bc/sp/ix/iy, [nn]
+        -: 1716:			}
+        -: 1717:		}
+        -: 1718:	}
+      355: 1719:	else if( opecode_ref_hl_sss( info, 0x70 ) ) {			//	ld [HL], <reg8> line
+        -: 1720:		//	log
+       66: 1721:		if( !is_analyze_phase ) {
+       22: 1722:			log.push_back( "[\t" + get_line() + "] Z80:8cyc, R800:4cyc" );			//	ld [HL], <reg8>
+        -: 1723:		}
+        -: 1724:	}
+      289: 1725:	else if( opecode_ref_hl_n( info, 0x36 ) ) {				//	ld [HL], imm8 line
+        -: 1726:		//	log
+        9: 1727:		if( !is_analyze_phase ) {
+        3: 1728:			if( this->code_size == 2 ) {
+        1: 1729:				log.push_back( "[\t" + get_line() + "] Z80:11cyc, R800:5cyc" );		//	ld [HL], imm8
+        -: 1730:			}
+        -: 1731:			else {
+        2: 1732:				log.push_back( "[\t" + get_line() + "] Z80:21cyc, R800:7cyc" );		//	ld [IX+d], imm8
+        -: 1733:			}
+        -: 1734:		}
+        -: 1735:	}
+      280: 1736:	else if( opecode_ref_bc_a( info, 0x02 ) ) {				//	ld [bc/de/nn], a line
+        -: 1737:		//	log
+        9: 1738:		if( !is_analyze_phase ) {
+        3: 1739:			if( this->code_size == 1 ) {
+        2: 1740:				log.push_back( "[\t" + get_line() + "] Z80:8cyc, R800:4cyc" );		//	ld [bc/de], a
+        -: 1741:			}
+        -: 1742:			else {
+        1: 1743:				log.push_back( "[\t" + get_line() + "] Z80:14cyc, R800:6cyc" );		//	ld [nn], a
+        -: 1744:			}
+        -: 1745:		}
+        -: 1746:	}
+      271: 1747:	else if( opecode_ref_nn_rp( info, 0xED, 0x22, 0x43 ) ) {	//	ld [nn], <reg16> line
+        -: 1748:		//	log
+       18: 1749:		if( !is_analyze_phase ) {
+        6: 1750:			if( this->code_size == 3 ) {
+        1: 1751:				log.push_back( "[\t" + get_line() + "] Z80:17cyc, R800:7cyc" );		//	ld [nn],hl
+        -: 1752:			}
+        -: 1753:			else {
+        5: 1754:				log.push_back( "[\t" + get_line() + "] Z80:22cyc, R800:8cyc" );		//	ld [nn],bc/de/sp/ix/iy
+        -: 1755:			}
+        -: 1756:		}
+        -: 1757:	}
+        -: 1758:	else {
+      253: 1759:		put_error( "Illegal operand." );
+      253: 1760:		return false;
+        -: 1761:	}
+        -: 1762:	//	log
+      860: 1763:	if( !is_analyze_phase ) {
+      286: 1764:		log_data_dump();
+      286: 1765:		log.push_back( "" );
+        -: 1766:	}
+      860: 1767:	return check_all_fixed();
+        -: 1768:}
+        -: 1769:
+        -: 1770:// --------------------------------------------------------------------
+        6: 1771:bool CZMA_PARSE_LDI::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 1772:
+        6: 1773:	update_flags( &info, p_last_line );
+        6: 1774:	if( this->opecode( info, 0xED, 0xA0 ) ) {
+        -: 1775:		//	log
+        3: 1776:		if( !this->is_analyze_phase ) {
+        1: 1777:			log.push_back( "[\t" + get_line() + "] Z80:18cyc, R800:7cyc" );
+        1: 1778:			this->log_data_dump();
+        1: 1779:			log.push_back( "" );
+        -: 1780:		}
+        3: 1781:		return check_all_fixed();
+        -: 1782:	}
+        3: 1783:	put_error( "Illegal operand" );
+        3: 1784:	return false;
+        -: 1785:}
+        -: 1786:
+        -: 1787:// --------------------------------------------------------------------
+        6: 1788:bool CZMA_PARSE_LDIR::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 1789:
+        6: 1790:	update_flags( &info, p_last_line );
+        6: 1791:	if( this->opecode( info, 0xED, 0xB0 ) ) {
+        -: 1792:		//	log
+        3: 1793:		if( !this->is_analyze_phase ) {
+        1: 1794:			log.push_back( "[\t" + get_line() + "] Z80:23cyc(BC!=0), 18cyc(BC=0), R800:?cyc(BC!=0), 7cyc(BC=0)" );
+        1: 1795:			this->log_data_dump();
+        1: 1796:			log.push_back( "" );
+        -: 1797:		}
+        3: 1798:		return check_all_fixed();
+        -: 1799:	}
+        3: 1800:	put_error( "Illegal operand" );
+        3: 1801:	return false;
+        -: 1802:}
+        -: 1803:
+        -: 1804:// --------------------------------------------------------------------
+        6: 1805:bool CZMA_PARSE_LDD::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 1806:
+        6: 1807:	update_flags( &info, p_last_line );
+        6: 1808:	if( this->opecode( info, 0xED, 0xA8 ) ) {
+        -: 1809:		//	log
+        3: 1810:		if( !this->is_analyze_phase ) {
+        1: 1811:			log.push_back( "[\t" + get_line() + "] Z80:18cyc, R800:7cyc" );
+        1: 1812:			this->log_data_dump();
+        1: 1813:			log.push_back( "" );
+        -: 1814:		}
+        3: 1815:		return check_all_fixed();
+        -: 1816:	}
+        3: 1817:	put_error( "Illegal operand" );
+        3: 1818:	return false;
+        -: 1819:}
+        -: 1820:
+        -: 1821:// --------------------------------------------------------------------
+        6: 1822:bool CZMA_PARSE_LDDR::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 1823:
+        6: 1824:	update_flags( &info, p_last_line );
+        6: 1825:	if( this->opecode( info, 0xED, 0xB8 ) ) {
+        -: 1826:		//	log
+        3: 1827:		if( !this->is_analyze_phase ) {
+        1: 1828:			log.push_back( "[\t" + get_line() + "] Z80:23cyc(BC!=0), 18cyc(BC=0), R800:?cyc(BC!=0), 7cyc(BC=0)" );
+        1: 1829:			this->log_data_dump();
+        1: 1830:			log.push_back( "" );
+        -: 1831:		}
+        3: 1832:		return check_all_fixed();
+        -: 1833:	}
+        3: 1834:	put_error( "Illegal operand" );
+        3: 1835:	return false;
+        -: 1836:}
+        -: 1837:
+        -: 1838:// --------------------------------------------------------------------
+        6: 1839:bool CZMA_PARSE_EXX::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 1840:
+        6: 1841:	update_flags( &info, p_last_line );
+        6: 1842:	if( this->opecode( info, 0xD9 ) ) {
+        -: 1843:		//	log
+        3: 1844:		if( !this->is_analyze_phase ) {
+        1: 1845:			log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:1cyc" );
+        1: 1846:			this->log_data_dump();
+        1: 1847:			log.push_back( "" );
+        -: 1848:		}
+        3: 1849:		return check_all_fixed();
+        -: 1850:	}
+        3: 1851:	put_error( "Illegal operand" );
+        3: 1852:	return false;
+        -: 1853:}
+        -: 1854:
+        -: 1855:// --------------------------------------------------------------------
+       21: 1856:bool CZMA_PARSE_EX::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 1857:
+       21: 1858:	update_flags( &info, p_last_line );
+       21: 1859:	if( !this->is_data_fixed ) {
+       11: 1860:		this->is_data_fixed = true;
+       11: 1861:		if( words.size() == 4 && words[1] == "DE" && words[2] == "," && words[3] == "HL" ) {
+        1: 1862:			this->set_code_size( &info, 1 );
+        1: 1863:			this->data.push_back( 0xEB );
+        -: 1864:		}
+       10: 1865:		else if( words.size() == 4 && words[1] == "AF" && words[2] == "," && words[3] == "AF'" ) {
+        1: 1866:			this->set_code_size( &info, 1 );
+        1: 1867:			this->data.push_back( 0x08 );
+        -: 1868:		}
+        9: 1869:		else if( words.size() == 6 && words[1] == "[" && words[2] == "SP" && words[3] == "]" && words[4] == "," ) {
+        6: 1870:			if( words[5] == "HL" ) {
+        1: 1871:				this->set_code_size( &info, 1 );
+        1: 1872:				this->data.push_back( 0xE3 );
+        -: 1873:			}
+        5: 1874:			else if( words[5] == "IX" ) {
+        1: 1875:				this->set_code_size( &info, 2 );
+        1: 1876:				this->data.push_back( 0xDD );
+        1: 1877:				this->data.push_back( 0xE3 );
+        -: 1878:			}
+        4: 1879:			else if( words[5] == "IY" ) {
+        1: 1880:				this->set_code_size( &info, 2 );
+        1: 1881:				this->data.push_back( 0xFD );
+        1: 1882:				this->data.push_back( 0xE3 );
+        -: 1883:			}
+        -: 1884:			else {
+        3: 1885:				this->is_data_fixed = false;
+        3: 1886:				put_error( "Illegal operand" );
+        3: 1887:				return false;
+        -: 1888:			}
+        -: 1889:		}
+        -: 1890:		else {
+        3: 1891:			this->is_data_fixed = false;
+        3: 1892:			put_error( "Illegal operand" );
+        3: 1893:			return false;
+        -: 1894:		}
+        -: 1895:	}
+        -: 1896:	//	log
+       15: 1897:	if( !this->is_analyze_phase ) {
+        5: 1898:		if( words.size() == 6 ) {
+        3: 1899:			if( words[5] == "HL" ) {
+        1: 1900:				log.push_back( "[\t" + get_line() + "] Z80:20cyc, R800:7cyc" );
+        -: 1901:			}
+        -: 1902:			else {
+        2: 1903:				log.push_back( "[\t" + get_line() + "] Z80:25cyc, R800:8cyc" );
+        -: 1904:			}
+        -: 1905:		}
+        -: 1906:		else {
+        2: 1907:			log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:1cyc" );
+        -: 1908:		}
+        5: 1909:		this->log_data_dump();
+        5: 1910:		log.push_back( "" );
+        -: 1911:	}
+       15: 1912:	return check_all_fixed();
+        -: 1913:}
+        -: 1914:
+        -: 1915:// --------------------------------------------------------------------
+       21: 1916:bool CZMA_PARSE_PUSH::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 1917:
+       21: 1918:	update_flags( &info, p_last_line );
+       21: 1919:	if( this->opecode_rp_with_af( info, 0xC5 ) ) {
+        -: 1920:		//	log
+       18: 1921:		if( !this->is_analyze_phase ) {
+        6: 1922:			if( words[1] == "IX" || words[1] == "IY" ) {
+        2: 1923:				log.push_back( "[\t" + get_line() + "] Z80:17cyc, R800:7cyc" );
+        -: 1924:			}
+        -: 1925:			else {
+        4: 1926:				log.push_back( "[\t" + get_line() + "] Z80:12cyc, R800:6cyc" );
+        -: 1927:			}
+        6: 1928:			this->log_data_dump();
+        6: 1929:			log.push_back( "" );
+        -: 1930:		}
+       18: 1931:		return check_all_fixed();
+        -: 1932:	}
+        3: 1933:	put_error( "Illegal operand" );
+        3: 1934:	return false;
+        -: 1935:}
+        -: 1936:
+        -: 1937:// --------------------------------------------------------------------
+       21: 1938:bool CZMA_PARSE_POP::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 1939:
+       21: 1940:	update_flags( &info, p_last_line );
+       21: 1941:	if( this->opecode_rp_with_af( info, 0xC1 ) ) {
+        -: 1942:		//	log
+       18: 1943:		if( !this->is_analyze_phase ) {
+        6: 1944:			if( words[1] == "IX" || words[1] == "IY" ) {
+        2: 1945:				log.push_back( "[\t" + get_line() + "] Z80:16cyc, R800:6cyc" );
+        -: 1946:			}
+        -: 1947:			else {
+        4: 1948:				log.push_back( "[\t" + get_line() + "] Z80:11cyc, R800:5cyc" );
+        -: 1949:			}
+        6: 1950:			this->log_data_dump();
+        6: 1951:			log.push_back( "" );
+        -: 1952:		}
+       18: 1953:		return check_all_fixed();
+        -: 1954:	}
+        3: 1955:	put_error( "Illegal operand" );
+        3: 1956:	return false;
+        -: 1957:}
+        -: 1958:
+        -: 1959:// --------------------------------------------------------------------
+        6: 1960:bool CZMA_PARSE_RLCA::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 1961:
+        6: 1962:	update_flags( &info, p_last_line );
+        6: 1963:	if( this->opecode( info, 0x07 ) ) {
+        -: 1964:		//	log
+        3: 1965:		if( !this->is_analyze_phase ) {
+        1: 1966:			log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:1cyc" );
+        1: 1967:			this->log_data_dump();
+        1: 1968:			log.push_back( "" );
+        -: 1969:		}
+        3: 1970:		return check_all_fixed();
+        -: 1971:	}
+        3: 1972:	put_error( "Illegal operand" );
+        3: 1973:	return false;
+        -: 1974:}
+        -: 1975:
+        -: 1976:// --------------------------------------------------------------------
+        6: 1977:bool CZMA_PARSE_RLA::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 1978:
+        6: 1979:	update_flags( &info, p_last_line );
+        6: 1980:	if( this->opecode( info, 0x17 ) ) {
+        -: 1981:		//	log
+        3: 1982:		if( !this->is_analyze_phase ) {
+        1: 1983:			log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:1cyc" );
+        1: 1984:			this->log_data_dump();
+        1: 1985:			log.push_back( "" );
+        -: 1986:		}
+        3: 1987:		return check_all_fixed();
+        -: 1988:	}
+        3: 1989:	put_error( "Illegal operand" );
+        3: 1990:	return false;
+        -: 1991:}
+        -: 1992:
+        -: 1993:// --------------------------------------------------------------------
+       33: 1994:bool CZMA_PARSE_RLC::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 1995:
+       33: 1996:	update_flags( &info, p_last_line );
+       33: 1997:	if( this->opecode_sss( info, 0xCB, 0x00 ) ) {
+        -: 1998:		//	log
+       30: 1999:		if( !this->is_analyze_phase ) {
+       10: 2000:			if( data.size() == 2 ) {
+        8: 2001:				if( this->data[1] == 0x06 ) {
+        1: 2002:					log.push_back( "[\t" + get_line() + "] Z80:17cyc, R800:8cyc" );		//	RLC	[HL]
+        -: 2003:				}
+        -: 2004:				else {
+        7: 2005:					log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:2cyc" );		//	RLC	r
+        -: 2006:				}
+        -: 2007:			}
+        -: 2008:			else {
+        2: 2009:				log.push_back( "[\t" + get_line() + "] Z80:25cyc, R800:10cyc" );		//	RLC	[IX+d]
+        -: 2010:			}
+       10: 2011:			this->log_data_dump();
+       10: 2012:			log.push_back( "" );
+        -: 2013:		}
+       30: 2014:		return check_all_fixed();
+        -: 2015:	}
+        3: 2016:	put_error( "Illegal operand" );
+        3: 2017:	return false;
+        -: 2018:}
+        -: 2019:
+        -: 2020:// --------------------------------------------------------------------
+       33: 2021:bool CZMA_PARSE_RL::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2022:
+       33: 2023:	update_flags( &info, p_last_line );
+       33: 2024:	if( this->opecode_sss( info, 0xCB, 0x10 ) ) {
+        -: 2025:		//	log
+       30: 2026:		if( !this->is_analyze_phase ) {
+       10: 2027:			if( data.size() == 2 ) {
+        8: 2028:				if( this->data[1] == 0x16 ) {
+        1: 2029:					log.push_back( "[\t" + get_line() + "] Z80:17cyc, R800:8cyc" );
+        -: 2030:				}
+        -: 2031:				else {
+        7: 2032:					log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:2cyc" );
+        -: 2033:				}
+        -: 2034:			}
+        -: 2035:			else {
+        2: 2036:				log.push_back( "[\t" + get_line() + "] Z80:25cyc, R800:10cyc" );
+        -: 2037:			}
+       10: 2038:			this->log_data_dump();
+       10: 2039:			log.push_back( "" );
+        -: 2040:		}
+       30: 2041:		return check_all_fixed();
+        -: 2042:	}
+        3: 2043:	put_error( "Illegal operand" );
+        3: 2044:	return false;
+        -: 2045:}
+        -: 2046:
+        -: 2047:// --------------------------------------------------------------------
+        6: 2048:bool CZMA_PARSE_RRCA::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2049:
+        6: 2050:	update_flags( &info, p_last_line );
+        6: 2051:	if( this->opecode( info, 0x0F ) ) {
+        -: 2052:		//	log
+        3: 2053:		if( !this->is_analyze_phase ) {
+        1: 2054:			log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:1cyc" );
+        1: 2055:			this->log_data_dump();
+        1: 2056:			log.push_back( "" );
+        -: 2057:		}
+        3: 2058:		return check_all_fixed();
+        -: 2059:	}
+        3: 2060:	put_error( "Illegal operand" );
+        3: 2061:	return false;
+        -: 2062:}
+        -: 2063:
+        -: 2064:// --------------------------------------------------------------------
+        6: 2065:bool CZMA_PARSE_RRA::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2066:
+        6: 2067:	update_flags( &info, p_last_line );
+        6: 2068:	if( this->opecode( info, 0x1F ) ) {
+        -: 2069:		//	log
+        3: 2070:		if( !this->is_analyze_phase ) {
+        1: 2071:			log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:1cyc" );
+        1: 2072:			this->log_data_dump();
+        1: 2073:			log.push_back( "" );
+        -: 2074:		}
+        3: 2075:		return check_all_fixed();
+        -: 2076:	}
+        3: 2077:	put_error( "Illegal operand" );
+        3: 2078:	return false;
+        -: 2079:}
+        -: 2080:
+        -: 2081:// --------------------------------------------------------------------
+       33: 2082:bool CZMA_PARSE_RRC::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2083:
+       33: 2084:	update_flags( &info, p_last_line );
+       33: 2085:	if( this->opecode_sss( info, 0xCB, 0x08 ) ) {
+        -: 2086:		//	log
+       30: 2087:		if( !this->is_analyze_phase ) {
+       10: 2088:			if( data.size() == 2 ) {
+        8: 2089:				if( this->data[1] == 0x0E ) {
+        1: 2090:					log.push_back( "[\t" + get_line() + "] Z80:17cyc, R800:8cyc" );			//	RRC [HL]
+        -: 2091:				}
+        -: 2092:				else {
+        7: 2093:					log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:2cyc" );			//	RRC r
+        -: 2094:				}
+        -: 2095:			}
+        -: 2096:			else {
+        2: 2097:				log.push_back( "[\t" + get_line() + "] Z80:25cyc, R800:10cyc" );			//	RRC [IX+d]
+        -: 2098:			}
+       10: 2099:			this->log_data_dump();
+       10: 2100:			log.push_back( "" );
+        -: 2101:		}
+       30: 2102:		return check_all_fixed();
+        -: 2103:	}
+        3: 2104:	put_error( "Illegal operand" );
+        3: 2105:	return false;
+        -: 2106:}
+        -: 2107:
+        -: 2108:// --------------------------------------------------------------------
+       33: 2109:bool CZMA_PARSE_RR::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2110:
+       33: 2111:	update_flags( &info, p_last_line );
+       33: 2112:	if( this->opecode_sss( info, 0xCB, 0x18 ) ) {
+        -: 2113:		//	log
+       30: 2114:		if( !this->is_analyze_phase ) {
+       10: 2115:			if( data.size() == 2 ) {
+        8: 2116:				if( this->data[1] == 0x1E ) {
+        1: 2117:					log.push_back( "[\t" + get_line() + "] Z80:17cyc, R800:8cyc" );			//	RR [HL]
+        -: 2118:				}
+        -: 2119:				else {
+        7: 2120:					log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:2cyc" );			//	RR r
+        -: 2121:				}
+        -: 2122:			}
+        -: 2123:			else {
+        2: 2124:				log.push_back( "[\t" + get_line() + "] Z80:25cyc, R800:10cyc" );			//	RR [IX+d]
+        -: 2125:			}
+       10: 2126:			this->log_data_dump();
+       10: 2127:			log.push_back( "" );
+        -: 2128:		}
+       30: 2129:		return check_all_fixed();
+        -: 2130:	}
+        3: 2131:	put_error( "Illegal operand" );
+        3: 2132:	return false;
+        -: 2133:}
+        -: 2134:
+        -: 2135:// --------------------------------------------------------------------
+       33: 2136:bool CZMA_PARSE_SLA::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2137:
+       33: 2138:	update_flags( &info, p_last_line );
+       33: 2139:	if( this->opecode_sss( info, 0xCB, 0x20 ) ) {
+        -: 2140:		//	log
+       30: 2141:		if( !this->is_analyze_phase ) {
+       10: 2142:			if( data.size() == 2 ) {
+        8: 2143:				if( this->data[1] == 0x26 ) {
+        1: 2144:					log.push_back( "[\t" + get_line() + "] Z80:17cyc, R800:8cyc" );		//	SLA [HL]
+        -: 2145:				}
+        -: 2146:				else {
+        7: 2147:					log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:2cyc" );		//	SLA r
+        -: 2148:				}
+        -: 2149:			}
+        -: 2150:			else {
+        2: 2151:				log.push_back( "[\t" + get_line() + "] Z80:25cyc, R800:10cyc" );		//	SLA [IX+d]
+        -: 2152:			}
+       10: 2153:			this->log_data_dump();
+       10: 2154:			log.push_back( "" );
+        -: 2155:		}
+       30: 2156:		return check_all_fixed();
+        -: 2157:	}
+        3: 2158:	put_error( "Illegal operand" );
+        3: 2159:	return false;
+        -: 2160:}
+        -: 2161:
+        -: 2162:// --------------------------------------------------------------------
+       33: 2163:bool CZMA_PARSE_SRA::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2164:
+       33: 2165:	update_flags( &info, p_last_line );
+       33: 2166:	if( this->opecode_sss( info, 0xCB, 0x28 ) ) {
+        -: 2167:		//	log
+       30: 2168:		if( !this->is_analyze_phase ) {
+       10: 2169:			if( data.size() == 2 ) {
+        8: 2170:				if( this->data[1] == 0x2E ) {
+        1: 2171:					log.push_back( "[\t" + get_line() + "] Z80:17cyc, R800:8cyc" );		//	SRA [HL]
+        -: 2172:				}
+        -: 2173:				else {
+        7: 2174:					log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:2cyc" );		//	SRA r
+        -: 2175:				}
+        -: 2176:			}
+        -: 2177:			else {
+        2: 2178:				log.push_back( "[\t" + get_line() + "] Z80:25cyc, R800:10cyc" );		//	SRA [IX+d]
+        -: 2179:			}
+       10: 2180:			this->log_data_dump();
+       10: 2181:			log.push_back( "" );
+        -: 2182:		}
+       30: 2183:		return check_all_fixed();
+        -: 2184:	}
+        3: 2185:	put_error( "Illegal operand" );
+        3: 2186:	return false;
+        -: 2187:}
+        -: 2188:
+        -: 2189:// --------------------------------------------------------------------
+       33: 2190:bool CZMA_PARSE_SRL::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2191:
+       33: 2192:	update_flags( &info, p_last_line );
+       33: 2193:	if( this->opecode_sss( info, 0xCB, 0x38 ) ) {
+        -: 2194:		//	log
+       30: 2195:		if( !this->is_analyze_phase ) {
+       10: 2196:			if( data.size() == 2 ) {
+        8: 2197:				if( this->data[1] == 0x3E ) {
+        1: 2198:					log.push_back( "[\t" + get_line() + "] Z80:17cyc, R800:8cyc" );		//	SRL [HL]
+        -: 2199:				}
+        -: 2200:				else {
+        7: 2201:					log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:2cyc" );		//	SRL	r
+        -: 2202:				}
+        -: 2203:			}
+        -: 2204:			else {
+        2: 2205:				log.push_back( "[\t" + get_line() + "] Z80:25cyc, R800:10cyc" );		//	SRL	[IX+d]
+        -: 2206:			}
+       10: 2207:			this->log_data_dump();
+       10: 2208:			log.push_back( "" );
+        -: 2209:		}
+       30: 2210:		return check_all_fixed();
+        -: 2211:	}
+        3: 2212:	put_error( "Illegal operand" );
+        3: 2213:	return false;
+        -: 2214:}
+        -: 2215:
+        -: 2216:// --------------------------------------------------------------------
+       90: 2217:bool CZMA_PARSE_ADD::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2218:
+       90: 2219:	update_flags( &info, p_last_line );
+       90: 2220:	if( this->opecode_a_sss( info, 0x80 ) ) {
+        -: 2221:		//	log
+       39: 2222:		if( !this->is_analyze_phase ) {
+       13: 2223:			if( words[3].size() > 1 ) {
+        4: 2224:				log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:2cyc" );	//	ADD A, IXh
+        -: 2225:			}
+        -: 2226:			else {
+        9: 2227:				log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:1cyc" );	//	ADD A, r
+        -: 2228:			}
+       13: 2229:			this->log_data_dump();
+       13: 2230:			log.push_back( "" );
+        -: 2231:		}
+       39: 2232:		return check_all_fixed();
+        -: 2233:	}
+       51: 2234:	if( this->opecode_a_ref_hl( info, 0x86 ) ) {
+        -: 2235:		//	log
+        9: 2236:		if( !this->is_analyze_phase ) {
+        3: 2237:			if( words[4] == "HL" ) {
+        1: 2238:				log.push_back( "[\t" + get_line() + "] Z80:8cyc, R800:4cyc" );	//	ADD A, [HL]
+        -: 2239:			}
+        -: 2240:			else {
+        2: 2241:				log.push_back( "[\t" + get_line() + "] Z80:21cyc, R800:7cyc" );	//	ADD A, [IX+o]
+        -: 2242:			}
+        3: 2243:			this->log_data_dump();
+        3: 2244:			log.push_back( "" );
+        -: 2245:		}
+        9: 2246:		return check_all_fixed();
+        -: 2247:	}
+       42: 2248:	if( this->opecode_a_n( info, 0xC6 ) ) {
+        -: 2249:		//	log
+        3: 2250:		if( !this->is_analyze_phase ) {
+        1: 2251:			log.push_back( "[\t" + get_line() + "] Z80:8cyc, R800:2cyc" );		//	ADD A, n
+        1: 2252:			this->log_data_dump();
+        1: 2253:			log.push_back( "" );
+        -: 2254:		}
+        3: 2255:		return check_all_fixed();
+        -: 2256:	}
+       39: 2257:	if( this->opecode_hl_rp( info, 0x09 ) ) {
+        -: 2258:		//	log
+       36: 2259:		if( !this->is_analyze_phase ) {
+       12: 2260:			if( words[1] == "HL" ) {
+        4: 2261:				log.push_back( "[\t" + get_line() + "] Z80:12cyc, R800:1cyc" );	//	ADD HL, rr
+        -: 2262:			}
+        -: 2263:			else {
+        8: 2264:				log.push_back( "[\t" + get_line() + "] Z80:17cyc, R800:2cyc" );	//	ADD IX, rr
+        -: 2265:			}
+       12: 2266:			this->log_data_dump();
+       12: 2267:			log.push_back( "" );
+        -: 2268:		}
+       36: 2269:		return check_all_fixed();
+        -: 2270:	}
+        3: 2271:	put_error( "Illegal operand" );
+        3: 2272:	return false;
+        -: 2273:}
+        -: 2274:
+        -: 2275:// --------------------------------------------------------------------
+       60: 2276:bool CZMA_PARSE_ADC::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2277:
+       60: 2278:	update_flags( &info, p_last_line );
+       60: 2279:	if( this->opecode_a_sss( info, 0x88 ) ) {
+        -: 2280:		//	log
+       33: 2281:		if( !this->is_analyze_phase ) {
+       11: 2282:			if( words[3].size() > 1 ) {
+        4: 2283:				log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:2cyc" );	//	ADC A, IXh
+        -: 2284:			}
+        -: 2285:			else {
+        7: 2286:				log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:1cyc" );	//	ADC A, r
+        -: 2287:			}
+       11: 2288:			this->log_data_dump();
+       11: 2289:			log.push_back( "" );
+        -: 2290:		}
+       33: 2291:		return check_all_fixed();
+        -: 2292:	}
+       27: 2293:	if( this->opecode_a_ref_hl( info, 0x8E ) ) {
+        -: 2294:		//	log
+        9: 2295:		if( !this->is_analyze_phase ) {
+        3: 2296:			if( words[4] == "HL" ) {
+        1: 2297:				log.push_back( "[\t" + get_line() + "] Z80:8cyc, R800:4cyc" );	//	ADC A, [HL]
+        -: 2298:			}
+        -: 2299:			else {
+        2: 2300:				log.push_back( "[\t" + get_line() + "] Z80:21cyc, R800:7cyc" );	//	ADC A, [IX+o]
+        -: 2301:			}
+        3: 2302:			this->log_data_dump();
+        3: 2303:			log.push_back( "" );
+        -: 2304:		}
+        9: 2305:		return check_all_fixed();
+        -: 2306:	}
+       18: 2307:	if( this->opecode_a_n( info, 0xCE ) ) {
+        -: 2308:		//	log
+        3: 2309:		if( !this->is_analyze_phase ) {
+        1: 2310:			log.push_back( "[\t" + get_line() + "] Z80:8cyc, R800:2cyc" );	//	ADC A, n
+        1: 2311:			this->log_data_dump();
+        1: 2312:			log.push_back( "" );
+        -: 2313:		}
+        3: 2314:		return check_all_fixed();
+        -: 2315:	}
+       15: 2316:	if( this->opecode_hl_rp_witnout_ix( info, 0xED, 0x4A ) ) {
+        -: 2317:		//	log
+       12: 2318:		if( !this->is_analyze_phase ) {
+        4: 2319:			log.push_back( "[\t" + get_line() + "] Z80:17cyc, R800:2cyc" );	//	ADC HL, rr
+        4: 2320:			this->log_data_dump();
+        4: 2321:			log.push_back( "" );
+        -: 2322:		}
+       12: 2323:		return check_all_fixed();
+        -: 2324:	}
+        3: 2325:	put_error( "Illegal operand" );
+        3: 2326:	return false;
+        -: 2327:}
+        -: 2328:
+        -: 2329:// --------------------------------------------------------------------
+      117: 2330:bool CZMA_PARSE_INC::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2331:
+      117: 2332:	update_flags( &info, p_last_line );
+      117: 2333:	if( this->opecode_ddd( info, 0x04 ) ) {
+        -: 2334:		//	log
+       33: 2335:		if( !this->is_analyze_phase ) {
+       11: 2336:			if( data.size() == 2 ) {
+        4: 2337:				log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:2cyc" );		//	INC IXh
+        -: 2338:			}
+        -: 2339:			else {
+        7: 2340:				log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:1cyc" );		//	INC r
+        -: 2341:			}
+       11: 2342:			this->log_data_dump();
+       11: 2343:			log.push_back( "" );
+        -: 2344:		}
+       33: 2345:		return check_all_fixed();
+        -: 2346:	}
+       84: 2347:	if( this->opecode_rp( info, 0x03 ) ) {
+        -: 2348:		//	log
+       18: 2349:		if( !this->is_analyze_phase ) {
+        6: 2350:			if( words[1] == "IX" || words[1] == "IY" ) {
+        2: 2351:				log.push_back( "[\t" + get_line() + "] Z80:12cyc, R800:1cyc" );		//	INC IX
+        -: 2352:			}
+        -: 2353:			else {
+        4: 2354:				log.push_back( "[\t" + get_line() + "] Z80:7cyc, R800:1cyc" );		//	INC rr
+        -: 2355:			}
+        6: 2356:			this->log_data_dump();
+        6: 2357:			log.push_back( "" );
+        -: 2358:		}
+       18: 2359:		return check_all_fixed();
+        -: 2360:	}
+       66: 2361:	if( this->opecode_ref_hl( info, 0x34 ) ) {
+        -: 2362:		//	log
+       15: 2363:		if( !this->is_analyze_phase ) {
+        5: 2364:			if( words[2] == "HL" ) {
+        1: 2365:				log.push_back( "[\t" + get_line() + "] Z80:12cyc, R800:7cyc" );		//	INC [HL]
+        -: 2366:			}
+        -: 2367:			else {
+        4: 2368:				log.push_back( "[\t" + get_line() + "] Z80:25cyc, R800:10cyc" );	//	INC [IX+o]
+        -: 2369:			}
+        5: 2370:			this->log_data_dump();
+        5: 2371:			log.push_back( "" );
+        -: 2372:		}
+       15: 2373:		return check_all_fixed();
+        -: 2374:	}
+       51: 2375:	put_error( "Illegal operand" );
+       51: 2376:	return false;
+        -: 2377:}
+        -: 2378:
+        -: 2379:// --------------------------------------------------------------------
+       48: 2380:bool CZMA_PARSE_SUB::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2381:
+       48: 2382:	update_flags( &info, p_last_line );
+       48: 2383:	if( this->opecode_a_sss( info, 0x90 ) ) {
+        -: 2384:		//	log
+       33: 2385:		if( !this->is_analyze_phase ) {
+       11: 2386:			if( data.size() == 2 ) {
+        4: 2387:				log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:2cyc" );	//	SUB A, IXh
+        -: 2388:			}
+        -: 2389:			else {
+        7: 2390:				log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:1cyc" );	//	SUB A, r
+        -: 2391:			}
+       11: 2392:			this->log_data_dump();
+       11: 2393:			log.push_back( "" );
+        -: 2394:		}
+       33: 2395:		return check_all_fixed();
+        -: 2396:	}
+       15: 2397:	if( this->opecode_a_ref_hl( info, 0x96 ) ) {
+        -: 2398:		//	log
+        9: 2399:		if( !this->is_analyze_phase ) {
+        3: 2400:			if( words[4] == "HL" ) {
+        1: 2401:				log.push_back( "[\t" + get_line() + "] Z80:8cyc, R800:4cyc" );	//	SUB A, [HL]
+        -: 2402:			}
+        -: 2403:			else {
+        2: 2404:				log.push_back( "[\t" + get_line() + "] Z80:21cyc, R800:7cyc" );	//	SUB A, [IX+o]
+        -: 2405:			}
+        3: 2406:			this->log_data_dump();
+        3: 2407:			log.push_back( "" );
+        -: 2408:		}
+        9: 2409:		return check_all_fixed();
+        -: 2410:	}
+        6: 2411:	if( this->opecode_a_n( info, 0xD6 ) ) {
+        -: 2412:		//	log
+        3: 2413:		if( !this->is_analyze_phase ) {
+        1: 2414:			log.push_back( "[\t" + get_line() + "] Z80:8cyc, R800:2cyc" );	//	SUB A, n
+        1: 2415:			this->log_data_dump();
+        1: 2416:			log.push_back( "" );
+        -: 2417:		}
+        3: 2418:		return check_all_fixed();
+        -: 2419:	}
+        3: 2420:	put_error( "Illegal operand" );
+        3: 2421:	return false;
+        -: 2422:}
+        -: 2423:
+        -: 2424:// --------------------------------------------------------------------
+       60: 2425:bool CZMA_PARSE_SBC::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2426:
+       60: 2427:	update_flags( &info, p_last_line );
+       60: 2428:	if( this->opecode_a_sss( info, 0x98 ) ) {
+        -: 2429:		//	log
+       33: 2430:		if( !this->is_analyze_phase ) {
+       11: 2431:			if( data.size() == 2 ) {
+        4: 2432:				log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:2cyc" );	//	SBC A, IXh
+        -: 2433:			}
+        -: 2434:			else {
+        7: 2435:				log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:1cyc" );	//	SBC A, r
+        -: 2436:			}
+       11: 2437:			this->log_data_dump();
+       11: 2438:			log.push_back( "" );
+        -: 2439:		}
+       33: 2440:		return check_all_fixed();
+        -: 2441:	}
+       27: 2442:	if( this->opecode_a_ref_hl( info, 0x9E ) ) {
+        -: 2443:		//	log
+        9: 2444:		if( !this->is_analyze_phase ) {
+        3: 2445:			if( words[4] == "HL" ) {
+        1: 2446:				log.push_back( "[\t" + get_line() + "] Z80:8cyc, R800:4cyc" );	//	SBC A, [HL]
+        -: 2447:			}
+        -: 2448:			else {
+        2: 2449:				log.push_back( "[\t" + get_line() + "] Z80:21cyc, R800:7cyc" );	//	SBC A, [IX+o]
+        -: 2450:			}
+        3: 2451:			this->log_data_dump();
+        3: 2452:			log.push_back( "" );
+        -: 2453:		}
+        9: 2454:		return check_all_fixed();
+        -: 2455:	}
+       18: 2456:	if( this->opecode_a_n( info, 0xDE ) ) {
+        -: 2457:		//	log
+        3: 2458:		if( !this->is_analyze_phase ) {
+        1: 2459:			log.push_back( "[\t" + get_line() + "] Z80:8cyc, R800:2cyc" );	//	SBC A, n
+        1: 2460:			this->log_data_dump();
+        1: 2461:			log.push_back( "" );
+        -: 2462:		}
+        3: 2463:		return check_all_fixed();
+        -: 2464:	}
+       15: 2465:	if( this->opecode_hl_rp_witnout_ix( info, 0xED, 0x42 ) ) {
+        -: 2466:		//	log
+       12: 2467:		if( !this->is_analyze_phase ) {
+        4: 2468:			log.push_back( "[\t" + get_line() + "] Z80:17cyc, R800:2cyc" );	//	SBC HL, rr
+        4: 2469:			this->log_data_dump();
+        4: 2470:			log.push_back( "" );
+        -: 2471:		}
+       12: 2472:		return check_all_fixed();
+        -: 2473:	}
+        3: 2474:	put_error( "Illegal operand" );
+        3: 2475:	return false;
+        -: 2476:}
+        -: 2477:
+        -: 2478:// --------------------------------------------------------------------
+       63: 2479:bool CZMA_PARSE_DEC::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2480:
+       63: 2481:	update_flags( &info, p_last_line );
+       63: 2482:	if( this->opecode_ddd( info, 0x05 ) ) {
+        -: 2483:		//	log
+       33: 2484:		if( !this->is_analyze_phase ) {
+       11: 2485:			if( data.size() == 2 ) {
+        4: 2486:				log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:2cyc" );	//	DEC IXh
+        -: 2487:			}
+        -: 2488:			else {
+        7: 2489:				log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:1cyc" );	//	DEC r
+        -: 2490:			}
+       11: 2491:			this->log_data_dump();
+       11: 2492:			log.push_back( "" );
+        -: 2493:		}
+       33: 2494:		return check_all_fixed();
+        -: 2495:	}
+       30: 2496:	if( this->opecode_rp( info, 0x0B ) ) {
+        -: 2497:		//	log
+       18: 2498:		if( !this->is_analyze_phase ) {
+        6: 2499:			if( words[1] == "IX" || words[1] == "IY" ) {
+        2: 2500:				log.push_back( "[\t" + get_line() + "] Z80:12cyc, R800:2cyc" );	//	DEC IX
+        -: 2501:			}
+        -: 2502:			else {
+        4: 2503:				log.push_back( "[\t" + get_line() + "] Z80:7cyc, R800:1cyc" );	//	DEC rr
+        -: 2504:			}
+        6: 2505:			this->log_data_dump();
+        6: 2506:			log.push_back( "" );
+        -: 2507:		}
+       18: 2508:		return check_all_fixed();
+        -: 2509:	}
+       12: 2510:	if( this->opecode_ref_hl( info, 0x35 ) ) {
+        -: 2511:		//	log
+        9: 2512:		if( !this->is_analyze_phase ) {
+        3: 2513:			if( words[2] == "HL" ) {
+        1: 2514:				log.push_back( "[\t" + get_line() + "] Z80:12cyc, R800:7cyc" );		//	DEC [HL]
+        -: 2515:			}
+        -: 2516:			else {
+        2: 2517:				log.push_back( "[\t" + get_line() + "] Z80:25cyc, R800:10cyc" );	//	DEC [IX+o]
+        -: 2518:			}
+        3: 2519:			this->log_data_dump();
+        3: 2520:			log.push_back( "" );
+        -: 2521:		}
+        9: 2522:		return check_all_fixed();
+        -: 2523:	}
+        3: 2524:	put_error( "Illegal operand" );
+        3: 2525:	return false;
+        -: 2526:}
+        -: 2527:
+        -: 2528:// --------------------------------------------------------------------
+       48: 2529:bool CZMA_PARSE_AND::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2530:
+       48: 2531:	update_flags( &info, p_last_line );
+       48: 2532:	if( this->opecode_a_sss( info, 0xA0 ) ) {
+        -: 2533:		//	log
+       33: 2534:		if( !this->is_analyze_phase ) {
+       11: 2535:			if( data.size() == 2 ) {
+        4: 2536:				log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:2cyc" );	//	AND A, IXh
+        -: 2537:			}
+        -: 2538:			else {
+        7: 2539:				log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:1cyc" );	//	AND A, r
+        -: 2540:			}
+       11: 2541:			this->log_data_dump();
+       11: 2542:			log.push_back( "" );
+        -: 2543:		}
+       33: 2544:		return check_all_fixed();
+        -: 2545:	}
+       15: 2546:	if( this->opecode_a_n( info, 0xE6 ) ) {
+        -: 2547:		//	log
+        3: 2548:		if( !this->is_analyze_phase ) {
+        1: 2549:			log.push_back( "[\t" + get_line() + "] Z80:8cyc, R800:2cyc" );	//	AND A, n
+        1: 2550:			this->log_data_dump();
+        1: 2551:			log.push_back( "" );
+        -: 2552:		}
+        3: 2553:		return check_all_fixed();
+        -: 2554:	}
+       12: 2555:	if( this->opecode_a_ref_hl( info, 0xA6 ) ) {
+        -: 2556:		//	log
+        9: 2557:		if( !this->is_analyze_phase ) {
+        3: 2558:			if( words[4] == "HL" ) {
+        1: 2559:				log.push_back( "[\t" + get_line() + "] Z80:8cyc, R800:4cyc" );	//	AND A, [HL]
+        -: 2560:			}
+        -: 2561:			else {
+        2: 2562:				log.push_back( "[\t" + get_line() + "] Z80:21cyc, R800:7cyc" );	//	AND A, [IX+o]
+        -: 2563:			}
+        3: 2564:			this->log_data_dump();
+        3: 2565:			log.push_back( "" );
+        -: 2566:		}
+        9: 2567:		return check_all_fixed();
+        -: 2568:	}
+        3: 2569:	put_error( "Illegal operand" );
+        3: 2570:	return false;
+        -: 2571:}
+        -: 2572:
+        -: 2573:// --------------------------------------------------------------------
+       48: 2574:bool CZMA_PARSE_OR::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2575:
+       48: 2576:	update_flags( &info, p_last_line );
+       48: 2577:	if( this->opecode_a_sss( info, 0xB0 ) ) {
+        -: 2578:		//	log
+       33: 2579:		if( !this->is_analyze_phase ) {
+       11: 2580:			if( data.size() == 2 ) {
+        4: 2581:				log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:2cyc" );	//	OR A, IXh
+        -: 2582:			}
+        -: 2583:			else {
+        7: 2584:				log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:1cyc" );	//	OR A, r
+        -: 2585:			}
+       11: 2586:			this->log_data_dump();
+       11: 2587:			log.push_back( "" );
+        -: 2588:		}
+       33: 2589:		return check_all_fixed();
+        -: 2590:	}
+       15: 2591:	if( this->opecode_a_n( info, 0xF6 ) ) {
+        -: 2592:		//	log
+        3: 2593:		if( !this->is_analyze_phase ) {
+        1: 2594:			log.push_back( "[\t" + get_line() + "] Z80:8cyc, R800:2cyc" );	//	OR A, n
+        1: 2595:			this->log_data_dump();
+        1: 2596:			log.push_back( "" );
+        -: 2597:		}
+        3: 2598:		return check_all_fixed();
+        -: 2599:	}
+       12: 2600:	if( this->opecode_a_ref_hl( info, 0xB6 ) ) {
+        -: 2601:		//	log
+        9: 2602:		if( !this->is_analyze_phase ) {
+        3: 2603:			if( words[4] == "HL" ) {
+        1: 2604:				log.push_back( "[\t" + get_line() + "] Z80:8cyc, R800:4cyc" );	//	OR A, [HL]
+        -: 2605:			}
+        -: 2606:			else {
+        2: 2607:				log.push_back( "[\t" + get_line() + "] Z80:21cyc, R800:7cyc" );	//	OR A, [IX+o]
+        -: 2608:			}
+        3: 2609:			this->log_data_dump();
+        3: 2610:			log.push_back( "" );
+        -: 2611:		}
+        9: 2612:		return check_all_fixed();
+        -: 2613:	}
+        3: 2614:	put_error( "Illegal operand" );
+        3: 2615:	return false;
+        -: 2616:}
+        -: 2617:
+        -: 2618:// --------------------------------------------------------------------
+       48: 2619:bool CZMA_PARSE_XOR::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2620:
+       48: 2621:	update_flags( &info, p_last_line );
+       48: 2622:	if( this->opecode_a_sss( info, 0xA8 ) ) {
+        -: 2623:		//	log
+       33: 2624:		if( !this->is_analyze_phase ) {
+       11: 2625:			if( data.size() == 2 ) {
+        4: 2626:				log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:2cyc" );	//	XOR A, IXh
+        -: 2627:			}
+        -: 2628:			else {
+        7: 2629:				log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:1cyc" );	//	XOR A, r
+        -: 2630:			}
+       11: 2631:			this->log_data_dump();
+       11: 2632:			log.push_back( "" );
+        -: 2633:		}
+       33: 2634:		return check_all_fixed();
+        -: 2635:	}
+       15: 2636:	if( this->opecode_a_n( info, 0xEE ) ) {
+        -: 2637:		//	log
+        3: 2638:		if( !this->is_analyze_phase ) {
+        1: 2639:			log.push_back( "[\t" + get_line() + "] Z80:8cyc, R800:2cyc" );	//	XOR A, n
+        1: 2640:			this->log_data_dump();
+        1: 2641:			log.push_back( "" );
+        -: 2642:		}
+        3: 2643:		return check_all_fixed();
+        -: 2644:	}
+       12: 2645:	if( this->opecode_a_ref_hl( info, 0xAE ) ) {
+        -: 2646:		//	log
+        9: 2647:		if( !this->is_analyze_phase ) {
+        3: 2648:			if( words[4] == "HL" ) {
+        1: 2649:				log.push_back( "[\t" + get_line() + "] Z80:8cyc, R800:4cyc" );	//	XOR A, [HL]
+        -: 2650:			}
+        -: 2651:			else {
+        2: 2652:				log.push_back( "[\t" + get_line() + "] Z80:21cyc, R800:7cyc" );	//	XOR A, [IX+o]
+        -: 2653:			}
+        3: 2654:			this->log_data_dump();
+        3: 2655:			log.push_back( "" );
+        -: 2656:		}
+        9: 2657:		return check_all_fixed();
+        -: 2658:	}
+        3: 2659:	put_error( "Illegal operand" );
+        3: 2660:	return false;
+        -: 2661:}
+        -: 2662:
+        -: 2663:// --------------------------------------------------------------------
+        6: 2664:bool CZMA_PARSE_CPL::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2665:
+        6: 2666:	update_flags( &info, p_last_line );
+        6: 2667:	if( this->opecode( info, 0x2F ) ) {
+        -: 2668:		//	log
+        3: 2669:		if( !this->is_analyze_phase ) {
+        1: 2670:			log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:1cyc" );	//	CPL
+        1: 2671:			this->log_data_dump();
+        1: 2672:			log.push_back( "" );
+        -: 2673:		}
+        3: 2674:		return check_all_fixed();
+        -: 2675:	}
+        3: 2676:	put_error( "Illegal operand" );
+        3: 2677:	return false;
+        -: 2678:}
+        -: 2679:
+        -: 2680:// --------------------------------------------------------------------
+        6: 2681:bool CZMA_PARSE_NEG::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2682:
+        6: 2683:	update_flags( &info, p_last_line );
+        6: 2684:	if( this->opecode( info, 0xED, 0x44 ) ) {
+        -: 2685:		//	log
+        3: 2686:		if( !this->is_analyze_phase ) {
+        1: 2687:			log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:2cyc" );	//	NEG
+        1: 2688:			this->log_data_dump();
+        1: 2689:			log.push_back( "" );
+        -: 2690:		}
+        3: 2691:		return check_all_fixed();
+        -: 2692:	}
+        3: 2693:	put_error( "Illegal operand" );
+        3: 2694:	return false;
+        -: 2695:}
+        -: 2696:
+        -: 2697:// --------------------------------------------------------------------
+        6: 2698:bool CZMA_PARSE_CCF::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2699:
+        6: 2700:	update_flags( &info, p_last_line );
+        6: 2701:	if( this->opecode( info, 0x3F ) ) {
+        -: 2702:		//	log
+        3: 2703:		if( !this->is_analyze_phase ) {
+        1: 2704:			log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:1cyc" );	//	NEG
+        1: 2705:			this->log_data_dump();
+        1: 2706:			log.push_back( "" );
+        -: 2707:		}
+        3: 2708:		return check_all_fixed();
+        -: 2709:	}
+        3: 2710:	put_error( "Illegal operand" );
+        3: 2711:	return false;
+        -: 2712:}
+        -: 2713:
+        -: 2714:// --------------------------------------------------------------------
+        6: 2715:bool CZMA_PARSE_SCF::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2716:
+        6: 2717:	update_flags( &info, p_last_line );
+        6: 2718:	if( this->opecode( info, 0x37 ) ) {
+        -: 2719:		//	log
+        3: 2720:		if( !this->is_analyze_phase ) {
+        1: 2721:			log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:1cyc" );	//	NEG
+        1: 2722:			this->log_data_dump();
+        1: 2723:			log.push_back( "" );
+        -: 2724:		}
+        3: 2725:		return check_all_fixed();
+        -: 2726:	}
+        3: 2727:	put_error( "Illegal operand" );
+        3: 2728:	return false;
+        -: 2729:}
+        -: 2730:
+        -: 2731:// --------------------------------------------------------------------
+      243: 2732:bool CZMA_PARSE_BIT::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2733:
+      243: 2734:	update_flags( &info, p_last_line );
+      243: 2735:	if( this->opecode_n_sss( info, 0x40 ) ) {
+        -: 2736:		//	log
+      240: 2737:		if( !this->is_analyze_phase ) {
+       80: 2738:			if( data.size() == 2 && (data[1] & 0x07) != 0x06 ) {
+       56: 2739:				log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:2cyc" );	//	BIT b,r
+        -: 2740:			}
+       24: 2741:			else if( data.size() == 2 ) {
+        8: 2742:				log.push_back( "[\t" + get_line() + "] Z80:14cyc, R800:5cyc" );	//	BIT b,[HL]
+        -: 2743:			}
+        -: 2744:			else {
+       16: 2745:				log.push_back( "[\t" + get_line() + "] Z80:22cyc, R800:7cyc" );	//	BIT b,[IX+o]
+        -: 2746:			}
+       80: 2747:			this->log_data_dump();
+       80: 2748:			log.push_back( "" );
+        -: 2749:		}
+      240: 2750:		return check_all_fixed();
+        -: 2751:	}
+        3: 2752:	put_error( "Illegal operand" );
+        3: 2753:	return false;
+        -: 2754:}
+        -: 2755:
+        -: 2756:// --------------------------------------------------------------------
+      243: 2757:bool CZMA_PARSE_RES::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2758:
+      243: 2759:	update_flags( &info, p_last_line );
+      243: 2760:	if( this->opecode_n_sss( info, 0x80 ) ) {
+        -: 2761:		//	log
+      240: 2762:		if( !this->is_analyze_phase ) {
+       80: 2763:			if( data.size() == 2 && (data[1] & 0x07) != 0x06 ) {
+       56: 2764:				log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:2cyc" );		//	RES b,r
+        -: 2765:			}
+       24: 2766:			else if( data.size() == 2 ) {
+        8: 2767:				log.push_back( "[\t" + get_line() + "] Z80:17cyc, R800:8cyc" );		//	RES b,[HL]
+        -: 2768:			}
+        -: 2769:			else {
+       16: 2770:				log.push_back( "[\t" + get_line() + "] Z80:25cyc, R800:10cyc" );	//	RES b,[IX+o]
+        -: 2771:			}
+       80: 2772:			this->log_data_dump();
+       80: 2773:			log.push_back( "" );
+        -: 2774:		}
+      240: 2775:		return check_all_fixed();
+        -: 2776:	}
+        3: 2777:	put_error( "Illegal operand" );
+        3: 2778:	return false;
+        -: 2779:}
+        -: 2780:
+        -: 2781:// --------------------------------------------------------------------
+      243: 2782:bool CZMA_PARSE_SET::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2783:
+      243: 2784:	update_flags( &info, p_last_line );
+      243: 2785:	if( this->opecode_n_sss( info, 0xC0 ) ) {
+        -: 2786:		//	log
+      240: 2787:		if( !this->is_analyze_phase ) {
+       80: 2788:			if( data.size() == 2 && (data[1] & 0x07) != 0x06 ) {
+       56: 2789:				log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:2cyc" );		//	SET b,r
+        -: 2790:			}
+       24: 2791:			else if( data.size() == 2 ) {
+        8: 2792:				log.push_back( "[\t" + get_line() + "] Z80:17cyc, R800:8cyc" );		//	SET b,[HL]
+        -: 2793:			}
+        -: 2794:			else {
+       16: 2795:				log.push_back( "[\t" + get_line() + "] Z80:25cyc, R800:10cyc" );	//	SET b,[IX+o]
+        -: 2796:			}
+       80: 2797:			this->log_data_dump();
+       80: 2798:			log.push_back( "" );
+        -: 2799:		}
+      240: 2800:		return check_all_fixed();
+        -: 2801:	}
+        3: 2802:	put_error( "Illegal operand" );
+        3: 2803:	return false;
+        -: 2804:}
+        -: 2805:
+        -: 2806:// --------------------------------------------------------------------
+        6: 2807:bool CZMA_PARSE_CPI::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2808:
+        6: 2809:	update_flags( &info, p_last_line );
+        6: 2810:	if( this->opecode( info, 0xED, 0xA1 ) ) {
+        -: 2811:		//	log
+        3: 2812:		if( !this->is_analyze_phase ) {
+        1: 2813:			log.push_back( "[\t" + get_line() + "] Z80:18cyc, R800:6cyc" );
+        1: 2814:			this->log_data_dump();
+        1: 2815:			log.push_back( "" );
+        -: 2816:		}
+        3: 2817:		return check_all_fixed();
+        -: 2818:	}
+        3: 2819:	put_error( "Illegal operand" );
+        3: 2820:	return false;
+        -: 2821:}
+        -: 2822:
+        -: 2823:// --------------------------------------------------------------------
+        6: 2824:bool CZMA_PARSE_CPIR::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2825:
+        6: 2826:	update_flags( &info, p_last_line );
+        6: 2827:	if( this->opecode( info, 0xED, 0xB1 ) ) {
+        -: 2828:		//	log
+        3: 2829:		if( !this->is_analyze_phase ) {
+        1: 2830:			log.push_back( "[\t" + get_line() + "] Z80:23cyc(BC!=0 && A!=[HL]), 18cyc(others), R800:?cyc(BC!=0 && A!=[HL]), 8cyc(others)" );
+        1: 2831:			this->log_data_dump();
+        1: 2832:			log.push_back( "" );
+        -: 2833:		}
+        3: 2834:		return check_all_fixed();
+        -: 2835:	}
+        3: 2836:	put_error( "Illegal operand" );
+        3: 2837:	return false;
+        -: 2838:}
+        -: 2839:
+        -: 2840:// --------------------------------------------------------------------
+        6: 2841:bool CZMA_PARSE_CPD::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2842:
+        6: 2843:	update_flags( &info, p_last_line );
+        6: 2844:	if( this->opecode( info, 0xED, 0xA9 ) ) {
+        -: 2845:		//	log
+        3: 2846:		if( !this->is_analyze_phase ) {
+        1: 2847:			log.push_back( "[\t" + get_line() + "] Z80:18cyc, R800:6cyc" );
+        1: 2848:			this->log_data_dump();
+        1: 2849:			log.push_back( "" );
+        -: 2850:		}
+        3: 2851:		return check_all_fixed();
+        -: 2852:	}
+        3: 2853:	put_error( "Illegal operand" );
+        3: 2854:	return false;
+        -: 2855:}
+        -: 2856:
+        -: 2857:// --------------------------------------------------------------------
+        6: 2858:bool CZMA_PARSE_CPDR::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2859:
+        6: 2860:	update_flags( &info, p_last_line );
+        6: 2861:	if( this->opecode( info, 0xED, 0xB9 ) ) {
+        -: 2862:		//	log
+        3: 2863:		if( !this->is_analyze_phase ) {
+        1: 2864:			log.push_back( "[\t" + get_line() + "] Z80:23cyc(BC!=0 && A!=[HL]), 18cyc(others), R800:?cyc(BC!=0 && A!=[HL]), 8cyc(others)" );
+        1: 2865:			this->log_data_dump();
+        1: 2866:			log.push_back( "" );
+        -: 2867:		}
+        3: 2868:		return check_all_fixed();
+        -: 2869:	}
+        3: 2870:	put_error( "Illegal operand" );
+        3: 2871:	return false;
+        -: 2872:}
+        -: 2873:
+        -: 2874:// --------------------------------------------------------------------
+       60: 2875:bool CZMA_PARSE_CP::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2876:
+       60: 2877:	update_flags( &info, p_last_line );
+       60: 2878:	if( this->opecode_a_sss( info, 0xB8 ) ) {
+        -: 2879:		//	log
+       33: 2880:		if( !this->is_analyze_phase ) {
+       11: 2881:			if( data.size() == 2 ) {
+        4: 2882:				log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:2cyc" );	//	CP A, IXh
+        -: 2883:			}
+        -: 2884:			else {
+        7: 2885:				log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:1cyc" );	//	CP A, r
+        -: 2886:			}
+       11: 2887:			this->log_data_dump();
+       11: 2888:			log.push_back( "" );
+        -: 2889:		}
+       33: 2890:		return check_all_fixed();
+        -: 2891:	}
+       27: 2892:	if( this->opecode_a_n( info, 0xFE ) ) {
+        -: 2893:		//	log
+        6: 2894:		if( !this->is_analyze_phase ) {
+        2: 2895:			log.push_back( "[\t" + get_line() + "] Z80:8cyc, R800:2cyc" );	//	CP A, n
+        2: 2896:			this->log_data_dump();
+        2: 2897:			log.push_back( "" );
+        -: 2898:		}
+        6: 2899:		return check_all_fixed();
+        -: 2900:	}
+       21: 2901:	if( this->opecode_a_ref_hl( info, 0xBE ) ) {
+        -: 2902:		//	log
+       15: 2903:		if( !this->is_analyze_phase ) {
+        5: 2904:			if( words[4] == "HL" ) {
+        1: 2905:				log.push_back( "[\t" + get_line() + "] Z80:8cyc, R800:4cyc" );	//	CP A, [HL]
+        -: 2906:			}
+        -: 2907:			else {
+        4: 2908:				log.push_back( "[\t" + get_line() + "] Z80:21cyc, R800:7cyc" );	//	CP A, [IX+o]
+        -: 2909:			}
+        5: 2910:			this->log_data_dump();
+        5: 2911:			log.push_back( "" );
+        -: 2912:		}
+       15: 2913:		return check_all_fixed();
+        -: 2914:	}
+        6: 2915:	put_error( "Illegal operand" );
+        6: 2916:	return false;
+        -: 2917:}
+        -: 2918:
+        -: 2919:// --------------------------------------------------------------------
+       45: 2920:bool CZMA_PARSE_JP::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2921:
+       45: 2922:	update_flags( &info, p_last_line );
+       45: 2923:	if( opecode_ccc_nnn( info, 0xC3, 0xC2 ) ) {
+        -: 2924:		//	log
+       27: 2925:		if( !this->is_analyze_phase ) {
+        9: 2926:			if( data[0] == 0xC3 ) {
+        1: 2927:				log.push_back( "[\t" + get_line() + "] Z80:11cyc, R800:5cyc" );	//	JP nn
+        -: 2928:			}
+        -: 2929:			else {
+        8: 2930:				log.push_back( "[\t" + get_line() + "] Z80:11cyc, R800:5cyc(cond=true), 3cyc(cond=false)" );	//	JP cond, nn
+        -: 2931:			}
+        9: 2932:			this->log_data_dump();
+        9: 2933:			log.push_back( "" );
+        -: 2934:		}
+       27: 2935:		return check_all_fixed();
+        -: 2936:	}
+       18: 2937:	if( words.size() == 2 && words[1] == "HL" ) {
+        3: 2938:		if( !this->is_data_fixed ) {
+        1: 2939:			this->set_code_size( &info, 1 );
+        1: 2940:			this->is_data_fixed = true;
+        1: 2941:			this->data.push_back( 0xE9 );
+        -: 2942:		}
+        -: 2943:		//	log
+        3: 2944:		if( !this->is_analyze_phase ) {
+        1: 2945:			log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:3cyc" );	//	JP HL
+        1: 2946:			this->log_data_dump();
+        1: 2947:			log.push_back( "" );
+        -: 2948:		}
+        3: 2949:		return check_all_fixed();
+        -: 2950:	}
+       15: 2951:	if( words.size() == 2 && words[1] == "IX" ) {
+        3: 2952:		if( !this->is_data_fixed ) {
+        1: 2953:			this->set_code_size( &info, 2 );
+        1: 2954:			this->is_data_fixed = true;
+        1: 2955:			this->data.push_back( 0xDD );
+        1: 2956:			this->data.push_back( 0xE9 );
+        -: 2957:		}
+        -: 2958:		//	log
+        3: 2959:		if( !this->is_analyze_phase ) {
+        1: 2960:			log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:4cyc" );	//	JP IX
+        1: 2961:			this->log_data_dump();
+        1: 2962:			log.push_back( "" );
+        -: 2963:		}
+        3: 2964:		return check_all_fixed();
+        -: 2965:	}
+       12: 2966:	if( words.size() == 2 && words[1] == "IY" ) {
+        3: 2967:		if( !this->is_data_fixed ) {
+        1: 2968:			this->set_code_size( &info, 2 );
+        1: 2969:			this->is_data_fixed = true;
+        1: 2970:			this->data.push_back( 0xFD );
+        1: 2971:			this->data.push_back( 0xE9 );
+        -: 2972:		}
+        -: 2973:		//	log
+        3: 2974:		if( !this->is_analyze_phase ) {
+        1: 2975:			log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:4cyc" );	//	JP IY
+        1: 2976:			this->log_data_dump();
+        1: 2977:			log.push_back( "" );
+        -: 2978:		}
+        3: 2979:		return check_all_fixed();
+        -: 2980:	}
+        9: 2981:	put_error( "Illegal operand" );
+        9: 2982:	return false;
+        -: 2983:}
+        -: 2984:
+        -: 2985:// --------------------------------------------------------------------
+       30: 2986:bool CZMA_PARSE_JR::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 2987:
+       30: 2988:	update_flags( &info, p_last_line );
+        -: 2989:
+       30: 2990:	if( opecode_ccc_e( info, 0x18, 0x20 ) ) {
+        -: 2991:		//	log
+       10: 2992:		if( !this->is_analyze_phase ) {
+        5: 2993:			if( data[0] == 0x18 ) {
+        1: 2994:				log.push_back( "[\t" + get_line() + "] Z80:13cyc, R800:3cyc" );	//	JR nn
+        -: 2995:			}
+        -: 2996:			else {
+        4: 2997:				log.push_back( "[\t" + get_line() + "] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)" );	//	JR cond, nn
+        -: 2998:			}
+        5: 2999:			this->log_data_dump();
+        5: 3000:			log.push_back( "" );
+        -: 3001:		}
+       10: 3002:		return check_all_fixed();
+        -: 3003:	}
+       20: 3004:	put_error( "Illegal operand" );
+       20: 3005:	return false;
+        -: 3006:}
+        -: 3007:
+        -: 3008:// --------------------------------------------------------------------
+       12: 3009:bool CZMA_PARSE_DJNZ::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3010:	int relative;
+        -: 3011:
+       12: 3012:	update_flags( &info, p_last_line );
+       12: 3013:	if( words.size() != 2 ) {
+        3: 3014:		put_error( "Illegal operand" );
+        3: 3015:		return false;
+        -: 3016:	}
+        9: 3017:	if( !this->is_data_fixed ) {
+        4: 3018:		this->set_code_size( &info, 2 );
+        4: 3019:		relative = this->relative_address( info, 1 );
+        4: 3020:		if( relative == -9999 ) {
+        1: 3021:			put_error( "Illegal operand" );
+        1: 3022:			return false;
+        -: 3023:		}
+        3: 3024:		this->is_data_fixed = true;
+        3: 3025:		this->data.push_back( 0x10 );
+        3: 3026:		this->data.push_back( relative );
+        -: 3027:	}
+        -: 3028:	//	log
+        8: 3029:	if( !this->is_analyze_phase ) {
+        3: 3030:		log.push_back( "[\t" + get_line() + "] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)" );	//	DJNZ nn
+        3: 3031:		this->log_data_dump();
+        3: 3032:		log.push_back( "" );
+        -: 3033:	}
+        8: 3034:	return check_all_fixed();
+        -: 3035:}
+        -: 3036:
+        -: 3037:// --------------------------------------------------------------------
+       36: 3038:bool CZMA_PARSE_CALL::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3039:
+       36: 3040:	update_flags( &info, p_last_line );
+       36: 3041:	if( opecode_ccc_nnn( info, 0xCD, 0xC4 ) ) {
+        -: 3042:		//	log
+       27: 3043:		if( !this->is_analyze_phase ) {
+        9: 3044:			if( data[0] == 0xCD ) {
+        1: 3045:				log.push_back( "[\t" + get_line() + "] Z80:18cyc, R800:5cyc" );				//	CALL nn
+        -: 3046:			}
+        -: 3047:			else {
+        8: 3048:				log.push_back( "[\t" + get_line() + "] Z80:18cyc(branch), 11cyc(through), R800:5cyc(branch), 3cyc(through)" );	//	CALL cond,nn
+        -: 3049:			}
+        9: 3050:			this->log_data_dump();
+        9: 3051:			log.push_back( "" );
+        -: 3052:		}
+       27: 3053:		return check_all_fixed();
+        -: 3054:	}
+        9: 3055:	put_error( "Illegal operand" );
+        9: 3056:	return false;
+        -: 3057:}
+        -: 3058:
+        -: 3059:// --------------------------------------------------------------------
+       33: 3060:bool CZMA_PARSE_RET::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3061:
+       33: 3062:	update_flags( &info, p_last_line );
+       33: 3063:	if( opecode_ccc( info, 0xC9, 0xC0 ) ) {
+        -: 3064:		//	log
+       30: 3065:		if( !this->is_analyze_phase ) {
+       10: 3066:			if( data[0] == 0xC9 ) {
+        2: 3067:				log.push_back( "[\t" + get_line() + "] Z80:11cyc, R800:5cyc" );				//	RET
+        -: 3068:			}
+        -: 3069:			else {
+        8: 3070:				log.push_back( "[\t" + get_line() + "] Z80:12cyc(branch), 6cyc(through), R800:5cyc(branch), 1cyc(through)" );	//	RET cond
+        -: 3071:			}
+       10: 3072:			this->log_data_dump();
+       10: 3073:			log.push_back( "" );
+        -: 3074:		}
+       30: 3075:		return check_all_fixed();
+        -: 3076:	}
+        3: 3077:	put_error( "Illegal operand" );
+        3: 3078:	return false;
+        -: 3079:}
+        -: 3080:
+        -: 3081:// --------------------------------------------------------------------
+        6: 3082:bool CZMA_PARSE_RETI::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3083:
+        6: 3084:	update_flags( &info, p_last_line );
+        6: 3085:	if( opecode( info, 0xED, 0x4D ) ) {
+        -: 3086:		//	log
+        3: 3087:		if( !this->is_analyze_phase ) {
+        1: 3088:			log.push_back( "[\t" + get_line() + "] Z80:16cyc, R800:7cyc" );
+        1: 3089:			this->log_data_dump();
+        1: 3090:			log.push_back( "" );
+        -: 3091:		}
+        3: 3092:		return check_all_fixed();
+        -: 3093:	}
+        3: 3094:	put_error( "Illegal operand" );
+        3: 3095:	return false;
+        -: 3096:}
+        -: 3097:
+        -: 3098:// --------------------------------------------------------------------
+        6: 3099:bool CZMA_PARSE_RETN::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3100:
+        6: 3101:	update_flags( &info, p_last_line );
+        6: 3102:	if( opecode( info, 0xED, 0x45 ) ) {
+        -: 3103:		//	log
+        3: 3104:		if( !this->is_analyze_phase ) {
+        1: 3105:			log.push_back( "[\t" + get_line() + "] Z80:16cyc, R800:7cyc" );
+        1: 3106:			this->log_data_dump();
+        1: 3107:			log.push_back( "" );
+        -: 3108:		}
+        3: 3109:		return check_all_fixed();
+        -: 3110:	}
+        3: 3111:	put_error( "Illegal operand" );
+        3: 3112:	return false;
+        -: 3113:}
+        -: 3114:
+        -: 3115:// --------------------------------------------------------------------
+       39: 3116:bool CZMA_PARSE_RST::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+       78: 3117:	CVALUE p;
+        -: 3118:	int index;
+       39: 3119:	update_flags( &info, p_last_line );
+       39: 3120:	if( words.size() >= 2 ) {
+       36: 3121:		index = this->expression( info, 1, p );
+       36: 3122:		if( index == 0 ) {
+        3: 3123:			put_error( "Illegal expression." );
+        3: 3124:			return false;
+        -: 3125:		}
+       33: 3126:		if( p.type != CVALUE::CV_INTEGER ) {
+        3: 3127:			put_error( "Illegal expression." );
+        3: 3128:			return false;
+        -: 3129:		}
+       30: 3130:		if( index < (int)words.size() ) {
+        3: 3131:			put_error( "Illegal operand." );
+        3: 3132:			return false;
+        -: 3133:		}
+       27: 3134:		if( (p.i & ~0x38) != 0 ) {
+        3: 3135:			put_error( std::string("Illegal restart address (") + std::to_string(p.i) + ")" );
+        3: 3136:			return false;
+        -: 3137:		}
+       24: 3138:		if( !this->is_data_fixed ) {
+        8: 3139:			this->is_data_fixed = true;
+        8: 3140:			this->set_code_size( &info, 1 );
+        8: 3141:			this->data.push_back( 0xC7 | p.i );
+        -: 3142:		}
+        -: 3143:		//	log
+       24: 3144:		if( !this->is_analyze_phase ) {
+        8: 3145:			log.push_back( "[\t" + get_line() + "] Z80:12cyc, R800:6 or 7cyc" );
+        8: 3146:			this->log_data_dump();
+        8: 3147:			log.push_back( "" );
+        -: 3148:		}
+       24: 3149:		return check_all_fixed();
+        -: 3150:	}
+        3: 3151:	put_error( "Illegal operand" );
+        3: 3152:	return false;
+        -: 3153:}
+        -: 3154:
+        -: 3155:// --------------------------------------------------------------------
+     4722: 3156:bool CZMA_PARSE_NOP::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3157:
+     4722: 3158:	update_flags( &info, p_last_line );
+     4722: 3159:	if( opecode( info, 0x00 ) ) {
+        -: 3160:		//	log
+     4719: 3161:		if( !this->is_analyze_phase ) {
+     1573: 3162:			log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:1cyc" );
+     1573: 3163:			this->log_data_dump();
+     1573: 3164:			log.push_back( "" );
+        -: 3165:		}
+     4719: 3166:		return check_all_fixed();
+        -: 3167:	}
+        3: 3168:	put_error( "Illegal operand" );
+        3: 3169:	return false;
+        -: 3170:}
+        -: 3171:
+        -: 3172:// --------------------------------------------------------------------
+        6: 3173:bool CZMA_PARSE_HALT::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3174:
+        6: 3175:	update_flags( &info, p_last_line );
+        6: 3176:	if( opecode( info, 0x76 ) ) {
+        -: 3177:		//	log
+        3: 3178:		if( !this->is_analyze_phase ) {
+        1: 3179:			log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:2cyc and wait interrupt" );
+        1: 3180:			this->log_data_dump();
+        1: 3181:			log.push_back( "" );
+        -: 3182:		}
+        3: 3183:		return check_all_fixed();
+        -: 3184:	}
+        3: 3185:	put_error( "Illegal operand" );
+        3: 3186:	return false;
+        -: 3187:}
+        -: 3188:
+        -: 3189:// --------------------------------------------------------------------
+        6: 3190:bool CZMA_PARSE_DI::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3191:
+        6: 3192:	update_flags( &info, p_last_line );
+        6: 3193:	if( opecode( info, 0xF3 ) ) {
+        -: 3194:		//	log
+        3: 3195:		if( !this->is_analyze_phase ) {
+        1: 3196:			log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:2cyc" );
+        1: 3197:			this->log_data_dump();
+        1: 3198:			log.push_back( "" );
+        -: 3199:		}
+        3: 3200:		return check_all_fixed();
+        -: 3201:	}
+        3: 3202:	put_error( "Illegal operand" );
+        3: 3203:	return false;
+        -: 3204:}
+        -: 3205:
+        -: 3206:// --------------------------------------------------------------------
+        6: 3207:bool CZMA_PARSE_EI::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3208:
+        6: 3209:	update_flags( &info, p_last_line );
+        6: 3210:	if( opecode( info, 0xFB ) ) {
+        -: 3211:		//	log
+        3: 3212:		if( !this->is_analyze_phase ) {
+        1: 3213:			log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:1cyc" );
+        1: 3214:			this->log_data_dump();
+        1: 3215:			log.push_back( "" );
+        -: 3216:		}
+        3: 3217:		return check_all_fixed();
+        -: 3218:	}
+        3: 3219:	put_error( "Illegal operand" );
+        3: 3220:	return false;
+        -: 3221:}
+        -: 3222:
+        -: 3223:// --------------------------------------------------------------------
+        6: 3224:bool CZMA_PARSE_IM0::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3225:
+        6: 3226:	update_flags( &info, p_last_line );
+        6: 3227:	if( opecode( info, 0xED, 0x46 ) ) {
+        -: 3228:		//	log
+        3: 3229:		if( !this->is_analyze_phase ) {
+        1: 3230:			log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:3cyc" );
+        1: 3231:			this->log_data_dump();
+        1: 3232:			log.push_back( "" );
+        -: 3233:		}
+        3: 3234:		return check_all_fixed();
+        -: 3235:	}
+        3: 3236:	put_error( "Illegal operand" );
+        3: 3237:	return false;
+        -: 3238:}
+        -: 3239:
+        -: 3240:// --------------------------------------------------------------------
+        6: 3241:bool CZMA_PARSE_IM1::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3242:
+        6: 3243:	update_flags( &info, p_last_line );
+        6: 3244:	if( opecode( info, 0xED, 0x56 ) ) {
+        -: 3245:		//	log
+        3: 3246:		if( !this->is_analyze_phase ) {
+        1: 3247:			log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:3cyc" );
+        1: 3248:			this->log_data_dump();
+        1: 3249:			log.push_back( "" );
+        -: 3250:		}
+        3: 3251:		return check_all_fixed();
+        -: 3252:	}
+        3: 3253:	put_error( "Illegal operand" );
+        3: 3254:	return false;
+        -: 3255:}
+        -: 3256:
+        -: 3257:// --------------------------------------------------------------------
+        6: 3258:bool CZMA_PARSE_IM2::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3259:
+        6: 3260:	update_flags( &info, p_last_line );
+        6: 3261:	if( opecode( info, 0xED, 0x5E ) ) {
+        -: 3262:		//	log
+        3: 3263:		if( !this->is_analyze_phase ) {
+        1: 3264:			log.push_back( "[\t" + get_line() + "] Z80:10cyc, R800:3cyc" );
+        1: 3265:			this->log_data_dump();
+        1: 3266:			log.push_back( "" );
+        -: 3267:		}
+        3: 3268:		return check_all_fixed();
+        -: 3269:	}
+        3: 3270:	put_error( "Illegal operand" );
+        3: 3271:	return false;
+        -: 3272:}
+        -: 3273:
+        -: 3274:// --------------------------------------------------------------------
+       27: 3275:bool CZMA_PARSE_IN::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3276:
+       27: 3277:	update_flags( &info, p_last_line );
+       27: 3278:	if( opecode_ddd_c( info, 0xDB, 0xED, 0x40 ) ) {
+        -: 3279:		//	log
+       24: 3280:		if( !this->is_analyze_phase ) {
+        8: 3281:			if( data[0] == 0xDB ) {
+        1: 3282:				log.push_back( "[\t" + get_line() + "] Z80:12cyc, R800:10 or 9cyc" );		//	IN A,[n]
+        -: 3283:			}
+        -: 3284:			else {
+        7: 3285:				log.push_back( "[\t" + get_line() + "] Z80:14cyc, R800:10 or 9cyc" );		//	IN A,[C]
+        -: 3286:			}
+        8: 3287:			this->log_data_dump();
+        8: 3288:			log.push_back( "" );
+        -: 3289:		}
+       24: 3290:		return check_all_fixed();
+        -: 3291:	}
+        3: 3292:	put_error( "Illegal operand" );
+        3: 3293:	return false;
+        -: 3294:}
+        -: 3295:
+        -: 3296:// --------------------------------------------------------------------
+        6: 3297:bool CZMA_PARSE_INI::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3298:
+        6: 3299:	update_flags( &info, p_last_line );
+        6: 3300:	if( opecode( info, 0xED, 0xA2 ) ) {
+        -: 3301:		//	log
+        3: 3302:		if( !this->is_analyze_phase ) {
+        1: 3303:			log.push_back( "[\t" + get_line() + "] Z80:18cyc, R800:12 or 11cyc" );
+        1: 3304:			this->log_data_dump();
+        1: 3305:			log.push_back( "" );
+        -: 3306:		}
+        3: 3307:		return check_all_fixed();
+        -: 3308:	}
+        3: 3309:	put_error( "Illegal operand" );
+        3: 3310:	return false;
+        -: 3311:}
+        -: 3312:
+        -: 3313:// --------------------------------------------------------------------
+        6: 3314:bool CZMA_PARSE_INIR::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3315:
+        6: 3316:	update_flags( &info, p_last_line );
+        6: 3317:	if( opecode( info, 0xED, 0xB2 ) ) {
+        -: 3318:		//	log
+        3: 3319:		if( !this->is_analyze_phase ) {
+        1: 3320:			log.push_back( "[\t" + get_line() + "] Z80:23 or 18cyc, R800:? or 12 or 11cyc" );
+        1: 3321:			this->log_data_dump();
+        1: 3322:			log.push_back( "" );
+        -: 3323:		}
+        3: 3324:		return check_all_fixed();
+        -: 3325:	}
+        3: 3326:	put_error( "Illegal operand" );
+        3: 3327:	return false;
+        -: 3328:}
+        -: 3329:
+        -: 3330:// --------------------------------------------------------------------
+        6: 3331:bool CZMA_PARSE_IND::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3332:
+        6: 3333:	update_flags( &info, p_last_line );
+        6: 3334:	if( opecode( info, 0xED, 0xAA ) ) {
+        -: 3335:		//	log
+        3: 3336:		if( !this->is_analyze_phase ) {
+        1: 3337:			log.push_back( "[\t" + get_line() + "] Z80:18cyc, R800:12 or 11cyc" );
+        1: 3338:			this->log_data_dump();
+        1: 3339:			log.push_back( "" );
+        -: 3340:		}
+        3: 3341:		return check_all_fixed();
+        -: 3342:	}
+        3: 3343:	put_error( "Illegal operand" );
+        3: 3344:	return false;
+        -: 3345:}
+        -: 3346:
+        -: 3347:// --------------------------------------------------------------------
+        6: 3348:bool CZMA_PARSE_INDR::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3349:
+        6: 3350:	update_flags( &info, p_last_line );
+        6: 3351:	if( opecode( info, 0xED, 0xBA ) ) {
+        -: 3352:		//	log
+        3: 3353:		if( !this->is_analyze_phase ) {
+        1: 3354:			log.push_back( "[\t" + get_line() + "] Z80:23 or 18cyc, R800:? or 12 or 11cyc" );
+        1: 3355:			this->log_data_dump();
+        1: 3356:			log.push_back( "" );
+        -: 3357:		}
+        3: 3358:		return check_all_fixed();
+        -: 3359:	}
+        3: 3360:	put_error( "Illegal operand" );
+        3: 3361:	return false;
+        -: 3362:}
+        -: 3363:
+        -: 3364:// --------------------------------------------------------------------
+       27: 3365:bool CZMA_PARSE_OUT::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3366:
+       27: 3367:	update_flags( &info, p_last_line );
+       27: 3368:	if( opecode_c_sss( info, 0xD3, 0xED, 0x41 ) ) {
+        -: 3369:		//	log
+       24: 3370:		if( !this->is_analyze_phase ) {
+        8: 3371:			if( data[0] == 0xD3 ) {
+        1: 3372:				log.push_back( "[\t" + get_line() + "] Z80:12cyc, R800:10 or 9cyc" );	//	OUT [n], A
+        -: 3373:			}
+        -: 3374:			else {
+        7: 3375:				log.push_back( "[\t" + get_line() + "] Z80:14cyc, R800:10 or 9cyc" );	//	OUT	[C], A
+        -: 3376:			}
+        8: 3377:			this->log_data_dump();
+        8: 3378:			log.push_back( "" );
+        -: 3379:		}
+       24: 3380:		return check_all_fixed();
+        -: 3381:	}
+        3: 3382:	put_error( "Illegal operand" );
+        3: 3383:	return false;
+        -: 3384:}
+        -: 3385:
+        -: 3386:// --------------------------------------------------------------------
+        6: 3387:bool CZMA_PARSE_OUTI::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3388:
+        6: 3389:	update_flags( &info, p_last_line );
+        6: 3390:	if( opecode( info, 0xED, 0xA3 ) ) {
+        -: 3391:		//	log
+        3: 3392:		if( !this->is_analyze_phase ) {
+        1: 3393:			log.push_back( "[\t" + get_line() + "] Z80:18cyc, R800:12 or 11cyc" );
+        1: 3394:			this->log_data_dump();
+        1: 3395:			log.push_back( "" );
+        -: 3396:		}
+        3: 3397:		return check_all_fixed();
+        -: 3398:	}
+        3: 3399:	put_error( "Illegal operand" );
+        3: 3400:	return false;
+        -: 3401:}
+        -: 3402:
+        -: 3403:// --------------------------------------------------------------------
+        6: 3404:bool CZMA_PARSE_OTIR::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3405:
+        6: 3406:	update_flags( &info, p_last_line );
+        6: 3407:	if( opecode( info, 0xED, 0xB3 ) ) {
+        -: 3408:		//	log
+        3: 3409:		if( !this->is_analyze_phase ) {
+        1: 3410:			log.push_back( "[\t" + get_line() + "] Z80:23 or 18cyc, R800:? or 12 or 11cyc" );
+        1: 3411:			this->log_data_dump();
+        1: 3412:			log.push_back( "" );
+        -: 3413:		}
+        3: 3414:		return check_all_fixed();
+        -: 3415:	}
+        3: 3416:	put_error( "Illegal operand" );
+        3: 3417:	return false;
+        -: 3418:}
+        -: 3419:
+        -: 3420:// --------------------------------------------------------------------
+        6: 3421:bool CZMA_PARSE_OUTD::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3422:
+        6: 3423:	update_flags( &info, p_last_line );
+        6: 3424:	if( opecode( info, 0xED, 0xAB ) ) {
+        -: 3425:		//	log
+        3: 3426:		if( !this->is_analyze_phase ) {
+        1: 3427:			log.push_back( "[\t" + get_line() + "] Z80:18cyc, R800:12 or 11cyc" );
+        1: 3428:			this->log_data_dump();
+        1: 3429:			log.push_back( "" );
+        -: 3430:		}
+        3: 3431:		return check_all_fixed();
+        -: 3432:	}
+        3: 3433:	put_error( "Illegal operand" );
+        3: 3434:	return false;
+        -: 3435:}
+        -: 3436:
+        -: 3437:// --------------------------------------------------------------------
+        6: 3438:bool CZMA_PARSE_OTDR::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3439:
+        6: 3440:	update_flags( &info, p_last_line );
+        6: 3441:	if( opecode( info, 0xED, 0xBB ) ) {
+        -: 3442:		//	log
+        3: 3443:		if( !this->is_analyze_phase ) {
+        1: 3444:			log.push_back( "[\t" + get_line() + "] Z80:23 or 18cyc, R800:? or 12 or 11cyc" );
+        1: 3445:			this->log_data_dump();
+        1: 3446:			log.push_back( "" );
+        -: 3447:		}
+        3: 3448:		return check_all_fixed();
+        -: 3449:	}
+        3: 3450:	put_error( "Illegal operand" );
+        3: 3451:	return false;
+        -: 3452:}
+        -: 3453:
+        -: 3454:// --------------------------------------------------------------------
+        6: 3455:bool CZMA_PARSE_DAA::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3456:
+        6: 3457:	update_flags( &info, p_last_line );
+        6: 3458:	if( opecode( info, 0x27 ) ) {
+        -: 3459:		//	log
+        3: 3460:		if( !this->is_analyze_phase ) {
+        1: 3461:			log.push_back( "[\t" + get_line() + "] Z80:5cyc, R800:1cyc" );
+        1: 3462:			this->log_data_dump();
+        1: 3463:			log.push_back( "" );
+        -: 3464:		}
+        3: 3465:		return check_all_fixed();
+        -: 3466:	}
+        3: 3467:	put_error( "Illegal operand" );
+        3: 3468:	return false;
+        -: 3469:}
+        -: 3470:
+        -: 3471:// --------------------------------------------------------------------
+        6: 3472:bool CZMA_PARSE_RLD::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3473:
+        6: 3474:	update_flags( &info, p_last_line );
+        6: 3475:	if( opecode( info, 0xED, 0x6F ) ) {
+        -: 3476:		//	log
+        3: 3477:		if( !this->is_analyze_phase ) {
+        1: 3478:			log.push_back( "[\t" + get_line() + "] Z80:20cyc, R800:8cyc" );
+        1: 3479:			this->log_data_dump();
+        1: 3480:			log.push_back( "" );
+        -: 3481:		}
+        3: 3482:		return check_all_fixed();
+        -: 3483:	}
+        3: 3484:	put_error( "Illegal operand" );
+        3: 3485:	return false;
+        -: 3486:}
+        -: 3487:
+        -: 3488:// --------------------------------------------------------------------
+        6: 3489:bool CZMA_PARSE_RRD::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3490:
+        6: 3491:	update_flags( &info, p_last_line );
+        6: 3492:	if( opecode( info, 0xED, 0x67 ) ) {
+        -: 3493:		//	log
+        3: 3494:		if( !this->is_analyze_phase ) {
+        1: 3495:			log.push_back( "[\t" + get_line() + "] Z80:20cyc, R800:8cyc" );
+        1: 3496:			this->log_data_dump();
+        1: 3497:			log.push_back( "" );
+        -: 3498:		}
+        3: 3499:		return check_all_fixed();
+        -: 3500:	}
+        3: 3501:	put_error( "Illegal operand" );
+        3: 3502:	return false;
+        -: 3503:}
+        -: 3504:
+        -: 3505:// --------------------------------------------------------------------
+       15: 3506:bool CZMA_PARSE_MULUB::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3507:
+       15: 3508:	update_flags( &info, p_last_line );
+       15: 3509:	if( opecode_mulub( info, 0xED, 0xC1 ) ) {
+        -: 3510:		//	log
+       12: 3511:		if( !this->is_analyze_phase ) {
+        4: 3512:			log.push_back( "[\t" + get_line() + "] Z80:--, R800:14cyc" );
+        4: 3513:			this->log_data_dump();
+        4: 3514:			log.push_back( "" );
+        -: 3515:		}
+       12: 3516:		return check_all_fixed();
+        -: 3517:	}
+        3: 3518:	put_error( "Illegal operand" );
+        3: 3519:	return false;
+        -: 3520:}
+        -: 3521:
+        -: 3522:// --------------------------------------------------------------------
+        9: 3523:bool CZMA_PARSE_MULUW::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3524:
+        9: 3525:	update_flags( &info, p_last_line );
+        9: 3526:	if( opecode_muluw( info ) ) {
+        -: 3527:		//	log
+        6: 3528:		if( !this->is_analyze_phase ) {
+        2: 3529:			log.push_back( "[\t" + get_line() + "] Z80:--, R800:36cyc" );
+        2: 3530:			this->log_data_dump();
+        2: 3531:			log.push_back( "" );
+        -: 3532:		}
+        6: 3533:		return check_all_fixed();
+        -: 3534:	}
+        3: 3535:	put_error( "Illegal operand" );
+        3: 3536:	return false;
+        -: 3537:}
+        -: 3538:
+        -: 3539:// --------------------------------------------------------------------
+       12: 3540:bool CZMA_PARSE_ERROR::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+        -: 3541:
+       12: 3542:	put_error( "Illegal command" );
+       12: 3543:	return false;
+        -: 3544:}
+        -: 3545:
+        -: 3546:// --------------------------------------------------------------------
+       21: 3547:bool CZMA_PARSE_USER_ERROR::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+       42: 3548:	CVALUE v;
+        -: 3549:
+       21: 3550:	set_code_size( &info, 0 );
+       21: 3551:	update_flags( &info, p_last_line );
+       21: 3552:	if( words.size() == 1 ) {
+        3: 3553:		put_error( "User error" );
+        3: 3554:		return false;
+        -: 3555:	}
+       18: 3556:	if( this->expression( info, 1, v ) == 0 ) {
+        6: 3557:		put_error( "Illegal parameter in ERROR." );
+        -: 3558:	}
+       18: 3559:	if( v.type == CVALUE::CV_STRING ) {
+        9: 3560:		put_error( v.s );
+        -: 3561:	}
+        9: 3562:	else if( v.type == CVALUE::CV_INTEGER ) {
+        3: 3563:		put_error( std::to_string( v.i ) );
+        -: 3564:	}
+        -: 3565:	else {
+        6: 3566:		put_error( "Illegal parameter in ERROR." );
+        -: 3567:	}
+       18: 3568:	return false;
+        -: 3569:}
+        -: 3570:
+        -: 3571:// --------------------------------------------------------------------
+      201: 3572:bool CZMA_PARSE_USER_MESSAGE::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+      402: 3573:	CVALUE v;
+        -: 3574:
+      201: 3575:	set_code_size( &info, 0 );
+      201: 3576:	update_flags( &info, p_last_line );
+      201: 3577:	if( words.size() == 1 ) {
+        3: 3578:		put_error( "Message not found in MESSAGE." );
+        3: 3579:		return false;
+        -: 3580:	}
+      198: 3581:	if( this->expression( info, 1, v ) == 0 ) {
+       60: 3582:		put_error( "Illegal parameter in MESSAGE." );
+       60: 3583:		return false;
+        -: 3584:	}
+      138: 3585:	if( v.type == CVALUE::CV_INTEGER ) {
+        3: 3586:		v.s = std::to_string( v.i );
+        -: 3587:	}
+        -: 3588:	//	log
+      138: 3589:	if( !this->is_analyze_phase ) {
+       39: 3590:		put_message( v.s );
+        -: 3591:	}
+      138: 3592:	return true;
+        -: 3593:}
+        -: 3594:
+        -: 3595:// --------------------------------------------------------------------
+       15: 3596:bool CZMA_PARSE_ADD_INCLUDE_PATH::process( CZMA_INFORMATION& info, CZMA_PARSE* p_last_line ) {
+       30: 3597:	CVALUE v;
+       15: 3598:	bool is_loaded = false;
+        -: 3599:
+       15: 3600:	set_code_size( &info, 0 );
+       15: 3601:	update_flags( &info, p_last_line );
+       15: 3602:	if( words.size() == 1 ) {
+        3: 3603:		put_error( "Path not found in ADD_INCLUDE_PATH." );
+        3: 3604:		return false;
+        -: 3605:	}
+       12: 3606:	if( this->expression( info, 1, v ) == 0 ) {
+        3: 3607:		put_error( "Illegal parameter in ADD_INCLUDE_PATH." );
+        3: 3608:		return false;
+        -: 3609:	}
+        9: 3610:	if( v.type == CVALUE::CV_INTEGER ) {
+        3: 3611:		v.s = std::to_string( v.i );
+        -: 3612:	}
+       38: 3613:	for( auto s : info.include_path ) {
+       29: 3614:		if( s == v.s ) {
+        6: 3615:			is_loaded = true;
+        -: 3616:		}
+        -: 3617:	}
+        9: 3618:	if( !is_loaded ) {
+        3: 3619:		info.include_path.push_back( v.s );
+        -: 3620:	}
+        -: 3621:	//	log
+        9: 3622:	if( !this->is_analyze_phase ) {
+        3: 3623:		log.push_back( "[\t" + get_line() + "]" );
+        3: 3624:		log.push_back( "\tAdd include path: " + v.s );
+        -: 3625:	}
+        9: 3626:	return true;
+      159: 3627:}

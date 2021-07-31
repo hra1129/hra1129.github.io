@@ -1,0 +1,684 @@
+        -:    0:Source:../zma_parse_expression.cpp
+        -:    0:Programs:4
+        -:    1:// --------------------------------------------------------------------
+        -:    2://	Z80 Macro Assembler parse
+        -:    3:// ====================================================================
+        -:    4://	2019/05/04	t.hara
+        -:    5:// --------------------------------------------------------------------
+        -:    6:
+        -:    7:#include "zma_parse.hpp"
+        -:    8:#include "zma_text.hpp"
+        -:    9:#include <string>
+        -:   10:#include <cctype>
+        -:   11:#include <iostream>
+        -:   12:#include <fstream>
+        -:   13:#include <algorithm>
+        -:   14:
+        -:   15:// --------------------------------------------------------------------
+     8283:   16:bool CZMA_PARSE::operator_single( CZMA_INFORMATION& info, int &index, CVALUE& result ) {
+    16566:   17:	std::string s, num;
+        -:   18:	bool is_success;
+        -:   19:
+     8283:   20:	s = get_word( index );
+     8283:   21:	if( s == "$" || s == "CODE_ADDRESS" ) {
+       39:   22:		index++;
+       39:   23:		result.type = CVALUE::CV_INTEGER;
+       39:   24:		if( this->get_fixed_code_address() ) {
+       28:   25:			result.i = this->get_code_address();
+        -:   26:		}
+        -:   27:		else {
+       11:   28:			result.type = CVALUE::CV_UNKNOWN;
+       11:   29:			result.i = 0;
+        -:   30:		}
+       39:   31:		return true;
+        -:   32:	}
+     8244:   33:	if( s == "FILE_ADDRESS" ) {
+       29:   34:		index++;
+       29:   35:		result.type = CVALUE::CV_INTEGER;
+       29:   36:		if( this->get_fixed_file_address() ) {
+       22:   37:			result.i = this->get_file_address();
+        -:   38:		}
+        -:   39:		else {
+        7:   40:			result.type = CVALUE::CV_UNKNOWN;
+        7:   41:			result.i = 0;
+        -:   42:		}
+       29:   43:		return true;
+        -:   44:	}
+     8215:   45:	if( s == "+" ) {
+      411:   46:		index++;
+      411:   47:		is_success = operator_single( info, index, result );
+      411:   48:		if( result.type != CVALUE::CV_INTEGER ) {
+       15:   49:			put_error( "Invalid operator '+'." );
+       15:   50:			return false;
+        -:   51:		}
+      396:   52:		return is_success;
+        -:   53:	}
+     7804:   54:	if( s == "-" ) {
+       24:   55:		index++;
+       24:   56:		is_success = operator_single( info, index, result );
+       24:   57:		if( result.type != CVALUE::CV_INTEGER ) {
+        3:   58:			put_error( "Invalid operator '-'." );
+        3:   59:			return false;
+        -:   60:		}
+       21:   61:		result.i = -result.i;
+       21:   62:		return is_success;
+        -:   63:	}
+     7780:   64:	if( s == "(" ) {
+       79:   65:		index++;
+       79:   66:		is_success = operator_logical_or( info, index, result );
+       79:   67:		if( !is_success ) {
+        5:   68:			put_error( "Invalid expression." );
+        5:   69:			return false;
+        -:   70:		}
+       74:   71:		s = get_word( index );
+       74:   72:		if( s != ")" ) {
+        3:   73:			put_error( "'(' are not closed." );
+        3:   74:			return false;
+        -:   75:		}
+       71:   76:		index++;
+       71:   77:		return true;
+        -:   78:	}
+     7701:   79:	if( s == "!" ) {
+       13:   80:		index++;
+       13:   81:		is_success = operator_single( info, index, result );
+       13:   82:		if( result.type != CVALUE::CV_INTEGER ) {
+        4:   83:			put_error( "Invalid operator '!'." );
+        4:   84:			return false;
+        -:   85:		}
+        9:   86:		result.i = !result.i;
+        9:   87:		return is_success;
+        -:   88:	}
+     7688:   89:	if( s == "~" ) {
+        6:   90:		index++;
+        6:   91:		is_success = operator_single( info, index, result );
+        6:   92:		if( result.type != CVALUE::CV_INTEGER ) {
+        3:   93:			put_error( "Invalid operator '~'." );
+        3:   94:			return false;
+        -:   95:		}
+        3:   96:		result.i = ~result.i;
+        3:   97:		return is_success;
+        -:   98:	}
+     7682:   99:	if( s[0] == '0' ) {
+     5411:  100:		index++;
+     5411:  101:		if( s[1] == '\0' ) {
+     2053:  102:			result.type = CVALUE::CV_INTEGER;
+     2053:  103:			result.i = 0;
+     2053:  104:			return true;
+        -:  105:		}
+     3358:  106:		num = "";
+     3358:  107:		if( s[1] == 'X' ) {
+    10388:  108:			for( auto c : s.substr( 2 ) ) {
+    14096:  109:				if( isxdigit( c ) ) {
+     7045:  110:					num = num + c;
+     7045:  111:					continue;
+        -:  112:				}
+        6:  113:				if( c == '_' ) {
+        3:  114:					continue;
+        -:  115:				}
+        3:  116:				put_error( std::string( "Description of numerical value '" ) + s + "' is abnormal." );
+        3:  117:				return false;
+        -:  118:			}
+     3337:  119:			result.type = CVALUE::CV_INTEGER;
+     3337:  120:			result.i = std::stoi( num, nullptr, 16 );
+     3337:  121:			return true;
+        -:  122:		}
+       18:  123:		if( s[1] == 'B' ) {
+      117:  124:			for( auto c : s.substr( 2 ) ) {
+      210:  125:				if( c == '0' || c == '1' ) {
+       99:  126:					num = num + c;
+       99:  127:					continue;
+        -:  128:				}
+       12:  129:				if( c == '_' ) {
+        9:  130:					continue;
+        -:  131:				}
+        3:  132:				put_error( std::string( "Description of numerical value '" ) + s + "' is abnormal." );
+        3:  133:				return false;
+        -:  134:			}
+        6:  135:			result.type = CVALUE::CV_INTEGER;
+        6:  136:			result.i = std::stoi( num, nullptr, 2 );
+        6:  137:			return true;
+        -:  138:		}
+       57:  139:		for( auto c : s.substr( 1 ) ) {
+       96:  140:			if( c >= '0' && c <= '7' ) {
+       45:  141:				num = num + c;
+       45:  142:				continue;
+        -:  143:			}
+        6:  144:			if( c == '_' ) {
+        3:  145:				continue;
+        -:  146:			}
+        3:  147:			put_error( std::string( "Description of numerical value '" ) + s + "' is abnormal." );
+        3:  148:			return false;
+        -:  149:		}
+        6:  150:		result.type = CVALUE::CV_INTEGER;
+        6:  151:		result.i = std::stoi( num, nullptr, 8 );
+        6:  152:		return true;
+        -:  153:	}
+     2271:  154:	if( isdigit( s[0] ) ) {
+     1378:  155:		num = "";
+     1378:  156:		index++;
+     3206:  157:		for( auto c : s ) {
+     3656:  158:			if( isdigit( c ) ) {
+     1825:  159:				num = num + c;
+     1825:  160:				continue;
+        -:  161:			}
+        6:  162:			if( c == '_' ) {
+        3:  163:				continue;
+        -:  164:			}
+        3:  165:			put_error( std::string( "Description of numerical value '" ) + s + "' is abnormal." );
+        3:  166:			return false;
+        -:  167:		}
+     1375:  168:		result.type = CVALUE::CV_INTEGER;
+     1375:  169:		result.i = std::stoi( num, nullptr );
+     1375:  170:		return true;
+        -:  171:	}
+        -:  172:	//	string
+      893:  173:	if( s[0] == '\"' ) {
+      384:  174:		index++;
+      384:  175:		result.type = CVALUE::CV_STRING;
+      384:  176:		result.s = s.substr( 1 );
+      384:  177:		return true;
+        -:  178:	}
+        -:  179:	//	•s³‚È‹L†
+        -:  180:	//	label
+      509:  181:	if( isalpha( s[0] ) || s[0] == '_' ) {
+      397:  182:		if( info.get_label_value( result, s ) ) {
+      147:  183:			index++;
+      147:  184:			return true;
+        -:  185:		}
+        -:  186:	}
+      362:  187:	return false;
+        -:  188:}
+        -:  189:
+        -:  190:// --------------------------------------------------------------------
+     7751:  191:bool CZMA_PARSE::operator_mul_div( CZMA_INFORMATION& info, int& index, CVALUE& result ) {
+    15502:  192:	std::string s;
+        -:  193:	bool is_success;
+    15502:  194:	CVALUE term;
+        -:  195:	int i;
+        -:  196:
+     7751:  197:	s = get_word( index );
+     7751:  198:	is_success = operator_single( info, index, result );
+     7751:  199:	if( !is_success ) {
+      367:  200:		return false;
+        -:  201:	}
+        -:  202:	for( ;;) {
+     7460:  203:		s = get_word( index );
+     7422:  204:		if( s == "*" ) {
+       37:  205:			index++;
+       37:  206:			is_success = operator_single( info, index, term );
+       37:  207:			if( !is_success ) {
+        9:  208:				return false;
+        -:  209:			}
+       34:  210:			if( result.type == CVALUE::CV_INTEGER && term.type == CVALUE::CV_INTEGER ) {
+        6:  211:				result.i = result.i * term.i;
+        6:  212:				continue;
+        -:  213:			}
+       32:  214:			else if( result.type == CVALUE::CV_STRING && term.type == CVALUE::CV_INTEGER ) {
+       10:  215:				s = "";
+    65560:  216:				for( i = 0; i < term.i; i++ ) {
+    65550:  217:					s = s + result.s;
+        -:  218:				}
+       10:  219:				result.s = s;
+       10:  220:				continue;
+        -:  221:			}
+       21:  222:			else if( result.type == CVALUE::CV_INTEGER && term.type == CVALUE::CV_STRING ) {
+        9:  223:				s = "";
+       90:  224:				for( i = 0; i < result.i; i++ ) {
+       81:  225:					s = s + term.s;
+        -:  226:				}
+        9:  227:				result.type = CVALUE::CV_STRING;
+        9:  228:				result.s = s;
+        9:  229:				continue;
+        -:  230:			}
+        3:  231:			put_error( "Invalid operator '*'" );
+        3:  232:			return false;
+        -:  233:		}
+     7388:  234:		if( s == "/" ) {
+       15:  235:			index++;
+       15:  236:			is_success = operator_single( info, index, term );
+       15:  237:			if( !is_success ) {
+        3:  238:				return false;
+        -:  239:			}
+       12:  240:			if( result.type != CVALUE::CV_INTEGER || term.type != CVALUE::CV_INTEGER ) {
+        6:  241:				put_error( "Invalid operator '/'" );
+        6:  242:				return false;
+        -:  243:			}
+        6:  244:			if( term.i == 0 ) {
+        3:  245:				put_error( "Divided by zero." );
+        3:  246:				return false;
+        -:  247:			}
+        -:  248:			else {
+        3:  249:				result.i = result.i / term.i;
+        -:  250:			}
+        3:  251:			continue;
+        -:  252:		}
+     7380:  253:		if( s == "%" ) {
+       26:  254:			index++;
+       26:  255:			is_success = operator_single( info, index, term );
+       26:  256:			if( !is_success ) {
+        3:  257:				return false;
+        -:  258:			}
+       23:  259:			if( result.type != CVALUE::CV_INTEGER || term.type != CVALUE::CV_INTEGER ) {
+       10:  260:				put_error( "Invalid operator '%'" );
+       10:  261:				return false;
+        -:  262:			}
+       13:  263:			if( term.i == 0 ) {
+        3:  264:				put_error( "Divided by zero." );
+        3:  265:				return false;
+        -:  266:			}
+        -:  267:			else {
+       10:  268:				result.i = result.i % term.i;
+        -:  269:			}
+       10:  270:			continue;
+        -:  271:		}
+     7344:  272:		break;
+        -:  273:	}
+     7344:  274:	return true;
+        -:  275:}
+        -:  276:
+        -:  277:// --------------------------------------------------------------------
+     7613:  278:bool CZMA_PARSE::operator_add_sub( CZMA_INFORMATION& info, int& index, CVALUE& result ) {
+    15226:  279:	std::string s;
+        -:  280:	bool is_success;
+    15226:  281:	CVALUE term;
+        -:  282:
+     7613:  283:	s = get_word( index );
+     7613:  284:	is_success = operator_mul_div( info, index, result );
+     7613:  285:	if( !is_success ) {
+      376:  286:		return false;
+        -:  287:	}
+        -:  288:	for( ;;) {
+     7439:  289:		s = get_word( index );
+     7338:  290:		if( s == "+" ) {
+      120:  291:			index++;
+      120:  292:			is_success = operator_mul_div( info, index, term );
+      120:  293:			if( !is_success ) {
+       26:  294:				return false;
+        -:  295:			}
+       94:  296:			if( result.type == CVALUE::CV_INTEGER && term.type == CVALUE::CV_INTEGER ) {
+       19:  297:				result.i = result.i + term.i;
+        -:  298:			}
+       75:  299:			else if( result.type == CVALUE::CV_STRING && term.type == CVALUE::CV_INTEGER ) {
+       37:  300:				result.s = result.s + std::to_string(term.i);
+        -:  301:			}
+       38:  302:			else if( result.type == CVALUE::CV_INTEGER && term.type == CVALUE::CV_STRING ) {
+       15:  303:				result.type = CVALUE::CV_STRING;
+       15:  304:				result.s = std::to_string(result.i) + term.s;
+        -:  305:			}
+        -:  306:			//if( result.type == CVALUE::CV_STRING && term.type == CVALUE::CV_STRING ) {
+       94:  307:			result.s = result.s + term.s;
+        -:  308:			//}
+        -:  309:		}
+     7218:  310:		else if( s == "-" ) {
+       18:  311:			index++;
+       18:  312:			is_success = operator_mul_div( info, index, term );
+       18:  313:			if( !is_success ) {
+        5:  314:				return false;
+        -:  315:			}
+       13:  316:			if( result.type != CVALUE::CV_INTEGER || term.type != CVALUE::CV_INTEGER ) {
+        6:  317:				put_error( "Invalid operator '-'" );
+        6:  318:				return false;
+        -:  319:			}
+        7:  320:			result.i = result.i - term.i;
+        -:  321:		}
+        -:  322:		else {
+     7200:  323:			break;
+        -:  324:		}
+        -:  325:	}
+     7200:  326:	return true;
+        -:  327:}
+        -:  328:
+        -:  329:// --------------------------------------------------------------------
+     7571:  330:bool CZMA_PARSE::operator_shift( CZMA_INFORMATION& info, int& index, CVALUE& result ) {
+    15142:  331:	std::string s;
+        -:  332:	bool is_success;
+    15142:  333:	CVALUE term;
+        -:  334:
+     7571:  335:	s = get_word( index );
+     7571:  336:	is_success = operator_add_sub( info, index, result );
+     7571:  337:	if( !is_success ) {
+      407:  338:		return false;
+        -:  339:	}
+     7164:  340:	if( result.type != CVALUE::CV_INTEGER ) {
+      333:  341:		return true;
+        -:  342:	}
+        -:  343:	for( ;;) {
+     6891:  344:		s = get_word( index );
+     6888:  345:		if( s == "<<" ) {
+       33:  346:			index++;
+       33:  347:			is_success = operator_add_sub( info, index, term );
+       33:  348:			if( !is_success ) {
+        3:  349:				return false;
+        -:  350:			}
+       30:  351:			if( term.type != CVALUE::CV_INTEGER ) {
+        3:  352:				put_error( "Invalid operator '<<'" );
+        3:  353:				return false;
+        -:  354:			}
+       27:  355:			result.i = result.i << term.i;
+       27:  356:			continue;
+        -:  357:		}
+     6831:  358:		if( s == ">>" ) {
+        9:  359:			index++;
+        9:  360:			is_success = operator_add_sub( info, index, term );
+        9:  361:			if( !is_success ) {
+        3:  362:				return false;
+        -:  363:			}
+        6:  364:			if( term.type != CVALUE::CV_INTEGER ) {
+        3:  365:				put_error( "Invalid operator '>>'" );
+        3:  366:				return false;
+        -:  367:			}
+        3:  368:			result.i = result.i >> term.i;
+        3:  369:			continue;
+        -:  370:		}
+     6819:  371:		break;
+        -:  372:	}
+     6819:  373:	return true;
+        -:  374:}
+        -:  375:
+        -:  376:// --------------------------------------------------------------------
+     7517:  377:bool CZMA_PARSE::operator_compare( CZMA_INFORMATION& info, int& index, CVALUE& result ) {
+    15034:  378:	std::string s;
+        -:  379:	bool is_success;
+    15034:  380:	CVALUE term;
+        -:  381:
+     7517:  382:	s = get_word( index );
+     7517:  383:	is_success = operator_shift( info, index, result );
+     7517:  384:	if( !is_success ) {
+      407:  385:		return false;
+        -:  386:	}
+     7110:  387:	if( result.type != CVALUE::CV_INTEGER ) {
+      321:  388:		return true;
+        -:  389:	}
+        -:  390:	for( ;;) {
+     6849:  391:		s = get_word( index );
+     6825:  392:		if( s == "<" ) {
+       12:  393:			index++;
+       12:  394:			is_success = operator_shift( info, index, term );
+       12:  395:			if( !is_success ) {
+        3:  396:				return false;
+        -:  397:			}
+        9:  398:			if( term.type != CVALUE::CV_INTEGER ) {
+        3:  399:				put_error( "Invalid operator '<'" );
+        3:  400:				return false;
+        -:  401:			}
+        6:  402:			result.i = result.i < term.i;
+        6:  403:			continue;
+        -:  404:		}
+     6813:  405:		if( s == ">" ) {
+       12:  406:			index++;
+       12:  407:			is_success = operator_shift( info, index, term );
+       12:  408:			if( !is_success ) {
+        3:  409:				return false;
+        -:  410:			}
+        9:  411:			if( term.type != CVALUE::CV_INTEGER ) {
+        3:  412:				put_error( "Invalid operator '>'" );
+        3:  413:				return false;
+        -:  414:			}
+        6:  415:			result.i = result.i > term.i;
+        6:  416:			continue;
+        -:  417:		}
+     6804:  418:		if( s == "<=" ) {
+       15:  419:			index++;
+       15:  420:			is_success = operator_shift( info, index, term );
+       15:  421:			if( !is_success ) {
+        3:  422:				return false;
+        -:  423:			}
+       12:  424:			if( term.type != CVALUE::CV_INTEGER ) {
+        3:  425:				put_error( "Invalid operator '<='" );
+        3:  426:				return false;
+        -:  427:			}
+        9:  428:			result.i = result.i <= term.i;
+        9:  429:			continue;
+        -:  430:		}
+     6789:  431:		if( s == ">=" ) {
+       15:  432:			index++;
+       15:  433:			is_success = operator_shift( info, index, term );
+       15:  434:			if( !is_success ) {
+        3:  435:				return false;
+        -:  436:			}
+       12:  437:			if( term.type != CVALUE::CV_INTEGER ) {
+        3:  438:				put_error( "Invalid operator '>='" );
+        3:  439:				return false;
+        -:  440:			}
+        9:  441:			result.i = result.i >= term.i;
+        9:  442:			continue;
+        -:  443:		}
+     6765:  444:		break;
+        -:  445:	}
+     6765:  446:	return true;
+        -:  447:}
+        -:  448:
+        -:  449:// --------------------------------------------------------------------
+     7463:  450:bool CZMA_PARSE::operator_equal( CZMA_INFORMATION& info, int& index, CVALUE& result ) {
+    14926:  451:	std::string s;
+        -:  452:	bool is_success;
+    14926:  453:	CVALUE term;
+        -:  454:
+     7463:  455:	s = get_word( index );
+     7463:  456:	is_success = operator_compare( info, index, result );
+     7463:  457:	if( !is_success ) {
+      425:  458:		return false;
+        -:  459:	}
+        -:  460:	for( ;;) {
+     7134:  461:		s = get_word( index );
+     7089:  462:		if( s == "==" ) {
+       36:  463:			index++;
+       36:  464:			is_success = operator_compare( info, index, term );
+       36:  465:			if( !is_success ) {
+        3:  466:				return false;
+        -:  467:			}
+       39:  468:			if( result.type == CVALUE::CV_STRING && term.type == CVALUE::CV_STRING ) {
+        6:  469:				result.type = CVALUE::CV_INTEGER;
+        6:  470:				result.i = result.s == term.s;
+        6:  471:				continue;
+        -:  472:			}
+       51:  473:			if( result.type == CVALUE::CV_INTEGER && term.type == CVALUE::CV_INTEGER ) {
+       24:  474:				result.i = result.i == term.i;
+       24:  475:				continue;
+        -:  476:			}
+        3:  477:			result.type = CVALUE::CV_INTEGER;
+        3:  478:			result.i = false;
+        3:  479:			continue;
+        -:  480:		}
+     7053:  481:		if( s == "!=" ) {
+       18:  482:			index++;
+       18:  483:			is_success = operator_compare( info, index, term );
+       18:  484:			if( !is_success ) {
+        3:  485:				return false;
+        -:  486:			}
+       21:  487:			if( result.type == CVALUE::CV_STRING && term.type == CVALUE::CV_STRING ) {
+        6:  488:				result.type = CVALUE::CV_INTEGER;
+        6:  489:				result.i = result.s != term.s;
+        6:  490:				continue;
+        -:  491:			}
+       15:  492:			if( result.type == CVALUE::CV_INTEGER && term.type == CVALUE::CV_INTEGER ) {
+        6:  493:				result.i = result.i != term.i;
+        6:  494:				continue;
+        -:  495:			}
+        3:  496:			result.type = CVALUE::CV_INTEGER;
+        3:  497:			result.i = true;
+        3:  498:			continue;
+        -:  499:		}
+     7032:  500:		break;
+        -:  501:	}
+     7032:  502:	return true;
+        -:  503:}
+        -:  504:
+        -:  505:// --------------------------------------------------------------------
+     7451:  506:bool CZMA_PARSE::operator_bit_and( CZMA_INFORMATION& info, int& index, CVALUE& result ) {
+    14902:  507:	std::string s;
+        -:  508:	bool is_success;
+    14902:  509:	CVALUE term;
+        -:  510:
+     7451:  511:	s = get_word( index );
+     7451:  512:	is_success = operator_equal( info, index, result );
+     7451:  513:	if( !is_success ) {
+      428:  514:		return false;
+        -:  515:	}
+     7023:  516:	if( result.type != CVALUE::CV_INTEGER ) {
+      288:  517:		return true;
+        -:  518:	}
+        -:  519:	for( ;;) {
+     6747:  520:		s = get_word( index );
+     6747:  521:		if( s == "&" ) {
+       12:  522:			index++;
+       12:  523:			is_success = operator_equal( info, index, term );
+       12:  524:			if( !is_success ) {
+        3:  525:				return false;
+        -:  526:			}
+        9:  527:			if( term.type != CVALUE::CV_INTEGER ) {
+        3:  528:				put_error( "Invalid operator '&'" );
+        3:  529:				return false;
+        -:  530:			}
+        6:  531:			result.i = result.i & term.i;
+        6:  532:			continue;
+        -:  533:		}
+     6729:  534:		break;
+        -:  535:	}
+     6729:  536:	return true;
+        -:  537:}
+        -:  538:
+        -:  539:// --------------------------------------------------------------------
+     7439:  540:bool CZMA_PARSE::operator_bit_xor( CZMA_INFORMATION& info, int& index, CVALUE& result ) {
+    14878:  541:	std::string s;
+        -:  542:	bool is_success;
+    14878:  543:	CVALUE term;
+        -:  544:
+     7439:  545:	s = get_word( index );
+     7439:  546:	is_success = operator_bit_and( info, index, result );
+     7439:  547:	if( !is_success ) {
+      431:  548:		return false;
+        -:  549:	}
+     7008:  550:	if( result.type != CVALUE::CV_INTEGER ) {
+      285:  551:		return true;
+        -:  552:	}
+        -:  553:	for( ;;) {
+     6735:  554:		s = get_word( index );
+     6735:  555:		if( s == "^" ) {
+       12:  556:			index++;
+       12:  557:			is_success = operator_bit_and( info, index, term );
+       12:  558:			if( !is_success ) {
+        3:  559:				return false;
+        -:  560:			}
+        9:  561:			if( term.type != CVALUE::CV_INTEGER ) {
+        3:  562:				put_error( "Invalid operator '^'" );
+        3:  563:				return false;
+        -:  564:			}
+        6:  565:			result.i = result.i ^ term.i;
+        6:  566:			continue;
+        -:  567:		}
+     6717:  568:		break;
+        -:  569:	}
+     6717:  570:	return true;
+        -:  571:}
+        -:  572:
+        -:  573:// --------------------------------------------------------------------
+     7403:  574:bool CZMA_PARSE::operator_bit_or( CZMA_INFORMATION& info, int& index, CVALUE& result ) {
+    14806:  575:	std::string s;
+        -:  576:	bool is_success;
+    14806:  577:	CVALUE term;
+        -:  578:
+     7403:  579:	s = get_word( index );
+     7403:  580:	is_success = operator_bit_xor( info, index, result );
+     7403:  581:	if( !is_success ) {
+      434:  582:		return false;
+        -:  583:	}
+     6969:  584:	if( result.type != CVALUE::CV_INTEGER ) {
+      282:  585:		return true;
+        -:  586:	}
+        -:  587:	for( ;;) {
+     6747:  588:		s = get_word( index );
+     6747:  589:		if( s == "|" ) {
+       36:  590:			index++;
+       36:  591:			is_success = operator_bit_xor( info, index, term );
+       36:  592:			if( !is_success ) {
+        3:  593:				return false;
+        -:  594:			}
+       33:  595:			if( term.type != CVALUE::CV_INTEGER ) {
+        3:  596:				put_error( "Invalid operator '|'" );
+        3:  597:				return false;
+        -:  598:			}
+       30:  599:			result.i = result.i | term.i;
+       30:  600:			continue;
+        -:  601:		}
+     6681:  602:		break;
+        -:  603:	}
+     6681:  604:	return true;
+        -:  605:}
+        -:  606:
+        -:  607:// --------------------------------------------------------------------
+     7385:  608:bool CZMA_PARSE::operator_logical_and( CZMA_INFORMATION& info, int& index, CVALUE& result ) {
+    14770:  609:	std::string s;
+        -:  610:	bool is_success;
+    14770:  611:	CVALUE term;
+        -:  612:
+     7385:  613:	s = get_word( index );
+     7385:  614:	is_success = operator_bit_or( info, index, result );
+     7385:  615:	if( !is_success ) {
+      437:  616:		return false;
+        -:  617:	}
+     6948:  618:	if( result.type != CVALUE::CV_INTEGER ) {
+      279:  619:		return true;
+        -:  620:	}
+        -:  621:	for( ;;) {
+     6693:  622:		s = get_word( index );
+     6693:  623:		if( s == "&&" ) {
+       18:  624:			index++;
+       18:  625:			is_success = operator_bit_or( info, index, term );
+       18:  626:			if( !is_success ) {
+        3:  627:				return false;
+        -:  628:			}
+       15:  629:			if( term.type != CVALUE::CV_INTEGER ) {
+        3:  630:				put_error( "Invalid operator '&&'" );
+        3:  631:				return false;
+        -:  632:			}
+       12:  633:			result.i = result.i && term.i;
+       12:  634:			continue;
+        -:  635:		}
+     6663:  636:		break;
+        -:  637:	}
+     6663:  638:	return true;
+        -:  639:}
+        -:  640:
+        -:  641:// --------------------------------------------------------------------
+     7367:  642:bool CZMA_PARSE::operator_logical_or( CZMA_INFORMATION& info, int& index, CVALUE& result ) {
+    14734:  643:	std::string s;
+        -:  644:	bool is_success;
+    14734:  645:	CVALUE term;
+        -:  646:
+     7367:  647:	s = get_word(index);
+     7367:  648:	is_success = operator_logical_and( info, index, result );
+     7367:  649:	if( !is_success ) {
+      440:  650:		return false;
+        -:  651:	}
+     6927:  652:	if( result.type != CVALUE::CV_INTEGER ) {
+      276:  653:		return true;
+        -:  654:	}
+        -:  655:	for( ;;) {
+     6675:  656:		s = get_word( index );
+     6675:  657:		if( s == "||" ) {
+       18:  658:			index++;
+       18:  659:			is_success = operator_logical_and( info, index, term );
+       18:  660:			if( !is_success ) {
+        3:  661:				return false;
+        -:  662:			}
+       15:  663:			if( term.type != CVALUE::CV_INTEGER ) {
+        3:  664:				put_error( "Invalid operator '||'" );
+        3:  665:				return false;
+        -:  666:			}
+       12:  667:			result.i = result.i || term.i;
+       12:  668:			continue;
+        -:  669:		}
+     6645:  670:		break;
+        -:  671:	}
+     6645:  672:	return true;
+        -:  673:}
+        -:  674:
+        -:  675:// --------------------------------------------------------------------
+     7288:  676:int CZMA_PARSE::expression( CZMA_INFORMATION& info, int index, CVALUE& result ) {
+     7288:  677:	bool is_success = operator_logical_or( info, index, result );
+     7288:  678:	if( is_success ) {
+     6847:  679:		return index;
+        -:  680:	}
+      441:  681:	return 0;
+      162:  682:}

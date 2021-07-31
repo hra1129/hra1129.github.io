@@ -1,0 +1,60 @@
+; -----------------------------------------------------------------------------
+; MC サンプルBGM " SNOWMAN " by michelan-gelo.
+; -----------------------------------------------------------------------------
+
+
+; -----------------------------------------------------------------------------
+; sound font data
+; -----------------------------------------------------------------------------
+{
+
+	; @0 ----------------------------------------------------------------------
+	0	1	2	2	2	0	-2	-3	-3	-3	-2	0	2	2	2	1	
+	0	-2	-3	-3	-3	-1	1	2	3	2	1	-1	-3	-3	-3	-2	
+	255					; AR
+	2					; DR
+	224					; SL
+	1					; SR
+	30					; RR
+	20					; ビブラート遅延時間
+	0					; ノイズ周波数
+	0					; ドラム用基準周波数
+
+}
+
+
+; -----------------------------------------------------------------------------
+; ch.0 (main part)
+; -----------------------------------------------------------------------------
+{
+	t186q8@0l16
+	o5v5ererv7ererv9ererv11ererv13ererv15ererer
+	$
+	v15o4ergro5cr
+	o4a2r8o5cro4aro5cro4a2r8o5cro4bro5cro4b2r8brarfrg4.a8b2
+	o4a2r8o5cro4aro5cro4a2r8o5cro4bro5cro4b2r8brgro5drerererer8.e4.
+	l8f4.rfedco4b2o5f2e4.redco4ba2r4a4
+	o5d4.rdco4bab4.o5df2
+	l16erererer8.er8.er8.er8.er8.er8.ererererer8.er8.er8.er8.er8.	
+}
+
+; -----------------------------------------------------------------------------
+; ch.1 (base part)
+; -----------------------------------------------------------------------------
+{
+	t186q8@0l16
+	o2v3brbrv5brbrv7brbrv9brbrv11o3ererv13ererer
+	$
+	r4.
+	v13o1aro2aro1aro2aro1aro2aro1aro2ar o1aro2aro1aro2aro1aro2aro1aro2ar o1gro2gro1gro2gro1gro2gro1gro2gr o1gro2gro1gro2gro1g+ro2g+ro1g+ro2g+r
+	o1aro2aro1aro2aro1aro2aro1aro2ar o1aro2aro1aro2aro1aro2aro1aro2ar o1gro2gro1gro2gro1gro2gro1gro2gr o1gro2gro1gro2gro1g+ro2g+ro1g+ro2g+r
+	o2drdrdrdrdrdro1bro2dro1brbrbrbrbrbrgrbr o2crcrcrcrcrcro1aro2cro1arararararararar
+	o2drdrdrdrdrdro1bro2dro1brbrbrbrbrbrgro2fr
+	v15o1brbrbrbr8.br8.br8.br8.br8.brarbro2erererer8.er8.er8.er8.er8.
+}
+
+; -----------------------------------------------------------------------------
+; ch.2 (void)
+; -----------------------------------------------------------------------------
+{
+}

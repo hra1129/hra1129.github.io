@@ -1,0 +1,7942 @@
+Z80 Macro Assembler ZMA v1.0.3
+=====================================================
+Programmed by t.hara
+
+<< code >>
+[	DB 0XFE]
+000000: fe
+
+[	DW SCA_MAIN]
+000001: 00 84
+
+[	DW SCA_END_OF_PROGRAM - 1]
+000003: 3f af
+
+[	DW SCA_MAIN]
+000005: 00 84
+
+[	INCLUDE ".//sca_info.asm"] begin
+[	INCLUDE ".//sca_info.asm"] end
+
+[	INCLUDE ".//bgmdriver_d.asm"] begin
+[	INCLUDE ".//bgmdriver_d.asm"] end
+
+[	INCLUDE ".//sca_graph_def_main.asm"] begin
+[	ORG 0X8400]
+	code address: 0x008400
+
+[SCA_MAIN ::]
+	global label address: 0x008400
+
+[	LD A , 15] Z80:8cyc, R800:2cyc
+008400: 3e 0f
+
+[	LD [ FORCLR ] , A] Z80:14cyc, R800:6cyc
+008402: 32 e9 f3
+
+[	XOR A , A] Z80:5cyc, R800:1cyc
+008405: af
+
+[	LD [ BAKCLR ] , A] Z80:14cyc, R800:6cyc
+008406: 32 ea f3
+
+[	LD [ BDRCLR ] , A] Z80:14cyc, R800:6cyc
+008409: 32 eb f3
+
+[	LD [ CLIKSW ] , A] Z80:14cyc, R800:6cyc
+00840c: 32 db f3
+
+[	LD A , [ RG1SAV ]] Z80:14cyc, R800:6cyc
+00840f: 3a e0 f3
+
+[	AND A , 0XFC] Z80:8cyc, R800:2cyc
+008412: e6 fc
+
+[	OR A , 0X02] Z80:8cyc, R800:2cyc
+008414: f6 02
+
+[	LD [ RG1SAV ] , A] Z80:14cyc, R800:6cyc
+008416: 32 e0 f3
+
+[	LD A , 4] Z80:8cyc, R800:2cyc
+008419: 3e 04
+
+[	CALL CHGMOD] Z80:18cyc, R800:5cyc
+00841b: cd 5f 00
+
+[	CALL SPRITE_INIT] Z80:18cyc, R800:5cyc
+00841e: cd 2b 84
+
+[	CALL SPRITE_PATTERN_INIT] Z80:18cyc, R800:5cyc
+008421: cd 52 84
+
+[	CALL BACKGROUND_INIT] Z80:18cyc, R800:5cyc
+008424: cd 5e 84
+
+[	CALL BGM_TRANSFER] Z80:18cyc, R800:5cyc
+008427: cd fe 84
+
+[	RET] Z80:11cyc, R800:5cyc
+00842a: c9
+
+[SPRITE_INIT ::]
+	global label address: 0x00842b
+
+[	LD B , 32] Z80:8cyc, R800:2cyc
+00842b: 06 20
+
+[	XOR A , A] Z80:5cyc, R800:1cyc
+00842d: af
+
+[	LD HL , SPRITE_COLOR_DATA] Z80:11cyc, R800:3cyc
+00842e: 21 26 88
+
+[SPRITE_INIT_LOOP2 :]
+	label address: 0x008431
+
+[	PUSH HL] Z80:12cyc, R800:6cyc
+008431: e5
+
+[	PUSH BC] Z80:12cyc, R800:6cyc
+008432: c5
+
+[	PUSH AF] Z80:12cyc, R800:6cyc
+008433: f5
+
+[	LD C , [ HL ]] Z80:8cyc, R800:4cyc
+008434: 4e
+
+[	CALL SPRITE_SET_COLOR] Z80:18cyc, R800:5cyc
+008435: cd 40 84
+
+[	POP AF] Z80:11cyc, R800:5cyc
+008438: f1
+
+[	POP BC] Z80:11cyc, R800:5cyc
+008439: c1
+
+[	POP HL] Z80:11cyc, R800:5cyc
+00843a: e1
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00843b: 23
+
+[	INC A] Z80:5cyc, R800:1cyc
+00843c: 3c
+
+[	DJNZ SPRITE_INIT_LOOP2] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00843d: 10 f2
+
+[	RET] Z80:11cyc, R800:5cyc
+00843f: c9
+
+[SPRITE_SET_COLOR ::]
+	global label address: 0x008440
+
+[	LD HL , SPRITE_COLOR] Z80:11cyc, R800:3cyc
+008440: 21 00 1c
+
+[	RLCA] Z80:5cyc, R800:1cyc
+008443: 07
+
+[	RLCA] Z80:5cyc, R800:1cyc
+008444: 07
+
+[	RLCA] Z80:5cyc, R800:1cyc
+008445: 07
+
+[	RLCA] Z80:5cyc, R800:1cyc
+008446: 07
+
+[	JR NC , SPRITE_SET_COLOR_SKIP1] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+008447: 30 01
+
+[	INC H] Z80:5cyc, R800:1cyc
+008449: 24
+
+[SPRITE_SET_COLOR_SKIP1 :]
+	label address: 0x00844a
+
+[	LD L , A] Z80:5cyc, R800:2cyc
+00844a: 6f
+
+[	LD A , C] Z80:5cyc, R800:2cyc
+00844b: 79
+
+[	LD BC , 16] Z80:11cyc, R800:3cyc
+00844c: 01 10 00
+
+[	JP FILVRM] Z80:11cyc, R800:5cyc
+00844f: c3 56 00
+
+[SPRITE_PATTERN_INIT ::]
+	global label address: 0x008452
+
+[	LD HL , SPRITE_PATTERN] Z80:11cyc, R800:3cyc
+008452: 21 26 85
+
+[	LD DE , SPRITE_GENERATOR] Z80:11cyc, R800:3cyc
+008455: 11 00 38
+
+[	LD BC , 8 * 4 * 24] Z80:11cyc, R800:3cyc
+008458: 01 00 03
+
+[	JP LDIRVM] Z80:11cyc, R800:5cyc
+00845b: c3 5c 00
+
+[BACKGROUND_INIT ::]
+	global label address: 0x00845e
+
+[	LD HL , PATTERN_NAME1] Z80:11cyc, R800:3cyc
+00845e: 21 00 18
+
+[	LD BC , 768] Z80:11cyc, R800:3cyc
+008461: 01 00 03
+
+[	XOR A , A] Z80:5cyc, R800:1cyc
+008464: af
+
+[	CALL FILVRM] Z80:18cyc, R800:5cyc
+008465: cd 56 00
+
+[	LD HL , BACKGROUND_PATTERN] Z80:11cyc, R800:3cyc
+008468: 21 46 88
+
+[	LD DE , PATTERN_GENERATOR1] Z80:11cyc, R800:3cyc
+00846b: 11 00 00
+
+[	LD BC , BACKGROUND_PATTERN_END - BACKGROUND_PATTERN] Z80:11cyc, R800:3cyc
+00846e: 01 90 01
+
+[	CALL LDIRVM] Z80:18cyc, R800:5cyc
+008471: cd 5c 00
+
+[	LD HL , BACKGROUND_PATTERN] Z80:11cyc, R800:3cyc
+008474: 21 46 88
+
+[	LD DE , PATTERN_GENERATOR2] Z80:11cyc, R800:3cyc
+008477: 11 00 08
+
+[	LD BC , BACKGROUND_PATTERN_END - BACKGROUND_PATTERN] Z80:11cyc, R800:3cyc
+00847a: 01 90 01
+
+[	CALL LDIRVM] Z80:18cyc, R800:5cyc
+00847d: cd 5c 00
+
+[	LD HL , BACKGROUND_PATTERN] Z80:11cyc, R800:3cyc
+008480: 21 46 88
+
+[	LD DE , PATTERN_GENERATOR3] Z80:11cyc, R800:3cyc
+008483: 11 00 10
+
+[	LD BC , BACKGROUND_PATTERN_END - BACKGROUND_PATTERN] Z80:11cyc, R800:3cyc
+008486: 01 90 01
+
+[	CALL LDIRVM] Z80:18cyc, R800:5cyc
+008489: cd 5c 00
+
+[	LD DE , COLOR_TABLE1] Z80:11cyc, R800:3cyc
+00848c: 11 00 20
+
+[	CALL BACKGROUND_SET_COLOR] Z80:18cyc, R800:5cyc
+00848f: cd e7 84
+
+[	LD DE , COLOR_TABLE2] Z80:11cyc, R800:3cyc
+008492: 11 00 28
+
+[	CALL BACKGROUND_SET_COLOR] Z80:18cyc, R800:5cyc
+008495: cd e7 84
+
+[	LD DE , COLOR_TABLE3] Z80:11cyc, R800:3cyc
+008498: 11 00 30
+
+[	CALL BACKGROUND_SET_COLOR] Z80:18cyc, R800:5cyc
+00849b: cd e7 84
+
+[	LD HL , BACKGROUND_GRAPHIC_PATTERN] Z80:11cyc, R800:3cyc
+00849e: 21 de 89
+
+[	LD DE , PATTERN_GENERATOR1 + 64 * 8] Z80:11cyc, R800:3cyc
+0084a1: 11 00 02
+
+[	LD BC , BACKGROUND_GRAPHIC_PATTERN_END - BACKGROUND_GRAPHIC_PATTERN] Z80:11cyc, R800:3cyc
+0084a4: 01 88 01
+
+[	CALL LDIRVM] Z80:18cyc, R800:5cyc
+0084a7: cd 5c 00
+
+[	LD HL , BACKGROUND_GRAPHIC_PATTERN] Z80:11cyc, R800:3cyc
+0084aa: 21 de 89
+
+[	LD DE , PATTERN_GENERATOR2 + 64 * 8] Z80:11cyc, R800:3cyc
+0084ad: 11 00 0a
+
+[	LD BC , BACKGROUND_GRAPHIC_PATTERN_END - BACKGROUND_GRAPHIC_PATTERN] Z80:11cyc, R800:3cyc
+0084b0: 01 88 01
+
+[	CALL LDIRVM] Z80:18cyc, R800:5cyc
+0084b3: cd 5c 00
+
+[	LD HL , BACKGROUND_GRAPHIC_PATTERN] Z80:11cyc, R800:3cyc
+0084b6: 21 de 89
+
+[	LD DE , PATTERN_GENERATOR3 + 64 * 8] Z80:11cyc, R800:3cyc
+0084b9: 11 00 12
+
+[	LD BC , BACKGROUND_GRAPHIC_PATTERN_END - BACKGROUND_GRAPHIC_PATTERN] Z80:11cyc, R800:3cyc
+0084bc: 01 88 01
+
+[	CALL LDIRVM] Z80:18cyc, R800:5cyc
+0084bf: cd 5c 00
+
+[	LD HL , BACKGROUND_GRAPHIC_COLOR] Z80:11cyc, R800:3cyc
+0084c2: 21 66 8b
+
+[	LD DE , COLOR_TABLE1 + 64 * 8] Z80:11cyc, R800:3cyc
+0084c5: 11 00 22
+
+[	LD BC , BACKGROUND_GRAPHIC_COLOR_END - BACKGROUND_GRAPHIC_COLOR] Z80:11cyc, R800:3cyc
+0084c8: 01 88 01
+
+[	CALL LDIRVM] Z80:18cyc, R800:5cyc
+0084cb: cd 5c 00
+
+[	LD HL , BACKGROUND_GRAPHIC_COLOR] Z80:11cyc, R800:3cyc
+0084ce: 21 66 8b
+
+[	LD DE , COLOR_TABLE2 + 64 * 8] Z80:11cyc, R800:3cyc
+0084d1: 11 00 2a
+
+[	LD BC , BACKGROUND_GRAPHIC_COLOR_END - BACKGROUND_GRAPHIC_COLOR] Z80:11cyc, R800:3cyc
+0084d4: 01 88 01
+
+[	CALL LDIRVM] Z80:18cyc, R800:5cyc
+0084d7: cd 5c 00
+
+[	LD HL , BACKGROUND_GRAPHIC_COLOR] Z80:11cyc, R800:3cyc
+0084da: 21 66 8b
+
+[	LD DE , COLOR_TABLE3 + 64 * 8] Z80:11cyc, R800:3cyc
+0084dd: 11 00 32
+
+[	LD BC , BACKGROUND_GRAPHIC_COLOR_END - BACKGROUND_GRAPHIC_COLOR] Z80:11cyc, R800:3cyc
+0084e0: 01 88 01
+
+[	CALL LDIRVM] Z80:18cyc, R800:5cyc
+0084e3: cd 5c 00
+
+[	RET] Z80:11cyc, R800:5cyc
+0084e6: c9
+
+[BACKGROUND_SET_COLOR :]
+	label address: 0x0084e7
+
+[	XOR A , A] Z80:5cyc, R800:1cyc
+0084e7: af
+
+[	LD BC , 8] Z80:11cyc, R800:3cyc
+0084e8: 01 08 00
+
+[BACKGROUND_SET_COLOR_LOOP :]
+	label address: 0x0084eb
+
+[	PUSH AF] Z80:12cyc, R800:6cyc
+0084eb: f5
+
+[	PUSH DE] Z80:12cyc, R800:6cyc
+0084ec: d5
+
+[	PUSH BC] Z80:12cyc, R800:6cyc
+0084ed: c5
+
+[	LD HL , BACKGROUND_COLOR] Z80:11cyc, R800:3cyc
+0084ee: 21 d6 89
+
+[	CALL LDIRVM] Z80:18cyc, R800:5cyc
+0084f1: cd 5c 00
+
+[	POP BC] Z80:11cyc, R800:5cyc
+0084f4: c1
+
+[	POP DE] Z80:11cyc, R800:5cyc
+0084f5: d1
+
+[	POP AF] Z80:11cyc, R800:5cyc
+0084f6: f1
+
+[	EX DE , HL] Z80:5cyc, R800:1cyc
+0084f7: eb
+
+[	ADD HL , BC] Z80:12cyc, R800:1cyc
+0084f8: 09
+
+[	EX DE , HL] Z80:5cyc, R800:1cyc
+0084f9: eb
+
+[	DEC A] Z80:5cyc, R800:1cyc
+0084fa: 3d
+
+[	JR NZ , BACKGROUND_SET_COLOR_LOOP] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+0084fb: 20 ee
+
+[	RET] Z80:11cyc, R800:5cyc
+0084fd: c9
+
+[BGM_TRANSFER :]
+	label address: 0x0084fe
+
+[	LD A , [ RAMAD1 ]] Z80:14cyc, R800:6cyc
+0084fe: 3a 42 f3
+
+[	LD H , 0X40] Z80:8cyc, R800:2cyc
+008501: 26 40
+
+[	CALL ENASLT] Z80:18cyc, R800:5cyc
+008503: cd 24 00
+
+[	LD HL , BGM_DATA_TRANSFER_START] Z80:11cyc, R800:3cyc
+008506: 21 ee 8c
+
+[	LD DE , 0X4000] Z80:11cyc, R800:3cyc
+008509: 11 00 40
+
+[	LD BC , BGM_DATA_TRANSFER_END - BGM_DATA_TRANSFER_START] Z80:11cyc, R800:3cyc
+00850c: 01 20 22
+
+[	LDIR] Z80:23cyc(BC!=0), 18cyc(BC=0), R800:?cyc(BC!=0), 7cyc(BC=0)
+00850f: ed b0
+
+[	LD A , [ EXPTBL ]] Z80:14cyc, R800:6cyc
+008511: 3a c1 fc
+
+[	LD H , 0X40] Z80:8cyc, R800:2cyc
+008514: 26 40
+
+[	CALL ENASLT] Z80:18cyc, R800:5cyc
+008516: cd 24 00
+
+[	EI] Z80:5cyc, R800:1cyc
+008519: fb
+
+[	LD HL , BGM_TABLE] Z80:11cyc, R800:3cyc
+00851a: 21 0e af
+
+[	LD DE , SCA_BGM_TABLE_ADR] Z80:11cyc, R800:3cyc
+00851d: 11 00 83
+
+[	LD BC , BGM_TABLE_END - BGM_TABLE] Z80:11cyc, R800:3cyc
+008520: 01 32 00
+
+[	LDIR] Z80:23cyc(BC!=0), 18cyc(BC=0), R800:?cyc(BC!=0), 7cyc(BC=0)
+008523: ed b0
+
+[	RET] Z80:11cyc, R800:5cyc
+008525: c9
+
+[SPRITE_PATTERN :]
+	label address: 0x008526
+
+[	DB 0X00 , 0X01 , 0X00 , 0X03 , 0X03 , 0X03 , 0X03 , 0X07]
+008526: 00 01 00 03 03 03 03 07
+
+[	DB 0X67 , 0X7F , 0X6F , 0X6F , 0X63 , 0X3D , 0XC4 , 0X03]
+00852e: 67 7f 6f 6f 63 3d c4 03
+
+[	DB 0X00 , 0X80 , 0X80 , 0X40 , 0X40 , 0XC0 , 0XC0 , 0XE0]
+008536: 00 80 80 40 40 c0 c0 e0
+
+[	DB 0X6A , 0X72 , 0X7A , 0X7A , 0X42 , 0X7A , 0X46 , 0X80]
+00853e: 6a 72 7a 7a 42 7a 46 80
+
+[	DB 0X01 , 0X03 , 0X03 , 0X06 , 0X06 , 0X04 , 0X04 , 0X4C]
+008546: 01 03 03 06 06 04 04 4c
+
+[	DB 0XCE , 0XCF , 0XDF , 0XDF , 0XDF , 0XC3 , 0X03 , 0X00]
+00854e: ce cf df df df c3 03 00
+
+[	DB 0X00 , 0X00 , 0X00 , 0X80 , 0X80 , 0X00 , 0X00 , 0X04]
+008556: 00 00 00 80 80 00 00 04
+
+[	DB 0X84 , 0XAC , 0XBC , 0XBC , 0XBC , 0X84 , 0X80 , 0X00]
+00855e: 84 ac bc bc bc 84 80 00
+
+[	DB 0X00 , 0X20 , 0X70 , 0X70 , 0X70 , 0X70 , 0X70 , 0X70]
+008566: 00 20 70 70 70 70 70 70
+
+[	DB 0X70 , 0X30 , 0X60 , 0X20 , 0X40 , 0X20 , 0X00 , 0X00]
+00856e: 70 30 60 20 40 20 00 00
+
+[	DB 0X00 , 0X08 , 0X1C , 0X1C , 0X1C , 0X1C , 0X1C , 0X1C]
+008576: 00 08 1c 1c 1c 1c 1c 1c
+
+[	DB 0X1C , 0X0C , 0X18 , 0X08 , 0X10 , 0X08 , 0X00 , 0X00]
+00857e: 1c 0c 18 08 10 08 00 00
+
+[	DB 0X03 , 0X0D , 0X17 , 0X3F , 0X5F , 0X7F , 0XBF , 0XFF]
+008586: 03 0d 17 3f 5f 7f bf ff
+
+[	DB 0XBF , 0X7F , 0X54 , 0X3F , 0X1D , 0X0E , 0X03 , 0X00]
+00858e: bf 7f 54 3f 1d 0e 03 00
+
+[	DB 0X80 , 0X60 , 0XD0 , 0XF8 , 0XDC , 0XFC , 0XD6 , 0XDA]
+008596: 80 60 d0 f8 dc fc d6 da
+
+[	DB 0XA2 , 0X0C , 0X94 , 0X28 , 0X50 , 0X60 , 0X80 , 0X00]
+00859e: a2 0c 94 28 50 60 80 00
+
+[	DB 0X00 , 0X03 , 0X0F , 0X1F , 0X3F , 0X3F , 0X7F , 0X7F]
+0085a6: 00 03 0f 1f 3f 3f 7f 7f
+
+[	DB 0X7F , 0X3F , 0X3F , 0X00 , 0X02 , 0X01 , 0X00 , 0X00]
+0085ae: 7f 3f 3f 00 02 01 00 00
+
+[	DB 0X00 , 0X80 , 0XE0 , 0XE0 , 0XE0 , 0XE0 , 0XE8 , 0XE4]
+0085b6: 00 80 e0 e0 e0 e0 e8 e4
+
+[	DB 0XDC , 0XF8 , 0X78 , 0XF0 , 0XE0 , 0X80 , 0X00 , 0X00]
+0085be: dc f8 78 f0 e0 80 00 00
+
+[	DB 0X00 , 0X00 , 0X00 , 0X00 , 0X03 , 0X07 , 0X0F , 0X0F]
+0085c6: 00 00 00 00 03 07 0f 0f
+
+[	DB 0X0F , 0X0F , 0X07 , 0X03 , 0X00 , 0X00 , 0X00 , 0X00]
+0085ce: 0f 0f 07 03 00 00 00 00
+
+[	DB 0X00 , 0X00 , 0X00 , 0X00 , 0XC0 , 0XE0 , 0XF0 , 0XF0]
+0085d6: 00 00 00 00 c0 e0 f0 f0
+
+[	DB 0XF0 , 0XF0 , 0XE0 , 0XC0 , 0X00 , 0X00 , 0X00 , 0X00]
+0085de: f0 f0 e0 c0 00 00 00 00
+
+[	DB 0X60 , 0XF0 , 0XFC , 0XFF , 0X7F , 0X3B , 0X35 , 0X1A]
+0085e6: 60 f0 fc ff 7f 3b 35 1a
+
+[	DB 0X1C , 0X3A , 0X34 , 0X78 , 0X7C , 0X3F , 0X18 , 0X00]
+0085ee: 1c 3a 34 78 7c 3f 18 00
+
+[	DB 0X00 , 0X00 , 0X1C , 0XFE , 0XFD , 0XEA , 0X4C , 0X10]
+0085f6: 00 00 1c fe fd ea 4c 10
+
+[	DB 0X20 , 0X20 , 0X10 , 0X98 , 0X08 , 0X0C , 0X9C , 0X78]
+0085fe: 20 20 10 98 08 0c 9c 78
+
+[	DB 0X00 , 0X60 , 0X70 , 0X7C , 0X3F , 0X1F , 0X1F , 0X0F]
+008606: 00 60 70 7c 3f 1f 1f 0f
+
+[	DB 0X0F , 0X1F , 0X1F , 0X3F , 0X3F , 0X18 , 0X00 , 0X00]
+00860e: 0f 1f 1f 3f 3f 18 00 00
+
+[	DB 0X00 , 0X00 , 0X00 , 0X1C , 0XFE , 0XFC , 0XF0 , 0XE0]
+008616: 00 00 00 1c fe fc f0 e0
+
+[	DB 0XC0 , 0XC0 , 0XE0 , 0XF0 , 0XF0 , 0XF8 , 0X78 , 0X00]
+00861e: c0 c0 e0 f0 f0 f8 78 00
+
+[	DB 0X00 , 0X30 , 0X7C , 0X7F , 0X7F , 0X35 , 0X3A , 0X34]
+008626: 00 30 7c 7f 7f 35 3a 34
+
+[	DB 0X38 , 0X34 , 0X78 , 0XF9 , 0XF8 , 0XF3 , 0X4C , 0X30]
+00862e: 38 34 78 f9 f8 f3 4c 30
+
+[	DB 0X0E , 0X1F , 0X7F , 0XF5 , 0XEA , 0XC4 , 0X88 , 0X10]
+008636: 0e 1f 7f f5 ea c4 88 10
+
+[	DB 0X20 , 0XA0 , 0X10 , 0X10 , 0X08 , 0X88 , 0X70 , 0X00]
+00863e: 20 a0 10 10 08 88 70 00
+
+[	DB 0X00 , 0X00 , 0X30 , 0X3C , 0X3F , 0X1F , 0X1F , 0X1F]
+008646: 00 00 30 3c 3f 1f 1f 1f
+
+[	DB 0X1F , 0X1F , 0X3F , 0X7F , 0X7F , 0X7C , 0X30 , 0X00]
+00864e: 1f 1f 3f 7f 7f 7c 30 00
+
+[	DB 0X00 , 0X0E , 0X1E , 0X7E , 0XFC , 0XF8 , 0XF0 , 0XE0]
+008656: 00 0e 1e 7e fc f8 f0 e0
+
+[	DB 0XC0 , 0XC0 , 0XE0 , 0XE0 , 0XF0 , 0X70 , 0X00 , 0X00]
+00865e: c0 c0 e0 e0 f0 70 00 00
+
+[	DB 0X7F , 0XFF , 0XC5 , 0X40 , 0X60 , 0X20 , 0X31 , 0X17]
+008666: 7f ff c5 40 60 20 31 17
+
+[	DB 0X1F , 0X0E , 0X0F , 0X06 , 0X06 , 0X02 , 0X03 , 0X01]
+00866e: 1f 0e 0f 06 06 02 03 01
+
+[	DB 0XFE , 0XFF , 0XFF , 0XFE , 0X6A , 0XD4 , 0X84 , 0X08]
+008676: fe ff ff fe 6a d4 84 08
+
+[	DB 0X08 , 0X10 , 0X10 , 0X20 , 0X20 , 0X40 , 0X40 , 0X80]
+00867e: 08 10 10 20 20 40 40 80
+
+[	DB 0X00 , 0X7F , 0X7F , 0X3F , 0X3F , 0X1F , 0X1F , 0X0F]
+008686: 00 7f 7f 3f 3f 1f 1f 0f
+
+[	DB 0X0F , 0X07 , 0X07 , 0X03 , 0X03 , 0X01 , 0X01 , 0X00]
+00868e: 0f 07 07 03 03 01 01 00
+
+[	DB 0X00 , 0XFE , 0XFE , 0XFC , 0XFC , 0XF8 , 0XF8 , 0XF0]
+008696: 00 fe fe fc fc f8 f8 f0
+
+[	DB 0XF0 , 0XE0 , 0XE0 , 0XC0 , 0XC0 , 0X80 , 0X80 , 0X00]
+00869e: f0 e0 e0 c0 c0 80 80 00
+
+[	DB 0X00 , 0X00 , 0X13 , 0X37 , 0X0E , 0X1B , 0X93 , 0X1E]
+0086a6: 00 00 13 37 0e 1b 93 1e
+
+[	DB 0X2F , 0X1A , 0X3D , 0X3F , 0X47 , 0X0E , 0X31 , 0X00]
+0086ae: 2f 1a 3d 3f 47 0e 31 00
+
+[	DB 0X40 , 0X10 , 0X74 , 0XCC , 0XFE , 0XD8 , 0XB8 , 0XF8]
+0086b6: 40 10 74 cc fe d8 b8 f8
+
+[	DB 0X70 , 0XF4 , 0XCC , 0XF8 , 0XB8 , 0X30 , 0XC4 , 0X00]
+0086be: 70 f4 cc f8 b8 30 c4 00
+
+[	DB 0X00 , 0X00 , 0X1B , 0X39 , 0X31 , 0X0C , 0XEC , 0X03]
+0086c6: 00 00 1b 39 31 0c ec 03
+
+[	DB 0X37 , 0X27 , 0X02 , 0X30 , 0X79 , 0X71 , 0X04 , 0X00]
+0086ce: 37 27 02 30 79 71 04 00
+
+[	DB 0X40 , 0X58 , 0X38 , 0X30 , 0X02 , 0X64 , 0X40 , 0X10]
+0086d6: 40 58 38 30 02 64 40 10
+
+[	DB 0X98 , 0X38 , 0X30 , 0XC0 , 0XC0 , 0XC8 , 0X04 , 0X00]
+0086de: 98 38 30 c0 c0 c8 04 00
+
+[	DB 0X20 , 0X7D , 0X5B , 0XE7 , 0XCE , 0X74 , 0XDF , 0XFF]
+0086e6: 20 7d 5b e7 ce 74 df ff
+
+[	DB 0X6F , 0X5A , 0X74 , 0X49 , 0XC7 , 0XAE , 0X56 , 0X38]
+0086ee: 6f 5a 74 49 c7 ae 56 38
+
+[	DB 0X48 , 0XFC , 0XD4 , 0X4F , 0XBE , 0XF2 , 0XBC , 0X7C]
+0086f6: 48 fc d4 4f be f2 bc 7c
+
+[	DB 0X36 , 0X7A , 0XE6 , 0XCE , 0XB6 , 0X1C , 0XBA , 0XE7]
+0086fe: 36 7a e6 ce b6 1c ba e7
+
+[	DB 0XA1 , 0X7F , 0X7F , 0XFF , 0XF1 , 0XEF , 0XEF , 0XEF]
+008706: a1 7f 7f ff f1 ef ef ef
+
+[	DB 0XFF , 0X6F , 0X4F , 0XF6 , 0XF9 , 0XF9 , 0XFF , 0X7B]
+00870e: ff 6f 4f f6 f9 f9 ff 7b
+
+[	DB 0XCC , 0XFE , 0XFF , 0XBB , 0X7B , 0X7E , 0XF4 , 0XB6]
+008716: cc fe ff bb 7b 7e f4 b6
+
+[	DB 0XFE , 0XBF , 0X7B , 0XF6 , 0XCE , 0XFE , 0XFE , 0XEF]
+00871e: fe bf 7b f6 ce fe fe ef
+
+[	DB 0X00 , 0X00 , 0X00 , 0X01 , 0X02 , 0X03 , 0X04 , 0X05]
+008726: 00 00 00 01 02 03 04 05
+
+[	DB 0X07 , 0X06 , 0X0D , 0X0F , 0X0F , 0X0F , 0X0F , 0X0F]
+00872e: 07 06 0d 0f 0f 0f 0f 0f
+
+[	DB 0X07 , 0X3A , 0XDF , 0X7F , 0XFF , 0XFF , 0XFF , 0X5F]
+008736: 07 3a df 7f ff ff ff 5f
+
+[	DB 0XFB , 0XFC , 0XFE , 0XC7 , 0XA7 , 0XBF , 0X9F , 0XFF]
+00873e: fb fc fe c7 a7 bf 9f ff
+
+[	DB 0X00 , 0X00 , 0X00 , 0X00 , 0X01 , 0X01 , 0X03 , 0X02]
+008746: 00 00 00 00 01 01 03 02
+
+[	DB 0X01 , 0X03 , 0X06 , 0X04 , 0X04 , 0X04 , 0X06 , 0X07]
+00874e: 01 03 06 04 04 04 06 07
+
+[	DB 0X00 , 0X07 , 0X3F , 0XFF , 0XFF , 0XFF , 0XFF , 0XA3]
+008756: 00 07 3f ff ff ff ff a3
+
+[	DB 0XFD , 0X07 , 0X03 , 0X3B , 0X7B , 0X77 , 0X6F , 0X1F]
+00875e: fd 07 03 3b 7b 77 6f 1f
+
+[	DB 0XE0 , 0X9C , 0X43 , 0XE1 , 0XD0 , 0XE9 , 0XD0 , 0XEB]
+008766: e0 9c 43 e1 d0 e9 d0 eb
+
+[	DB 0X45 , 0X9F , 0XBF , 0XA3 , 0X65 , 0XBD , 0X39 , 0X9F]
+00876e: 45 9f bf a3 65 bd 39 9f
+
+[	DB 0X00 , 0X00 , 0X00 , 0X80 , 0XC0 , 0X40 , 0XE0 , 0XE0]
+008776: 00 00 00 80 c0 40 e0 e0
+
+[	DB 0X60 , 0XA0 , 0XD0 , 0XD0 , 0XD0 , 0XD0 , 0XD0 , 0X90]
+00877e: 60 a0 d0 d0 d0 d0 d0 90
+
+[	DB 0X00 , 0XE0 , 0XFC , 0XFE , 0XFF , 0XFE , 0XFF , 0XF4]
+008786: 00 e0 fc fe ff fe ff f4
+
+[	DB 0XFF , 0XE0 , 0XC0 , 0XDC , 0XDA , 0XE2 , 0XF6 , 0XF8]
+00878e: ff e0 c0 dc da e2 f6 f8
+
+[	DB 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X80 , 0X00 , 0X00]
+008796: 00 00 00 00 00 80 00 00
+
+[	DB 0X80 , 0XC0 , 0X60 , 0X20 , 0X20 , 0X20 , 0X60 , 0XE0]
+00879e: 80 c0 60 20 20 20 60 e0
+
+[	DB 0X0B , 0X04 , 0X03 , 0X01 , 0X01 , 0X01 , 0X01 , 0X00]
+0087a6: 0b 04 03 01 01 01 01 00
+
+[	DB 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
+0087ae: 00 00 00 00 00 00 00 00
+
+[	DB 0XFF , 0X1F , 0XCF , 0X2F , 0XEF , 0XFE , 0XFF , 0XFF]
+0087b6: ff 1f cf 2f ef fe ff ff
+
+[	DB 0XFF , 0XFF , 0X6F , 0X7D , 0X3E , 0X15 , 0X0C , 0X03]
+0087be: ff ff 6f 7d 3e 15 0c 03
+
+[	DB 0X07 , 0X03 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
+0087c6: 07 03 00 00 00 00 00 00
+
+[	DB 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
+0087ce: 00 00 00 00 00 00 00 00
+
+[	DB 0XFD , 0XF9 , 0X39 , 0XDB , 0XDF , 0XC7 , 0XD0 , 0X4A]
+0087d6: fd f9 39 db df c7 d0 4a
+
+[	DB 0X50 , 0X4A , 0X30 , 0X3F , 0X1F , 0X0F , 0X03 , 0X00]
+0087de: 50 4a 30 3f 1f 0f 03 00
+
+[	DB 0X4F , 0XE0 , 0X63 , 0XA5 , 0X46 , 0X9D , 0XF6 , 0XDD]
+0087e6: 4f e0 63 a5 46 9d f6 dd
+
+[	DB 0XF7 , 0XDD , 0XF6 , 0X06 , 0X8C , 0X18 , 0X70 , 0XC0]
+0087ee: f7 dd f6 06 8c 18 70 c0
+
+[	DB 0X30 , 0X60 , 0XC0 , 0X80 , 0X80 , 0X80 , 0X80 , 0X00]
+0087f6: 30 60 c0 80 80 80 80 00
+
+[	DB 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
+0087fe: 00 00 00 00 00 00 00 00
+
+[	DB 0XBF , 0X9F , 0X9C , 0XDA , 0XF9 , 0XE2 , 0X09 , 0XA2]
+008806: bf 9f 9c da f9 e2 09 a2
+
+[	DB 0X08 , 0XA2 , 0X08 , 0XF8 , 0XF0 , 0XE0 , 0X80 , 0X00]
+00880e: 08 a2 08 f8 f0 e0 80 00
+
+[	DB 0XC0 , 0X80 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
+008816: c0 80 00 00 00 00 00 00
+
+[	DB 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
+00881e: 00 00 00 00 00 00 00 00
+
+[SPRITE_COLOR_DATA :]
+	label address: 0x008826
+
+[	DB 0X01 , 0X4E , 0X01 , 0X44 , 0X01 , 0X44 , 0X01 , 0X44]
+008826: 01 4e 01 44 01 44 01 44
+
+[	DB 0X01 , 0X44 , 0X01 , 0X44 , 0X01 , 0X44 , 0X04 , 0X04]
+00882e: 01 44 01 44 01 44 04 04
+
+[	DB 0X04 , 0X04 , 0X04 , 0X04 , 0X04 , 0X04 , 0X04 , 0X04]
+008836: 04 04 04 04 04 04 04 04
+
+[	DB 0X04 , 0X04 , 0X04 , 0X04 , 0X04 , 0X06 , 0X06 , 0X06]
+00883e: 04 04 04 04 04 06 06 06
+
+[	INCLUDE ".//sca_font.asm"] begin
+[BACKGROUND_PATTERN :]
+	label address: 0x008846
+
+[	DB 0X00]
+008846: 00
+
+[	DB 0X00]
+008847: 00
+
+[	DB 0X00]
+008848: 00
+
+[	DB 0X00]
+008849: 00
+
+[	DB 0X00]
+00884a: 00
+
+[	DB 0X00]
+00884b: 00
+
+[	DB 0X00]
+00884c: 00
+
+[	DB 0X00]
+00884d: 00
+
+[	DB 0X7C]
+00884e: 7c
+
+[	DB 0XFE]
+00884f: fe
+
+[	DB 0XC6]
+008850: c6
+
+[	DB 0XC6]
+008851: c6
+
+[	DB 0XC6]
+008852: c6
+
+[	DB 0XFE]
+008853: fe
+
+[	DB 0X7C]
+008854: 7c
+
+[	DB 0X00]
+008855: 00
+
+[	DB 0X38]
+008856: 38
+
+[	DB 0X38]
+008857: 38
+
+[	DB 0X18]
+008858: 18
+
+[	DB 0X18]
+008859: 18
+
+[	DB 0X18]
+00885a: 18
+
+[	DB 0X18]
+00885b: 18
+
+[	DB 0X18]
+00885c: 18
+
+[	DB 0X00]
+00885d: 00
+
+[	DB 0XFC]
+00885e: fc
+
+[	DB 0XFE]
+00885f: fe
+
+[	DB 0X06]
+008860: 06
+
+[	DB 0X7C]
+008861: 7c
+
+[	DB 0XC0]
+008862: c0
+
+[	DB 0XFE]
+008863: fe
+
+[	DB 0XFE]
+008864: fe
+
+[	DB 0X00]
+008865: 00
+
+[	DB 0XFC]
+008866: fc
+
+[	DB 0XFE]
+008867: fe
+
+[	DB 0X06]
+008868: 06
+
+[	DB 0X7C]
+008869: 7c
+
+[	DB 0X06]
+00886a: 06
+
+[	DB 0XFE]
+00886b: fe
+
+[	DB 0XFC]
+00886c: fc
+
+[	DB 0X00]
+00886d: 00
+
+[	DB 0X3C]
+00886e: 3c
+
+[	DB 0X7C]
+00886f: 7c
+
+[	DB 0XEC]
+008870: ec
+
+[	DB 0XCC]
+008871: cc
+
+[	DB 0XFE]
+008872: fe
+
+[	DB 0XFE]
+008873: fe
+
+[	DB 0X0C]
+008874: 0c
+
+[	DB 0X00]
+008875: 00
+
+[	DB 0XFE]
+008876: fe
+
+[	DB 0XFE]
+008877: fe
+
+[	DB 0XC0]
+008878: c0
+
+[	DB 0XFC]
+008879: fc
+
+[	DB 0X06]
+00887a: 06
+
+[	DB 0XFE]
+00887b: fe
+
+[	DB 0XFC]
+00887c: fc
+
+[	DB 0X00]
+00887d: 00
+
+[	DB 0X3C]
+00887e: 3c
+
+[	DB 0X7C]
+00887f: 7c
+
+[	DB 0XC0]
+008880: c0
+
+[	DB 0XFC]
+008881: fc
+
+[	DB 0XC6]
+008882: c6
+
+[	DB 0XFE]
+008883: fe
+
+[	DB 0X7C]
+008884: 7c
+
+[	DB 0X00]
+008885: 00
+
+[	DB 0XFE]
+008886: fe
+
+[	DB 0XFE]
+008887: fe
+
+[	DB 0XCC]
+008888: cc
+
+[	DB 0X0C]
+008889: 0c
+
+[	DB 0X18]
+00888a: 18
+
+[	DB 0X18]
+00888b: 18
+
+[	DB 0X18]
+00888c: 18
+
+[	DB 0X00]
+00888d: 00
+
+[	DB 0X7C]
+00888e: 7c
+
+[	DB 0XFE]
+00888f: fe
+
+[	DB 0XC6]
+008890: c6
+
+[	DB 0X7C]
+008891: 7c
+
+[	DB 0XC6]
+008892: c6
+
+[	DB 0XFE]
+008893: fe
+
+[	DB 0X7C]
+008894: 7c
+
+[	DB 0X00]
+008895: 00
+
+[	DB 0X7C]
+008896: 7c
+
+[	DB 0XFE]
+008897: fe
+
+[	DB 0XC6]
+008898: c6
+
+[	DB 0X7E]
+008899: 7e
+
+[	DB 0X06]
+00889a: 06
+
+[	DB 0X7C]
+00889b: 7c
+
+[	DB 0X78]
+00889c: 78
+
+[	DB 0X00]
+00889d: 00
+
+[	DB 0X7C]
+00889e: 7c
+
+[	DB 0XFE]
+00889f: fe
+
+[	DB 0XC6]
+0088a0: c6
+
+[	DB 0XC6]
+0088a1: c6
+
+[	DB 0XFE]
+0088a2: fe
+
+[	DB 0XFE]
+0088a3: fe
+
+[	DB 0XC6]
+0088a4: c6
+
+[	DB 0X00]
+0088a5: 00
+
+[	DB 0XFC]
+0088a6: fc
+
+[	DB 0XFE]
+0088a7: fe
+
+[	DB 0XC6]
+0088a8: c6
+
+[	DB 0XFC]
+0088a9: fc
+
+[	DB 0XC6]
+0088aa: c6
+
+[	DB 0XFE]
+0088ab: fe
+
+[	DB 0XFC]
+0088ac: fc
+
+[	DB 0X00]
+0088ad: 00
+
+[	DB 0X7C]
+0088ae: 7c
+
+[	DB 0XFC]
+0088af: fc
+
+[	DB 0XC0]
+0088b0: c0
+
+[	DB 0XC0]
+0088b1: c0
+
+[	DB 0XC0]
+0088b2: c0
+
+[	DB 0XFC]
+0088b3: fc
+
+[	DB 0X7C]
+0088b4: 7c
+
+[	DB 0X00]
+0088b5: 00
+
+[	DB 0XF8]
+0088b6: f8
+
+[	DB 0XFC]
+0088b7: fc
+
+[	DB 0XCE]
+0088b8: ce
+
+[	DB 0XC6]
+0088b9: c6
+
+[	DB 0XCE]
+0088ba: ce
+
+[	DB 0XFC]
+0088bb: fc
+
+[	DB 0XF8]
+0088bc: f8
+
+[	DB 0X00]
+0088bd: 00
+
+[	DB 0XFE]
+0088be: fe
+
+[	DB 0XFE]
+0088bf: fe
+
+[	DB 0XC0]
+0088c0: c0
+
+[	DB 0XFC]
+0088c1: fc
+
+[	DB 0XC0]
+0088c2: c0
+
+[	DB 0XFE]
+0088c3: fe
+
+[	DB 0XFE]
+0088c4: fe
+
+[	DB 0X00]
+0088c5: 00
+
+[	DB 0XFE]
+0088c6: fe
+
+[	DB 0XFE]
+0088c7: fe
+
+[	DB 0XC0]
+0088c8: c0
+
+[	DB 0XFC]
+0088c9: fc
+
+[	DB 0XFC]
+0088ca: fc
+
+[	DB 0XC0]
+0088cb: c0
+
+[	DB 0XC0]
+0088cc: c0
+
+[	DB 0X00]
+0088cd: 00
+
+[	DB 0X7C]
+0088ce: 7c
+
+[	DB 0XFC]
+0088cf: fc
+
+[	DB 0XC0]
+0088d0: c0
+
+[	DB 0XDE]
+0088d1: de
+
+[	DB 0XC6]
+0088d2: c6
+
+[	DB 0XFE]
+0088d3: fe
+
+[	DB 0X7C]
+0088d4: 7c
+
+[	DB 0X00]
+0088d5: 00
+
+[	DB 0XC6]
+0088d6: c6
+
+[	DB 0XC6]
+0088d7: c6
+
+[	DB 0XC6]
+0088d8: c6
+
+[	DB 0XFE]
+0088d9: fe
+
+[	DB 0XC6]
+0088da: c6
+
+[	DB 0XC6]
+0088db: c6
+
+[	DB 0XC6]
+0088dc: c6
+
+[	DB 0X00]
+0088dd: 00
+
+[	DB 0X3C]
+0088de: 3c
+
+[	DB 0X18]
+0088df: 18
+
+[	DB 0X18]
+0088e0: 18
+
+[	DB 0X18]
+0088e1: 18
+
+[	DB 0X18]
+0088e2: 18
+
+[	DB 0X3C]
+0088e3: 3c
+
+[	DB 0X3C]
+0088e4: 3c
+
+[	DB 0X00]
+0088e5: 00
+
+[	DB 0X1E]
+0088e6: 1e
+
+[	DB 0X0C]
+0088e7: 0c
+
+[	DB 0X0C]
+0088e8: 0c
+
+[	DB 0X0C]
+0088e9: 0c
+
+[	DB 0XCC]
+0088ea: cc
+
+[	DB 0XFC]
+0088eb: fc
+
+[	DB 0X78]
+0088ec: 78
+
+[	DB 0X00]
+0088ed: 00
+
+[	DB 0XCE]
+0088ee: ce
+
+[	DB 0XDC]
+0088ef: dc
+
+[	DB 0XF8]
+0088f0: f8
+
+[	DB 0XF8]
+0088f1: f8
+
+[	DB 0XDC]
+0088f2: dc
+
+[	DB 0XCE]
+0088f3: ce
+
+[	DB 0XC6]
+0088f4: c6
+
+[	DB 0X00]
+0088f5: 00
+
+[	DB 0XC0]
+0088f6: c0
+
+[	DB 0XC0]
+0088f7: c0
+
+[	DB 0XC0]
+0088f8: c0
+
+[	DB 0XC0]
+0088f9: c0
+
+[	DB 0XC0]
+0088fa: c0
+
+[	DB 0XFE]
+0088fb: fe
+
+[	DB 0XFE]
+0088fc: fe
+
+[	DB 0X00]
+0088fd: 00
+
+[	DB 0XC6]
+0088fe: c6
+
+[	DB 0XEE]
+0088ff: ee
+
+[	DB 0XFE]
+008900: fe
+
+[	DB 0XD6]
+008901: d6
+
+[	DB 0XC6]
+008902: c6
+
+[	DB 0XC6]
+008903: c6
+
+[	DB 0XC6]
+008904: c6
+
+[	DB 0X00]
+008905: 00
+
+[	DB 0XE6]
+008906: e6
+
+[	DB 0XE6]
+008907: e6
+
+[	DB 0XF6]
+008908: f6
+
+[	DB 0XD6]
+008909: d6
+
+[	DB 0XDE]
+00890a: de
+
+[	DB 0XCE]
+00890b: ce
+
+[	DB 0XCE]
+00890c: ce
+
+[	DB 0X00]
+00890d: 00
+
+[	DB 0X7C]
+00890e: 7c
+
+[	DB 0XFE]
+00890f: fe
+
+[	DB 0XC6]
+008910: c6
+
+[	DB 0XC6]
+008911: c6
+
+[	DB 0XC6]
+008912: c6
+
+[	DB 0XFE]
+008913: fe
+
+[	DB 0X7C]
+008914: 7c
+
+[	DB 0X00]
+008915: 00
+
+[	DB 0XFC]
+008916: fc
+
+[	DB 0XFE]
+008917: fe
+
+[	DB 0XC6]
+008918: c6
+
+[	DB 0XFE]
+008919: fe
+
+[	DB 0XFC]
+00891a: fc
+
+[	DB 0XC0]
+00891b: c0
+
+[	DB 0XC0]
+00891c: c0
+
+[	DB 0X00]
+00891d: 00
+
+[	DB 0X7C]
+00891e: 7c
+
+[	DB 0XFE]
+00891f: fe
+
+[	DB 0XC6]
+008920: c6
+
+[	DB 0XC6]
+008921: c6
+
+[	DB 0XDE]
+008922: de
+
+[	DB 0XFC]
+008923: fc
+
+[	DB 0X7A]
+008924: 7a
+
+[	DB 0X00]
+008925: 00
+
+[	DB 0XFC]
+008926: fc
+
+[	DB 0XFE]
+008927: fe
+
+[	DB 0XC6]
+008928: c6
+
+[	DB 0XFE]
+008929: fe
+
+[	DB 0XFC]
+00892a: fc
+
+[	DB 0XDE]
+00892b: de
+
+[	DB 0XCE]
+00892c: ce
+
+[	DB 0X00]
+00892d: 00
+
+[	DB 0X7C]
+00892e: 7c
+
+[	DB 0XFC]
+00892f: fc
+
+[	DB 0XC0]
+008930: c0
+
+[	DB 0X7C]
+008931: 7c
+
+[	DB 0X06]
+008932: 06
+
+[	DB 0XFE]
+008933: fe
+
+[	DB 0XFC]
+008934: fc
+
+[	DB 0X00]
+008935: 00
+
+[	DB 0X7E]
+008936: 7e
+
+[	DB 0X7E]
+008937: 7e
+
+[	DB 0X18]
+008938: 18
+
+[	DB 0X18]
+008939: 18
+
+[	DB 0X18]
+00893a: 18
+
+[	DB 0X18]
+00893b: 18
+
+[	DB 0X18]
+00893c: 18
+
+[	DB 0X00]
+00893d: 00
+
+[	DB 0XC6]
+00893e: c6
+
+[	DB 0XC6]
+00893f: c6
+
+[	DB 0XC6]
+008940: c6
+
+[	DB 0XC6]
+008941: c6
+
+[	DB 0XC6]
+008942: c6
+
+[	DB 0XFE]
+008943: fe
+
+[	DB 0X7C]
+008944: 7c
+
+[	DB 0X00]
+008945: 00
+
+[	DB 0XC6]
+008946: c6
+
+[	DB 0XC6]
+008947: c6
+
+[	DB 0X6C]
+008948: 6c
+
+[	DB 0X6C]
+008949: 6c
+
+[	DB 0X38]
+00894a: 38
+
+[	DB 0X38]
+00894b: 38
+
+[	DB 0X10]
+00894c: 10
+
+[	DB 0X00]
+00894d: 00
+
+[	DB 0XC6]
+00894e: c6
+
+[	DB 0XC6]
+00894f: c6
+
+[	DB 0XC6]
+008950: c6
+
+[	DB 0XD6]
+008951: d6
+
+[	DB 0XFE]
+008952: fe
+
+[	DB 0XEE]
+008953: ee
+
+[	DB 0XC6]
+008954: c6
+
+[	DB 0X00]
+008955: 00
+
+[	DB 0XC6]
+008956: c6
+
+[	DB 0XC6]
+008957: c6
+
+[	DB 0X6C]
+008958: 6c
+
+[	DB 0X38]
+008959: 38
+
+[	DB 0X6C]
+00895a: 6c
+
+[	DB 0XC6]
+00895b: c6
+
+[	DB 0XC6]
+00895c: c6
+
+[	DB 0X00]
+00895d: 00
+
+[	DB 0X66]
+00895e: 66
+
+[	DB 0X66]
+00895f: 66
+
+[	DB 0X7E]
+008960: 7e
+
+[	DB 0X3C]
+008961: 3c
+
+[	DB 0X18]
+008962: 18
+
+[	DB 0X18]
+008963: 18
+
+[	DB 0X18]
+008964: 18
+
+[	DB 0X00]
+008965: 00
+
+[	DB 0XFE]
+008966: fe
+
+[	DB 0XFE]
+008967: fe
+
+[	DB 0X1C]
+008968: 1c
+
+[	DB 0X38]
+008969: 38
+
+[	DB 0X70]
+00896a: 70
+
+[	DB 0XFE]
+00896b: fe
+
+[	DB 0XFE]
+00896c: fe
+
+[	DB 0X00]
+00896d: 00
+
+[	DB 0X10]
+00896e: 10
+
+[	DB 0X38]
+00896f: 38
+
+[	DB 0X38]
+008970: 38
+
+[	DB 0X38]
+008971: 38
+
+[	DB 0X10]
+008972: 10
+
+[	DB 0X00]
+008973: 00
+
+[	DB 0X10]
+008974: 10
+
+[	DB 0X00]
+008975: 00
+
+[	DB 0XFF]
+008976: ff
+
+[	DB 0XFF]
+008977: ff
+
+[	DB 0XFF]
+008978: ff
+
+[	DB 0XFF]
+008979: ff
+
+[	DB 0XFF]
+00897a: ff
+
+[	DB 0XFF]
+00897b: ff
+
+[	DB 0XFF]
+00897c: ff
+
+[	DB 0XFF]
+00897d: ff
+
+[	DB 0X38]
+00897e: 38
+
+[	DB 0X44]
+00897f: 44
+
+[	DB 0XBA]
+008980: ba
+
+[	DB 0XA2]
+008981: a2
+
+[	DB 0XBA]
+008982: ba
+
+[	DB 0X44]
+008983: 44
+
+[	DB 0X38]
+008984: 38
+
+[	DB 0X00]
+008985: 00
+
+[	DB 0X00]
+008986: 00
+
+[	DB 0X00]
+008987: 00
+
+[	DB 0X00]
+008988: 00
+
+[	DB 0X00]
+008989: 00
+
+[	DB 0X00]
+00898a: 00
+
+[	DB 0X18]
+00898b: 18
+
+[	DB 0X18]
+00898c: 18
+
+[	DB 0X00]
+00898d: 00
+
+[	DB 0X03]
+00898e: 03
+
+[	DB 0X0F]
+00898f: 0f
+
+[	DB 0X1F]
+008990: 1f
+
+[	DB 0X3F]
+008991: 3f
+
+[	DB 0X7F]
+008992: 7f
+
+[	DB 0X7F]
+008993: 7f
+
+[	DB 0XFF]
+008994: ff
+
+[	DB 0XFF]
+008995: ff
+
+[	DB 0XC0]
+008996: c0
+
+[	DB 0XF0]
+008997: f0
+
+[	DB 0XF8]
+008998: f8
+
+[	DB 0XFC]
+008999: fc
+
+[	DB 0XFE]
+00899a: fe
+
+[	DB 0XFE]
+00899b: fe
+
+[	DB 0XFF]
+00899c: ff
+
+[	DB 0XFF]
+00899d: ff
+
+[	DB 0XFF]
+00899e: ff
+
+[	DB 0XFF]
+00899f: ff
+
+[	DB 0X7F]
+0089a0: 7f
+
+[	DB 0X7F]
+0089a1: 7f
+
+[	DB 0X3F]
+0089a2: 3f
+
+[	DB 0X1F]
+0089a3: 1f
+
+[	DB 0X0F]
+0089a4: 0f
+
+[	DB 0X03]
+0089a5: 03
+
+[	DB 0XFF]
+0089a6: ff
+
+[	DB 0XFF]
+0089a7: ff
+
+[	DB 0XFE]
+0089a8: fe
+
+[	DB 0XFE]
+0089a9: fe
+
+[	DB 0XFC]
+0089aa: fc
+
+[	DB 0XF8]
+0089ab: f8
+
+[	DB 0XF0]
+0089ac: f0
+
+[	DB 0XC0]
+0089ad: c0
+
+[	DB 0XFE]
+0089ae: fe
+
+[	DB 0X00]
+0089af: 00
+
+[	DB 0X00]
+0089b0: 00
+
+[	DB 0X7C]
+0089b1: 7c
+
+[	DB 0X00]
+0089b2: 00
+
+[	DB 0X00]
+0089b3: 00
+
+[	DB 0XFE]
+0089b4: fe
+
+[	DB 0X00]
+0089b5: 00
+
+[	DB 0X1C]
+0089b6: 1c
+
+[	DB 0XE0]
+0089b7: e0
+
+[	DB 0X3C]
+0089b8: 3c
+
+[	DB 0XE0]
+0089b9: e0
+
+[	DB 0X3E]
+0089ba: 3e
+
+[	DB 0XE0]
+0089bb: e0
+
+[	DB 0X1E]
+0089bc: 1e
+
+[	DB 0X00]
+0089bd: 00
+
+[	DB 0XE8]
+0089be: e8
+
+[	DB 0X48]
+0089bf: 48
+
+[	DB 0XE8]
+0089c0: e8
+
+[	DB 0X48]
+0089c1: 48
+
+[	DB 0XE8]
+0089c2: e8
+
+[	DB 0XAA]
+0089c3: aa
+
+[	DB 0XE6]
+0089c4: e6
+
+[	DB 0X00]
+0089c5: 00
+
+[	DB 0X05]
+0089c6: 05
+
+[	DB 0XC5]
+0089c7: c5
+
+[	DB 0X00]
+0089c8: 00
+
+[	DB 0XC4]
+0089c9: c4
+
+[	DB 0X08]
+0089ca: 08
+
+[	DB 0X13]
+0089cb: 13
+
+[	DB 0XE1]
+0089cc: e1
+
+[	DB 0X03]
+0089cd: 03
+
+[	DB 0X00]
+0089ce: 00
+
+[	DB 0X7E]
+0089cf: 7e
+
+[	DB 0X42]
+0089d0: 42
+
+[	DB 0X42]
+0089d1: 42
+
+[	DB 0X42]
+0089d2: 42
+
+[	DB 0XC2]
+0089d3: c2
+
+[	DB 0X7E]
+0089d4: 7e
+
+[	DB 0X80]
+0089d5: 80
+
+[BACKGROUND_PATTERN_END :]
+	label address: 0x0089d6
+
+[BACKGROUND_COLOR :]
+	label address: 0x0089d6
+
+[	DB 0XF0]
+0089d6: f0
+
+[	DB 0XF0]
+0089d7: f0
+
+[	DB 0X70]
+0089d8: 70
+
+[	DB 0X70]
+0089d9: 70
+
+[	DB 0X50]
+0089da: 50
+
+[	DB 0X50]
+0089db: 50
+
+[	DB 0X40]
+0089dc: 40
+
+[	DB 0X40]
+0089dd: 40
+
+[	INCLUDE ".//sca_font.asm"] end
+
+[	INCLUDE ".//sca_graphic.asm"] begin
+[BACKGROUND_GRAPHIC_PATTERN :]
+	label address: 0x0089de
+
+[	DB 0X03]
+0089de: 03
+
+[	DB 0X0F]
+0089df: 0f
+
+[	DB 0X1F]
+0089e0: 1f
+
+[	DB 0X3F]
+0089e1: 3f
+
+[	DB 0X7F]
+0089e2: 7f
+
+[	DB 0X7F]
+0089e3: 7f
+
+[	DB 0XFF]
+0089e4: ff
+
+[	DB 0XFF]
+0089e5: ff
+
+[	DB 0XE0]
+0089e6: e0
+
+[	DB 0XF0]
+0089e7: f0
+
+[	DB 0XF8]
+0089e8: f8
+
+[	DB 0XFC]
+0089e9: fc
+
+[	DB 0XFE]
+0089ea: fe
+
+[	DB 0XFE]
+0089eb: fe
+
+[	DB 0XAA]
+0089ec: aa
+
+[	DB 0X74]
+0089ed: 74
+
+[	DB 0XFD]
+0089ee: fd
+
+[	DB 0XFF]
+0089ef: ff
+
+[	DB 0XBA]
+0089f0: ba
+
+[	DB 0X50]
+0089f1: 50
+
+[	DB 0X7F]
+0089f2: 7f
+
+[	DB 0X3D]
+0089f3: 3d
+
+[	DB 0X03]
+0089f4: 03
+
+[	DB 0X07]
+0089f5: 07
+
+[	DB 0XA8]
+0089f6: a8
+
+[	DB 0X40]
+0089f7: 40
+
+[	DB 0X80]
+0089f8: 80
+
+[	DB 0XFD]
+0089f9: fd
+
+[	DB 0XEA]
+0089fa: ea
+
+[	DB 0X54]
+0089fb: 54
+
+[	DB 0XC0]
+0089fc: c0
+
+[	DB 0XE0]
+0089fd: e0
+
+[	DB 0X90]
+0089fe: 90
+
+[	DB 0X02]
+0089ff: 02
+
+[	DB 0X2A]
+008a00: 2a
+
+[	DB 0X50]
+008a01: 50
+
+[	DB 0X52]
+008a02: 52
+
+[	DB 0X04]
+008a03: 04
+
+[	DB 0X24]
+008a04: 24
+
+[	DB 0X05]
+008a05: 05
+
+[	DB 0X90]
+008a06: 90
+
+[	DB 0X94]
+008a07: 94
+
+[	DB 0X82]
+008a08: 82
+
+[	DB 0X12]
+008a09: 12
+
+[	DB 0X20]
+008a0a: 20
+
+[	DB 0X24]
+008a0b: 24
+
+[	DB 0X8A]
+008a0c: 8a
+
+[	DB 0X4A]
+008a0d: 4a
+
+[	DB 0XA1]
+008a0e: a1
+
+[	DB 0XA8]
+008a0f: a8
+
+[	DB 0XA4]
+008a10: a4
+
+[	DB 0X05]
+008a11: 05
+
+[	DB 0X20]
+008a12: 20
+
+[	DB 0X52]
+008a13: 52
+
+[	DB 0X52]
+008a14: 52
+
+[	DB 0X04]
+008a15: 04
+
+[	DB 0X40]
+008a16: 40
+
+[	DB 0X08]
+008a17: 08
+
+[	DB 0X24]
+008a18: 24
+
+[	DB 0X24]
+008a19: 24
+
+[	DB 0X10]
+008a1a: 10
+
+[	DB 0XA4]
+008a1b: a4
+
+[	DB 0XA4]
+008a1c: a4
+
+[	DB 0X42]
+008a1d: 42
+
+[	DB 0XC2]
+008a1e: c2
+
+[	DB 0X63]
+008a1f: 63
+
+[	DB 0X7B]
+008a20: 7b
+
+[	DB 0X3E]
+008a21: 3e
+
+[	DB 0X1F]
+008a22: 1f
+
+[	DB 0X7D]
+008a23: 7d
+
+[	DB 0XFF]
+008a24: ff
+
+[	DB 0X77]
+008a25: 77
+
+[	DB 0X07]
+008a26: 07
+
+[	DB 0X1E]
+008a27: 1e
+
+[	DB 0XFC]
+008a28: fc
+
+[	DB 0XEC]
+008a29: ec
+
+[	DB 0XF8]
+008a2a: f8
+
+[	DB 0XB8]
+008a2b: b8
+
+[	DB 0XFC]
+008a2c: fc
+
+[	DB 0XEF]
+008a2d: ef
+
+[	DB 0X7F]
+008a2e: 7f
+
+[	DB 0X5D]
+008a2f: 5d
+
+[	DB 0X37]
+008a30: 37
+
+[	DB 0X3F]
+008a31: 3f
+
+[	DB 0X7E]
+008a32: 7e
+
+[	DB 0X4F]
+008a33: 4f
+
+[	DB 0X87]
+008a34: 87
+
+[	DB 0X81]
+008a35: 81
+
+[	DB 0XFC]
+008a36: fc
+
+[	DB 0XB8]
+008a37: b8
+
+[	DB 0XF8]
+008a38: f8
+
+[	DB 0XA8]
+008a39: a8
+
+[	DB 0XF8]
+008a3a: f8
+
+[	DB 0XFC]
+008a3b: fc
+
+[	DB 0XC6]
+008a3c: c6
+
+[	DB 0X00]
+008a3d: 00
+
+[	DB 0X7F]
+008a3e: 7f
+
+[	DB 0X90]
+008a3f: 90
+
+[	DB 0X90]
+008a40: 90
+
+[	DB 0X93]
+008a41: 93
+
+[	DB 0X92]
+008a42: 92
+
+[	DB 0X93]
+008a43: 93
+
+[	DB 0X92]
+008a44: 92
+
+[	DB 0X93]
+008a45: 93
+
+[	DB 0XFE]
+008a46: fe
+
+[	DB 0X07]
+008a47: 07
+
+[	DB 0X07]
+008a48: 07
+
+[	DB 0XE7]
+008a49: e7
+
+[	DB 0XA7]
+008a4a: a7
+
+[	DB 0X47]
+008a4b: 47
+
+[	DB 0XA7]
+008a4c: a7
+
+[	DB 0X47]
+008a4d: 47
+
+[	DB 0X92]
+008a4e: 92
+
+[	DB 0X90]
+008a4f: 90
+
+[	DB 0X90]
+008a50: 90
+
+[	DB 0X9F]
+008a51: 9f
+
+[	DB 0XA0]
+008a52: a0
+
+[	DB 0XC0]
+008a53: c0
+
+[	DB 0XC1]
+008a54: c1
+
+[	DB 0XFF]
+008a55: ff
+
+[	DB 0XA7]
+008a56: a7
+
+[	DB 0X07]
+008a57: 07
+
+[	DB 0X07]
+008a58: 07
+
+[	DB 0XFF]
+008a59: ff
+
+[	DB 0X17]
+008a5a: 17
+
+[	DB 0XAB]
+008a5b: ab
+
+[	DB 0X55]
+008a5c: 55
+
+[	DB 0XFF]
+008a5d: ff
+
+[	DB 0X7F]
+008a5e: 7f
+
+[	DB 0X80]
+008a5f: 80
+
+[	DB 0X80]
+008a60: 80
+
+[	DB 0X9E]
+008a61: 9e
+
+[	DB 0XBE]
+008a62: be
+
+[	DB 0XB0]
+008a63: b0
+
+[	DB 0XB0]
+008a64: b0
+
+[	DB 0XBC]
+008a65: bc
+
+[	DB 0XFE]
+008a66: fe
+
+[	DB 0X01]
+008a67: 01
+
+[	DB 0X01]
+008a68: 01
+
+[	DB 0XF9]
+008a69: f9
+
+[	DB 0XFD]
+008a6a: fd
+
+[	DB 0XCD]
+008a6b: cd
+
+[	DB 0XCD]
+008a6c: cd
+
+[	DB 0XCD]
+008a6d: cd
+
+[	DB 0X9E]
+008a6e: 9e
+
+[	DB 0X86]
+008a6f: 86
+
+[	DB 0X86]
+008a70: 86
+
+[	DB 0XBE]
+008a71: be
+
+[	DB 0XBC]
+008a72: bc
+
+[	DB 0X80]
+008a73: 80
+
+[	DB 0X80]
+008a74: 80
+
+[	DB 0X7F]
+008a75: 7f
+
+[	DB 0XFD]
+008a76: fd
+
+[	DB 0XF9]
+008a77: f9
+
+[	DB 0XC1]
+008a78: c1
+
+[	DB 0XC1]
+008a79: c1
+
+[	DB 0XC1]
+008a7a: c1
+
+[	DB 0X01]
+008a7b: 01
+
+[	DB 0X01]
+008a7c: 01
+
+[	DB 0XFE]
+008a7d: fe
+
+[	DB 0X7F]
+008a7e: 7f
+
+[	DB 0X80]
+008a7f: 80
+
+[	DB 0X80]
+008a80: 80
+
+[	DB 0X9E]
+008a81: 9e
+
+[	DB 0XBE]
+008a82: be
+
+[	DB 0XB0]
+008a83: b0
+
+[	DB 0XB0]
+008a84: b0
+
+[	DB 0XBC]
+008a85: bc
+
+[	DB 0XFE]
+008a86: fe
+
+[	DB 0X01]
+008a87: 01
+
+[	DB 0X01]
+008a88: 01
+
+[	DB 0XCD]
+008a89: cd
+
+[	DB 0XCD]
+008a8a: cd
+
+[	DB 0XCD]
+008a8b: cd
+
+[	DB 0XCD]
+008a8c: cd
+
+[	DB 0XFD]
+008a8d: fd
+
+[	DB 0X9E]
+008a8e: 9e
+
+[	DB 0X86]
+008a8f: 86
+
+[	DB 0X86]
+008a90: 86
+
+[	DB 0XBE]
+008a91: be
+
+[	DB 0XBC]
+008a92: bc
+
+[	DB 0X80]
+008a93: 80
+
+[	DB 0X80]
+008a94: 80
+
+[	DB 0X7F]
+008a95: 7f
+
+[	DB 0XFD]
+008a96: fd
+
+[	DB 0XCD]
+008a97: cd
+
+[	DB 0XCD]
+008a98: cd
+
+[	DB 0XCD]
+008a99: cd
+
+[	DB 0XCD]
+008a9a: cd
+
+[	DB 0X01]
+008a9b: 01
+
+[	DB 0X01]
+008a9c: 01
+
+[	DB 0XFE]
+008a9d: fe
+
+[	DB 0X00]
+008a9e: 00
+
+[	DB 0X00]
+008a9f: 00
+
+[	DB 0X0C]
+008aa0: 0c
+
+[	DB 0X1E]
+008aa1: 1e
+
+[	DB 0X78]
+008aa2: 78
+
+[	DB 0X00]
+008aa3: 00
+
+[	DB 0X00]
+008aa4: 00
+
+[	DB 0X00]
+008aa5: 00
+
+[	DB 0X00]
+008aa6: 00
+
+[	DB 0X00]
+008aa7: 00
+
+[	DB 0X00]
+008aa8: 00
+
+[	DB 0X00]
+008aa9: 00
+
+[	DB 0X00]
+008aaa: 00
+
+[	DB 0X0C]
+008aab: 0c
+
+[	DB 0X1E]
+008aac: 1e
+
+[	DB 0X78]
+008aad: 78
+
+[	DB 0X0C]
+008aae: 0c
+
+[	DB 0X1E]
+008aaf: 1e
+
+[	DB 0X78]
+008ab0: 78
+
+[	DB 0X00]
+008ab1: 00
+
+[	DB 0X00]
+008ab2: 00
+
+[	DB 0X00]
+008ab3: 00
+
+[	DB 0X00]
+008ab4: 00
+
+[	DB 0X00]
+008ab5: 00
+
+[	DB 0X00]
+008ab6: 00
+
+[	DB 0X00]
+008ab7: 00
+
+[	DB 0X00]
+008ab8: 00
+
+[	DB 0X18]
+008ab9: 18
+
+[	DB 0X3C]
+008aba: 3c
+
+[	DB 0XF0]
+008abb: f0
+
+[	DB 0X00]
+008abc: 00
+
+[	DB 0X00]
+008abd: 00
+
+[	DB 0X00]
+008abe: 00
+
+[	DB 0X7F]
+008abf: 7f
+
+[	DB 0X7F]
+008ac0: 7f
+
+[	DB 0X7F]
+008ac1: 7f
+
+[	DB 0X7F]
+008ac2: 7f
+
+[	DB 0X7F]
+008ac3: 7f
+
+[	DB 0X7F]
+008ac4: 7f
+
+[	DB 0X7F]
+008ac5: 7f
+
+[	DB 0X01]
+008ac6: 01
+
+[	DB 0XFE]
+008ac7: fe
+
+[	DB 0XFE]
+008ac8: fe
+
+[	DB 0XFE]
+008ac9: fe
+
+[	DB 0XFE]
+008aca: fe
+
+[	DB 0XFE]
+008acb: fe
+
+[	DB 0XFE]
+008acc: fe
+
+[	DB 0XFE]
+008acd: fe
+
+[	DB 0X7F]
+008ace: 7f
+
+[	DB 0X7F]
+008acf: 7f
+
+[	DB 0X7F]
+008ad0: 7f
+
+[	DB 0X7F]
+008ad1: 7f
+
+[	DB 0X7F]
+008ad2: 7f
+
+[	DB 0X7F]
+008ad3: 7f
+
+[	DB 0X7F]
+008ad4: 7f
+
+[	DB 0X80]
+008ad5: 80
+
+[	DB 0XFE]
+008ad6: fe
+
+[	DB 0XFE]
+008ad7: fe
+
+[	DB 0XFE]
+008ad8: fe
+
+[	DB 0XFE]
+008ad9: fe
+
+[	DB 0XFE]
+008ada: fe
+
+[	DB 0XFE]
+008adb: fe
+
+[	DB 0XFE]
+008adc: fe
+
+[	DB 0X00]
+008add: 00
+
+[	DB 0X80]
+008ade: 80
+
+[	DB 0X00]
+008adf: 00
+
+[	DB 0X1F]
+008ae0: 1f
+
+[	DB 0X3F]
+008ae1: 3f
+
+[	DB 0X3F]
+008ae2: 3f
+
+[	DB 0X3F]
+008ae3: 3f
+
+[	DB 0X3F]
+008ae4: 3f
+
+[	DB 0X3F]
+008ae5: 3f
+
+[	DB 0X01]
+008ae6: 01
+
+[	DB 0X00]
+008ae7: 00
+
+[	DB 0XFC]
+008ae8: fc
+
+[	DB 0XFC]
+008ae9: fc
+
+[	DB 0XFC]
+008aea: fc
+
+[	DB 0XFC]
+008aeb: fc
+
+[	DB 0XFC]
+008aec: fc
+
+[	DB 0XFC]
+008aed: fc
+
+[	DB 0X3F]
+008aee: 3f
+
+[	DB 0X3F]
+008aef: 3f
+
+[	DB 0X3F]
+008af0: 3f
+
+[	DB 0X3F]
+008af1: 3f
+
+[	DB 0X3F]
+008af2: 3f
+
+[	DB 0X3F]
+008af3: 3f
+
+[	DB 0X3F]
+008af4: 3f
+
+[	DB 0X80]
+008af5: 80
+
+[	DB 0XFC]
+008af6: fc
+
+[	DB 0XFC]
+008af7: fc
+
+[	DB 0XFC]
+008af8: fc
+
+[	DB 0XFC]
+008af9: fc
+
+[	DB 0XFC]
+008afa: fc
+
+[	DB 0XF8]
+008afb: f8
+
+[	DB 0X00]
+008afc: 00
+
+[	DB 0X01]
+008afd: 01
+
+[	DB 0XFF]
+008afe: ff
+
+[	DB 0XFF]
+008aff: ff
+
+[	DB 0XFF]
+008b00: ff
+
+[	DB 0XFF]
+008b01: ff
+
+[	DB 0XFF]
+008b02: ff
+
+[	DB 0XFF]
+008b03: ff
+
+[	DB 0X00]
+008b04: 00
+
+[	DB 0X00]
+008b05: 00
+
+[	DB 0X00]
+008b06: 00
+
+[	DB 0X00]
+008b07: 00
+
+[	DB 0XFF]
+008b08: ff
+
+[	DB 0XFF]
+008b09: ff
+
+[	DB 0XFF]
+008b0a: ff
+
+[	DB 0XFF]
+008b0b: ff
+
+[	DB 0XFF]
+008b0c: ff
+
+[	DB 0XFF]
+008b0d: ff
+
+[	DB 0X3F]
+008b0e: 3f
+
+[	DB 0X3F]
+008b0f: 3f
+
+[	DB 0X3F]
+008b10: 3f
+
+[	DB 0X3F]
+008b11: 3f
+
+[	DB 0X3F]
+008b12: 3f
+
+[	DB 0X3F]
+008b13: 3f
+
+[	DB 0X3F]
+008b14: 3f
+
+[	DB 0X3F]
+008b15: 3f
+
+[	DB 0XFC]
+008b16: fc
+
+[	DB 0XFC]
+008b17: fc
+
+[	DB 0XFC]
+008b18: fc
+
+[	DB 0XFC]
+008b19: fc
+
+[	DB 0XFC]
+008b1a: fc
+
+[	DB 0XFC]
+008b1b: fc
+
+[	DB 0XFC]
+008b1c: fc
+
+[	DB 0XFC]
+008b1d: fc
+
+[	DB 0XFF]
+008b1e: ff
+
+[	DB 0XFF]
+008b1f: ff
+
+[	DB 0XFF]
+008b20: ff
+
+[	DB 0XFF]
+008b21: ff
+
+[	DB 0XFF]
+008b22: ff
+
+[	DB 0XFF]
+008b23: ff
+
+[	DB 0XFF]
+008b24: ff
+
+[	DB 0XFF]
+008b25: ff
+
+[	DB 0XFF]
+008b26: ff
+
+[	DB 0XFF]
+008b27: ff
+
+[	DB 0XFF]
+008b28: ff
+
+[	DB 0XFF]
+008b29: ff
+
+[	DB 0XFF]
+008b2a: ff
+
+[	DB 0XFF]
+008b2b: ff
+
+[	DB 0XFF]
+008b2c: ff
+
+[	DB 0XFF]
+008b2d: ff
+
+[	DB 0X7F]
+008b2e: 7f
+
+[	DB 0X7F]
+008b2f: 7f
+
+[	DB 0X3F]
+008b30: 3f
+
+[	DB 0X0F]
+008b31: 0f
+
+[	DB 0X7F]
+008b32: 7f
+
+[	DB 0X7F]
+008b33: 7f
+
+[	DB 0X3F]
+008b34: 3f
+
+[	DB 0X0F]
+008b35: 0f
+
+[	DB 0XFF]
+008b36: ff
+
+[	DB 0XFF]
+008b37: ff
+
+[	DB 0XFF]
+008b38: ff
+
+[	DB 0XFF]
+008b39: ff
+
+[	DB 0X00]
+008b3a: 00
+
+[	DB 0X00]
+008b3b: 00
+
+[	DB 0X00]
+008b3c: 00
+
+[	DB 0X00]
+008b3d: 00
+
+[	DB 0XFE]
+008b3e: fe
+
+[	DB 0XFE]
+008b3f: fe
+
+[	DB 0XFC]
+008b40: fc
+
+[	DB 0XF0]
+008b41: f0
+
+[	DB 0XFE]
+008b42: fe
+
+[	DB 0XFE]
+008b43: fe
+
+[	DB 0XFC]
+008b44: fc
+
+[	DB 0XF0]
+008b45: f0
+
+[	DB 0X7F]
+008b46: 7f
+
+[	DB 0X7F]
+008b47: 7f
+
+[	DB 0X7F]
+008b48: 7f
+
+[	DB 0X7F]
+008b49: 7f
+
+[	DB 0X7F]
+008b4a: 7f
+
+[	DB 0X7F]
+008b4b: 7f
+
+[	DB 0X7F]
+008b4c: 7f
+
+[	DB 0X7F]
+008b4d: 7f
+
+[	DB 0X0F]
+008b4e: 0f
+
+[	DB 0X3F]
+008b4f: 3f
+
+[	DB 0X7F]
+008b50: 7f
+
+[	DB 0X7F]
+008b51: 7f
+
+[	DB 0X0F]
+008b52: 0f
+
+[	DB 0X3F]
+008b53: 3f
+
+[	DB 0X7F]
+008b54: 7f
+
+[	DB 0X7F]
+008b55: 7f
+
+[	DB 0XFE]
+008b56: fe
+
+[	DB 0XFE]
+008b57: fe
+
+[	DB 0XFE]
+008b58: fe
+
+[	DB 0XFE]
+008b59: fe
+
+[	DB 0XFE]
+008b5a: fe
+
+[	DB 0XFE]
+008b5b: fe
+
+[	DB 0XFE]
+008b5c: fe
+
+[	DB 0XFE]
+008b5d: fe
+
+[	DB 0XF0]
+008b5e: f0
+
+[	DB 0XFC]
+008b5f: fc
+
+[	DB 0XFE]
+008b60: fe
+
+[	DB 0XFE]
+008b61: fe
+
+[	DB 0XF0]
+008b62: f0
+
+[	DB 0XFC]
+008b63: fc
+
+[	DB 0XFE]
+008b64: fe
+
+[	DB 0XFE]
+008b65: fe
+
+[BACKGROUND_GRAPHIC_PATTERN_END :]
+	label address: 0x008b66
+
+[BACKGROUND_GRAPHIC_COLOR :]
+	label address: 0x008b66
+
+[	DB 0X3C]
+008b66: 3c
+
+[	DB 0X3C]
+008b67: 3c
+
+[	DB 0X3C]
+008b68: 3c
+
+[	DB 0X3C]
+008b69: 3c
+
+[	DB 0X3C]
+008b6a: 3c
+
+[	DB 0X3C]
+008b6b: 3c
+
+[	DB 0X32]
+008b6c: 32
+
+[	DB 0X32]
+008b6d: 32
+
+[	DB 0X3C]
+008b6e: 3c
+
+[	DB 0X3C]
+008b6f: 3c
+
+[	DB 0X3C]
+008b70: 3c
+
+[	DB 0X3C]
+008b71: 3c
+
+[	DB 0X3C]
+008b72: 3c
+
+[	DB 0X3C]
+008b73: 3c
+
+[	DB 0X32]
+008b74: 32
+
+[	DB 0X32]
+008b75: 32
+
+[	DB 0X32]
+008b76: 32
+
+[	DB 0X32]
+008b77: 32
+
+[	DB 0X32]
+008b78: 32
+
+[	DB 0X32]
+008b79: 32
+
+[	DB 0X2C]
+008b7a: 2c
+
+[	DB 0X2C]
+008b7b: 2c
+
+[	DB 0X9C]
+008b7c: 9c
+
+[	DB 0X9C]
+008b7d: 9c
+
+[	DB 0X32]
+008b7e: 32
+
+[	DB 0X32]
+008b7f: 32
+
+[	DB 0X32]
+008b80: 32
+
+[	DB 0X2C]
+008b81: 2c
+
+[	DB 0X2C]
+008b82: 2c
+
+[	DB 0X2C]
+008b83: 2c
+
+[	DB 0X6C]
+008b84: 6c
+
+[	DB 0X6C]
+008b85: 6c
+
+[	DB 0X3C]
+008b86: 3c
+
+[	DB 0X3C]
+008b87: 3c
+
+[	DB 0X2C]
+008b88: 2c
+
+[	DB 0X3C]
+008b89: 3c
+
+[	DB 0X3C]
+008b8a: 3c
+
+[	DB 0X2C]
+008b8b: 2c
+
+[	DB 0X3C]
+008b8c: 3c
+
+[	DB 0X3C]
+008b8d: 3c
+
+[	DB 0X2C]
+008b8e: 2c
+
+[	DB 0X3C]
+008b8f: 3c
+
+[	DB 0X2C]
+008b90: 2c
+
+[	DB 0X3C]
+008b91: 3c
+
+[	DB 0X2C]
+008b92: 2c
+
+[	DB 0X3C]
+008b93: 3c
+
+[	DB 0X2C]
+008b94: 2c
+
+[	DB 0X3C]
+008b95: 3c
+
+[	DB 0X2C]
+008b96: 2c
+
+[	DB 0X2C]
+008b97: 2c
+
+[	DB 0X3C]
+008b98: 3c
+
+[	DB 0X3C]
+008b99: 3c
+
+[	DB 0X3C]
+008b9a: 3c
+
+[	DB 0X2C]
+008b9b: 2c
+
+[	DB 0X3C]
+008b9c: 3c
+
+[	DB 0X3C]
+008b9d: 3c
+
+[	DB 0X2C]
+008b9e: 2c
+
+[	DB 0X3C]
+008b9f: 3c
+
+[	DB 0X3C]
+008ba0: 3c
+
+[	DB 0X2C]
+008ba1: 2c
+
+[	DB 0X3C]
+008ba2: 3c
+
+[	DB 0X3C]
+008ba3: 3c
+
+[	DB 0X2C]
+008ba4: 2c
+
+[	DB 0X3C]
+008ba5: 3c
+
+[	DB 0X0C]
+008ba6: 0c
+
+[	DB 0X0C]
+008ba7: 0c
+
+[	DB 0X0C]
+008ba8: 0c
+
+[	DB 0X0C]
+008ba9: 0c
+
+[	DB 0X0C]
+008baa: 0c
+
+[	DB 0X0C]
+008bab: 0c
+
+[	DB 0X0C]
+008bac: 0c
+
+[	DB 0X0C]
+008bad: 0c
+
+[	DB 0X0C]
+008bae: 0c
+
+[	DB 0X0C]
+008baf: 0c
+
+[	DB 0X0C]
+008bb0: 0c
+
+[	DB 0X0C]
+008bb1: 0c
+
+[	DB 0X0C]
+008bb2: 0c
+
+[	DB 0X0C]
+008bb3: 0c
+
+[	DB 0X0C]
+008bb4: 0c
+
+[	DB 0X0C]
+008bb5: 0c
+
+[	DB 0X0C]
+008bb6: 0c
+
+[	DB 0X0C]
+008bb7: 0c
+
+[	DB 0X0C]
+008bb8: 0c
+
+[	DB 0X0C]
+008bb9: 0c
+
+[	DB 0X0C]
+008bba: 0c
+
+[	DB 0X0C]
+008bbb: 0c
+
+[	DB 0X0C]
+008bbc: 0c
+
+[	DB 0X0C]
+008bbd: 0c
+
+[	DB 0X0C]
+008bbe: 0c
+
+[	DB 0X0C]
+008bbf: 0c
+
+[	DB 0X0C]
+008bc0: 0c
+
+[	DB 0X0C]
+008bc1: 0c
+
+[	DB 0X0C]
+008bc2: 0c
+
+[	DB 0X0C]
+008bc3: 0c
+
+[	DB 0X0C]
+008bc4: 0c
+
+[	DB 0X0C]
+008bc5: 0c
+
+[	DB 0X0E]
+008bc6: 0e
+
+[	DB 0X0F]
+008bc7: 0f
+
+[	DB 0X0F]
+008bc8: 0f
+
+[	DB 0X0F]
+008bc9: 0f
+
+[	DB 0X0F]
+008bca: 0f
+
+[	DB 0X0F]
+008bcb: 0f
+
+[	DB 0X0F]
+008bcc: 0f
+
+[	DB 0X0F]
+008bcd: 0f
+
+[	DB 0X0E]
+008bce: 0e
+
+[	DB 0X0F]
+008bcf: 0f
+
+[	DB 0X0F]
+008bd0: 0f
+
+[	DB 0X0F]
+008bd1: 0f
+
+[	DB 0X0F]
+008bd2: 0f
+
+[	DB 0X0F]
+008bd3: 0f
+
+[	DB 0X0F]
+008bd4: 0f
+
+[	DB 0X0F]
+008bd5: 0f
+
+[	DB 0X0F]
+008bd6: 0f
+
+[	DB 0X0F]
+008bd7: 0f
+
+[	DB 0X0F]
+008bd8: 0f
+
+[	DB 0X0F]
+008bd9: 0f
+
+[	DB 0X0E]
+008bda: 0e
+
+[	DB 0X0E]
+008bdb: 0e
+
+[	DB 0X0E]
+008bdc: 0e
+
+[	DB 0X0E]
+008bdd: 0e
+
+[	DB 0X0F]
+008bde: 0f
+
+[	DB 0X0F]
+008bdf: 0f
+
+[	DB 0X0F]
+008be0: 0f
+
+[	DB 0X0F]
+008be1: 0f
+
+[	DB 0X0E]
+008be2: 0e
+
+[	DB 0X0E]
+008be3: 0e
+
+[	DB 0X0E]
+008be4: 0e
+
+[	DB 0X0E]
+008be5: 0e
+
+[	DB 0X0C]
+008be6: 0c
+
+[	DB 0X0F]
+008be7: 0f
+
+[	DB 0X0B]
+008be8: 0b
+
+[	DB 0X0A]
+008be9: 0a
+
+[	DB 0X0A]
+008bea: 0a
+
+[	DB 0X0A]
+008beb: 0a
+
+[	DB 0X0A]
+008bec: 0a
+
+[	DB 0X0A]
+008bed: 0a
+
+[	DB 0X0C]
+008bee: 0c
+
+[	DB 0X0F]
+008bef: 0f
+
+[	DB 0X0B]
+008bf0: 0b
+
+[	DB 0X0A]
+008bf1: 0a
+
+[	DB 0X0A]
+008bf2: 0a
+
+[	DB 0X0A]
+008bf3: 0a
+
+[	DB 0X0A]
+008bf4: 0a
+
+[	DB 0X0A]
+008bf5: 0a
+
+[	DB 0X0A]
+008bf6: 0a
+
+[	DB 0X0A]
+008bf7: 0a
+
+[	DB 0X0A]
+008bf8: 0a
+
+[	DB 0X0A]
+008bf9: 0a
+
+[	DB 0X0A]
+008bfa: 0a
+
+[	DB 0X09]
+008bfb: 09
+
+[	DB 0X08]
+008bfc: 08
+
+[	DB 0X0C]
+008bfd: 0c
+
+[	DB 0X0A]
+008bfe: 0a
+
+[	DB 0X0A]
+008bff: 0a
+
+[	DB 0X0A]
+008c00: 0a
+
+[	DB 0X0A]
+008c01: 0a
+
+[	DB 0X0A]
+008c02: 0a
+
+[	DB 0X09]
+008c03: 09
+
+[	DB 0X08]
+008c04: 08
+
+[	DB 0X0C]
+008c05: 0c
+
+[	DB 0X0C]
+008c06: 0c
+
+[	DB 0X0F]
+008c07: 0f
+
+[	DB 0X07]
+008c08: 07
+
+[	DB 0X05]
+008c09: 05
+
+[	DB 0X05]
+008c0a: 05
+
+[	DB 0X05]
+008c0b: 05
+
+[	DB 0X05]
+008c0c: 05
+
+[	DB 0X05]
+008c0d: 05
+
+[	DB 0X0C]
+008c0e: 0c
+
+[	DB 0X0F]
+008c0f: 0f
+
+[	DB 0X07]
+008c10: 07
+
+[	DB 0X05]
+008c11: 05
+
+[	DB 0X05]
+008c12: 05
+
+[	DB 0X05]
+008c13: 05
+
+[	DB 0X05]
+008c14: 05
+
+[	DB 0X05]
+008c15: 05
+
+[	DB 0X05]
+008c16: 05
+
+[	DB 0X05]
+008c17: 05
+
+[	DB 0X05]
+008c18: 05
+
+[	DB 0X05]
+008c19: 05
+
+[	DB 0X05]
+008c1a: 05
+
+[	DB 0X04]
+008c1b: 04
+
+[	DB 0X0C]
+008c1c: 0c
+
+[	DB 0X0C]
+008c1d: 0c
+
+[	DB 0X05]
+008c1e: 05
+
+[	DB 0X05]
+008c1f: 05
+
+[	DB 0X05]
+008c20: 05
+
+[	DB 0X05]
+008c21: 05
+
+[	DB 0X05]
+008c22: 05
+
+[	DB 0X04]
+008c23: 04
+
+[	DB 0X0C]
+008c24: 0c
+
+[	DB 0X0C]
+008c25: 0c
+
+[	DB 0XF5]
+008c26: f5
+
+[	DB 0XF5]
+008c27: f5
+
+[	DB 0XF5]
+008c28: f5
+
+[	DB 0XF5]
+008c29: f5
+
+[	DB 0XF7]
+008c2a: f7
+
+[	DB 0XF5]
+008c2b: f5
+
+[	DB 0XF5]
+008c2c: f5
+
+[	DB 0XF5]
+008c2d: f5
+
+[	DB 0XF5]
+008c2e: f5
+
+[	DB 0XF5]
+008c2f: f5
+
+[	DB 0XF5]
+008c30: f5
+
+[	DB 0XF5]
+008c31: f5
+
+[	DB 0XF5]
+008c32: f5
+
+[	DB 0XF5]
+008c33: f5
+
+[	DB 0XF7]
+008c34: f7
+
+[	DB 0XF7]
+008c35: f7
+
+[	DB 0XF5]
+008c36: f5
+
+[	DB 0XF7]
+008c37: f7
+
+[	DB 0XF7]
+008c38: f7
+
+[	DB 0XF5]
+008c39: f5
+
+[	DB 0XF5]
+008c3a: f5
+
+[	DB 0XF5]
+008c3b: f5
+
+[	DB 0XF5]
+008c3c: f5
+
+[	DB 0XF5]
+008c3d: f5
+
+[	DB 0XF5]
+008c3e: f5
+
+[	DB 0XF5]
+008c3f: f5
+
+[	DB 0XF5]
+008c40: f5
+
+[	DB 0XF5]
+008c41: f5
+
+[	DB 0XF5]
+008c42: f5
+
+[	DB 0XF7]
+008c43: f7
+
+[	DB 0XF5]
+008c44: f5
+
+[	DB 0XF5]
+008c45: f5
+
+[	DB 0XEF]
+008c46: ef
+
+[	DB 0XEF]
+008c47: ef
+
+[	DB 0XEF]
+008c48: ef
+
+[	DB 0XEF]
+008c49: ef
+
+[	DB 0XEF]
+008c4a: ef
+
+[	DB 0XEF]
+008c4b: ef
+
+[	DB 0XEF]
+008c4c: ef
+
+[	DB 0XEF]
+008c4d: ef
+
+[	DB 0XEF]
+008c4e: ef
+
+[	DB 0XE4]
+008c4f: e4
+
+[	DB 0XE4]
+008c50: e4
+
+[	DB 0XE4]
+008c51: e4
+
+[	DB 0XE4]
+008c52: e4
+
+[	DB 0XE4]
+008c53: e4
+
+[	DB 0XE4]
+008c54: e4
+
+[	DB 0XE4]
+008c55: e4
+
+[	DB 0XEF]
+008c56: ef
+
+[	DB 0XEF]
+008c57: ef
+
+[	DB 0XEF]
+008c58: ef
+
+[	DB 0XEF]
+008c59: ef
+
+[	DB 0XEF]
+008c5a: ef
+
+[	DB 0XEF]
+008c5b: ef
+
+[	DB 0XEF]
+008c5c: ef
+
+[	DB 0XE4]
+008c5d: e4
+
+[	DB 0XE4]
+008c5e: e4
+
+[	DB 0XE4]
+008c5f: e4
+
+[	DB 0XE4]
+008c60: e4
+
+[	DB 0XE4]
+008c61: e4
+
+[	DB 0XE4]
+008c62: e4
+
+[	DB 0XE4]
+008c63: e4
+
+[	DB 0XE4]
+008c64: e4
+
+[	DB 0XE4]
+008c65: e4
+
+[	DB 0XEA]
+008c66: ea
+
+[	DB 0X0A]
+008c67: 0a
+
+[	DB 0X9A]
+008c68: 9a
+
+[	DB 0X9A]
+008c69: 9a
+
+[	DB 0X9A]
+008c6a: 9a
+
+[	DB 0X9A]
+008c6b: 9a
+
+[	DB 0X9A]
+008c6c: 9a
+
+[	DB 0X9A]
+008c6d: 9a
+
+[	DB 0XEA]
+008c6e: ea
+
+[	DB 0X0A]
+008c6f: 0a
+
+[	DB 0X90]
+008c70: 90
+
+[	DB 0X90]
+008c71: 90
+
+[	DB 0X90]
+008c72: 90
+
+[	DB 0X90]
+008c73: 90
+
+[	DB 0X90]
+008c74: 90
+
+[	DB 0X90]
+008c75: 90
+
+[	DB 0X9A]
+008c76: 9a
+
+[	DB 0X9A]
+008c77: 9a
+
+[	DB 0X9A]
+008c78: 9a
+
+[	DB 0X9A]
+008c79: 9a
+
+[	DB 0X9A]
+008c7a: 9a
+
+[	DB 0X9A]
+008c7b: 9a
+
+[	DB 0X0A]
+008c7c: 0a
+
+[	DB 0XE0]
+008c7d: e0
+
+[	DB 0X90]
+008c7e: 90
+
+[	DB 0X90]
+008c7f: 90
+
+[	DB 0X90]
+008c80: 90
+
+[	DB 0X90]
+008c81: 90
+
+[	DB 0X90]
+008c82: 90
+
+[	DB 0X90]
+008c83: 90
+
+[	DB 0XE0]
+008c84: e0
+
+[	DB 0XE0]
+008c85: e0
+
+[	DB 0X90]
+008c86: 90
+
+[	DB 0X90]
+008c87: 90
+
+[	DB 0X90]
+008c88: 90
+
+[	DB 0X90]
+008c89: 90
+
+[	DB 0X90]
+008c8a: 90
+
+[	DB 0X90]
+008c8b: 90
+
+[	DB 0X90]
+008c8c: 90
+
+[	DB 0X90]
+008c8d: 90
+
+[	DB 0X9A]
+008c8e: 9a
+
+[	DB 0X9A]
+008c8f: 9a
+
+[	DB 0X9A]
+008c90: 9a
+
+[	DB 0X9A]
+008c91: 9a
+
+[	DB 0X9A]
+008c92: 9a
+
+[	DB 0X9A]
+008c93: 9a
+
+[	DB 0X9A]
+008c94: 9a
+
+[	DB 0X9A]
+008c95: 9a
+
+[	DB 0X9A]
+008c96: 9a
+
+[	DB 0X9A]
+008c97: 9a
+
+[	DB 0X9A]
+008c98: 9a
+
+[	DB 0X9A]
+008c99: 9a
+
+[	DB 0X9A]
+008c9a: 9a
+
+[	DB 0X9A]
+008c9b: 9a
+
+[	DB 0X9A]
+008c9c: 9a
+
+[	DB 0X9A]
+008c9d: 9a
+
+[	DB 0X90]
+008c9e: 90
+
+[	DB 0X90]
+008c9f: 90
+
+[	DB 0X90]
+008ca0: 90
+
+[	DB 0X90]
+008ca1: 90
+
+[	DB 0X90]
+008ca2: 90
+
+[	DB 0X90]
+008ca3: 90
+
+[	DB 0X90]
+008ca4: 90
+
+[	DB 0X90]
+008ca5: 90
+
+[	DB 0X9A]
+008ca6: 9a
+
+[	DB 0X9A]
+008ca7: 9a
+
+[	DB 0X9A]
+008ca8: 9a
+
+[	DB 0X9A]
+008ca9: 9a
+
+[	DB 0X9A]
+008caa: 9a
+
+[	DB 0X9A]
+008cab: 9a
+
+[	DB 0X9A]
+008cac: 9a
+
+[	DB 0X9A]
+008cad: 9a
+
+[	DB 0X77]
+008cae: 77
+
+[	DB 0X77]
+008caf: 77
+
+[	DB 0X77]
+008cb0: 77
+
+[	DB 0X77]
+008cb1: 77
+
+[	DB 0X77]
+008cb2: 77
+
+[	DB 0X77]
+008cb3: 77
+
+[	DB 0X77]
+008cb4: 77
+
+[	DB 0X77]
+008cb5: 77
+
+[	DB 0X54]
+008cb6: 54
+
+[	DB 0X54]
+008cb7: 54
+
+[	DB 0X54]
+008cb8: 54
+
+[	DB 0X54]
+008cb9: 54
+
+[	DB 0X4E]
+008cba: 4e
+
+[	DB 0X4E]
+008cbb: 4e
+
+[	DB 0X4E]
+008cbc: 4e
+
+[	DB 0X4E]
+008cbd: 4e
+
+[	DB 0X54]
+008cbe: 54
+
+[	DB 0X54]
+008cbf: 54
+
+[	DB 0X54]
+008cc0: 54
+
+[	DB 0X54]
+008cc1: 54
+
+[	DB 0X54]
+008cc2: 54
+
+[	DB 0X54]
+008cc3: 54
+
+[	DB 0X54]
+008cc4: 54
+
+[	DB 0X54]
+008cc5: 54
+
+[	DB 0X54]
+008cc6: 54
+
+[	DB 0X54]
+008cc7: 54
+
+[	DB 0X54]
+008cc8: 54
+
+[	DB 0X54]
+008cc9: 54
+
+[	DB 0X4E]
+008cca: 4e
+
+[	DB 0X4E]
+008ccb: 4e
+
+[	DB 0X4E]
+008ccc: 4e
+
+[	DB 0X4E]
+008ccd: 4e
+
+[	DB 0X54]
+008cce: 54
+
+[	DB 0X54]
+008ccf: 54
+
+[	DB 0X54]
+008cd0: 54
+
+[	DB 0X54]
+008cd1: 54
+
+[	DB 0X54]
+008cd2: 54
+
+[	DB 0X54]
+008cd3: 54
+
+[	DB 0X54]
+008cd4: 54
+
+[	DB 0X54]
+008cd5: 54
+
+[	DB 0X4E]
+008cd6: 4e
+
+[	DB 0X4E]
+008cd7: 4e
+
+[	DB 0X4E]
+008cd8: 4e
+
+[	DB 0X4E]
+008cd9: 4e
+
+[	DB 0X54]
+008cda: 54
+
+[	DB 0X54]
+008cdb: 54
+
+[	DB 0X54]
+008cdc: 54
+
+[	DB 0X54]
+008cdd: 54
+
+[	DB 0X54]
+008cde: 54
+
+[	DB 0X54]
+008cdf: 54
+
+[	DB 0X54]
+008ce0: 54
+
+[	DB 0X54]
+008ce1: 54
+
+[	DB 0X54]
+008ce2: 54
+
+[	DB 0X54]
+008ce3: 54
+
+[	DB 0X54]
+008ce4: 54
+
+[	DB 0X54]
+008ce5: 54
+
+[	DB 0X4E]
+008ce6: 4e
+
+[	DB 0X4E]
+008ce7: 4e
+
+[	DB 0X4E]
+008ce8: 4e
+
+[	DB 0X4E]
+008ce9: 4e
+
+[	DB 0X54]
+008cea: 54
+
+[	DB 0X54]
+008ceb: 54
+
+[	DB 0X54]
+008cec: 54
+
+[	DB 0X54]
+008ced: 54
+
+[BACKGROUND_GRAPHIC_COLOR_END :]
+	label address: 0x008cee
+
+[	INCLUDE ".//sca_graphic.asm"] end
+
+[BGM_DATA_TRANSFER_START :]
+	label address: 0x008cee
+
+[_BGM_STAGE1 :]
+	label address: 0x008cee
+
+[	INCLUDE ".//stage1_bgm.asm"] begin
+[	DB 0X06 , 0X00 , 0XF6 , 0X00 , 0XFE , 0X02 , 0X67 , 0X0F , 0X68 , 0XFF , 0X02 , 0X30 , 0X04 , 0X66 , 0X04 , 0X2D]
+008cee: 06 00 f6 00 fe 02 67 0f
+008cf6: 68 ff 02 30 04 66 04 2d
+
+[	DB 0X05 , 0X66 , 0X0F , 0X2D , 0X04 , 0X66 , 0X10 , 0X2D , 0X04 , 0X66 , 0X05 , 0X30 , 0X04 , 0X66 , 0X04 , 0X2D]
+008cfe: 05 66 0f 2d 04 66 10 2d
+008d06: 04 66 05 30 04 66 04 2d
+
+[	DB 0X05 , 0X66 , 0X04 , 0X30 , 0X05 , 0X66 , 0X04 , 0X2D , 0X05 , 0X66 , 0X0F , 0X2D , 0X04 , 0X66 , 0X0F , 0X2D]
+008d0e: 05 66 04 30 05 66 04 2d
+008d16: 05 66 0f 2d 04 66 0f 2d
+
+[	DB 0X05 , 0X66 , 0X04 , 0X30 , 0X05 , 0X66 , 0X04 , 0X2D , 0X05 , 0X66 , 0X04 , 0X2F , 0X04 , 0X66 , 0X05 , 0X2B]
+008d1e: 05 66 04 30 05 66 04 2d
+008d26: 05 66 04 2f 04 66 05 2b
+
+[	DB 0X04 , 0X66 , 0X10 , 0X2B , 0X04 , 0X66 , 0X0F , 0X2B , 0X05 , 0X66 , 0X04 , 0X2F , 0X04 , 0X66 , 0X05 , 0X2B]
+008d2e: 04 66 10 2b 04 66 0f 2b
+008d36: 05 66 04 2f 04 66 05 2b
+
+[	DB 0X04 , 0X66 , 0X05 , 0X2D , 0X04 , 0X66 , 0X05 , 0X28 , 0X04 , 0X66 , 0X0F , 0X28 , 0X05 , 0X66 , 0X0F , 0X2B]
+008d3e: 04 66 05 2d 04 66 05 28
+008d46: 04 66 0f 28 05 66 0f 2b
+
+[	DB 0X04 , 0X66 , 0X05 , 0X2F , 0X04 , 0X66 , 0X05 , 0X32 , 0X04 , 0X66 , 0X04 , 0X30 , 0X05 , 0X66 , 0X04 , 0X2D]
+008d4e: 04 66 05 2f 04 66 05 32
+008d56: 04 66 04 30 05 66 04 2d
+
+[	DB 0X05 , 0X66 , 0X0F , 0X2D , 0X04 , 0X66 , 0X10 , 0X2D , 0X04 , 0X66 , 0X05 , 0X30 , 0X04 , 0X66 , 0X04 , 0X2D]
+008d5e: 05 66 0f 2d 04 66 10 2d
+008d66: 04 66 05 30 04 66 04 2d
+
+[	DB 0X05 , 0X66 , 0X04 , 0X30 , 0X05 , 0X66 , 0X04 , 0X2D , 0X04 , 0X66 , 0X10 , 0X2D , 0X04 , 0X66 , 0X0F , 0X2D]
+008d6e: 05 66 04 30 05 66 04 2d
+008d76: 04 66 10 2d 04 66 0f 2d
+
+[	DB 0X05 , 0X66 , 0X04 , 0X30 , 0X05 , 0X66 , 0X04 , 0X2D , 0X05 , 0X66 , 0X04 , 0X2F , 0X04 , 0X66 , 0X05 , 0X2B]
+008d7e: 05 66 04 30 05 66 04 2d
+008d86: 05 66 04 2f 04 66 05 2b
+
+[	DB 0X04 , 0X66 , 0X10 , 0X2B , 0X04 , 0X66 , 0X0F , 0X2B , 0X05 , 0X66 , 0X04 , 0X2F , 0X04 , 0X66 , 0X05 , 0X2B]
+008d8e: 04 66 10 2b 04 66 0f 2b
+008d96: 05 66 04 2f 04 66 05 2b
+
+[	DB 0X04 , 0X66 , 0X05 , 0X30 , 0X04 , 0X66 , 0X05 , 0X2D , 0X04 , 0X66 , 0X04 , 0X2B , 0X05 , 0X66 , 0X04 , 0X2D]
+008d9e: 04 66 05 30 04 66 05 2d
+008da6: 04 66 04 2b 05 66 04 2d
+
+[	DB 0X05 , 0X66 , 0X04 , 0X66 , 0X15 , 0X34 , 0X14 , 0X39 , 0X56 , 0X3C , 0X2B , 0X39 , 0X14 , 0X3C , 0X15 , 0X3B]
+008dae: 05 66 04 66 15 34 14 39
+008db6: 56 3c 2b 39 14 3c 15 3b
+
+[	DB 0X40 , 0X39 , 0X15 , 0X38 , 0X1F , 0X39 , 0X0A , 0X3B , 0X2A , 0X39 , 0X56 , 0X3C , 0X2B , 0X39 , 0X14 , 0X3C]
+008dbe: 40 39 15 38 1f 39 0a 3b
+008dc6: 2a 39 56 3c 2b 39 14 3c
+
+[	DB 0X15 , 0X3B , 0X56 , 0X40 , 0X2A , 0X66 , 0X0A , 0X2B , 0X04 , 0X66 , 0X05 , 0X2D , 0X04 , 0X66 , 0X05 , 0X2F]
+008dce: 15 3b 56 40 2a 66 0a 2b
+008dd6: 04 66 05 2d 04 66 05 2f
+
+[	DB 0X04 , 0X66 , 0X04 , 0X69 , 0X0B , 0X00 , 0X67 , 0X0D , 0X68 , 0XFF , 0X02 , 0X15 , 0X04 , 0X66 , 0X04 , 0X15]
+008dde: 04 66 04 69 0b 00 67 0d
+008de6: 68 ff 02 15 04 66 04 15
+
+[	DB 0X05 , 0X66 , 0X04 , 0X1C , 0X05 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X05 , 0X15 , 0X04 , 0X66 , 0X05 , 0X15]
+008dee: 05 66 04 1c 05 66 04 15
+008df6: 04 66 05 15 04 66 05 15
+
+[	DB 0X04 , 0X66 , 0X05 , 0X1C , 0X04 , 0X66 , 0X04 , 0X15 , 0X05 , 0X66 , 0X04 , 0X13 , 0X05 , 0X66 , 0X04 , 0X13]
+008dfe: 04 66 05 1c 04 66 04 15
+008e06: 05 66 04 13 05 66 04 13
+
+[	DB 0X05 , 0X66 , 0X04 , 0X1A , 0X04 , 0X66 , 0X05 , 0X13 , 0X04 , 0X66 , 0X05 , 0X13 , 0X04 , 0X66 , 0X04 , 0X13]
+008e0e: 05 66 04 1a 04 66 05 13
+008e16: 04 66 05 13 04 66 04 13
+
+[	DB 0X05 , 0X66 , 0X04 , 0X1A , 0X05 , 0X66 , 0X04 , 0X13 , 0X05 , 0X66 , 0X04 , 0X11 , 0X04 , 0X66 , 0X05 , 0X11]
+008e1e: 05 66 04 1a 05 66 04 13
+008e26: 05 66 04 11 04 66 05 11
+
+[	DB 0X04 , 0X66 , 0X05 , 0X18 , 0X04 , 0X66 , 0X05 , 0X11 , 0X04 , 0X66 , 0X04 , 0X11 , 0X05 , 0X66 , 0X04 , 0X11]
+008e2e: 04 66 05 18 04 66 05 11
+008e36: 04 66 04 11 05 66 04 11
+
+[	DB 0X05 , 0X66 , 0X04 , 0X18 , 0X04 , 0X66 , 0X05 , 0X11 , 0X04 , 0X66 , 0X05 , 0X10 , 0X04 , 0X66 , 0X05 , 0X10]
+008e3e: 05 66 04 18 04 66 05 11
+008e46: 04 66 05 10 04 66 05 10
+
+[	DB 0X04 , 0X66 , 0X04 , 0X13 , 0X05 , 0X66 , 0X04 , 0X10 , 0X05 , 0X66 , 0X04 , 0X10 , 0X05 , 0X66 , 0X04 , 0X10]
+008e4e: 04 66 04 13 05 66 04 10
+008e56: 05 66 04 10 05 66 04 10
+
+[	DB 0X04 , 0X66 , 0X05 , 0X13 , 0X04 , 0X66 , 0X05 , 0X17 , 0X04 , 0X66 , 0X04 , 0X15 , 0X05 , 0X66 , 0X04 , 0X15]
+008e5e: 04 66 05 13 04 66 05 17
+008e66: 04 66 04 15 05 66 04 15
+
+[	DB 0X05 , 0X66 , 0X04 , 0X1C , 0X05 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X05 , 0X15 , 0X04 , 0X66 , 0X05 , 0X15]
+008e6e: 05 66 04 1c 05 66 04 15
+008e76: 04 66 05 15 04 66 05 15
+
+[	DB 0X04 , 0X66 , 0X05 , 0X1C , 0X04 , 0X66 , 0X04 , 0X15 , 0X05 , 0X66 , 0X04 , 0X13 , 0X05 , 0X66 , 0X04 , 0X13]
+008e7e: 04 66 05 1c 04 66 04 15
+008e86: 05 66 04 13 05 66 04 13
+
+[	DB 0X04 , 0X66 , 0X05 , 0X1A , 0X04 , 0X66 , 0X05 , 0X13 , 0X04 , 0X66 , 0X05 , 0X13 , 0X04 , 0X66 , 0X04 , 0X13]
+008e8e: 04 66 05 1a 04 66 05 13
+008e96: 04 66 05 13 04 66 04 13
+
+[	DB 0X05 , 0X66 , 0X04 , 0X1A , 0X05 , 0X66 , 0X04 , 0X13 , 0X05 , 0X66 , 0X04 , 0X11 , 0X04 , 0X66 , 0X05 , 0X11]
+008e9e: 05 66 04 1a 05 66 04 13
+008ea6: 05 66 04 11 04 66 05 11
+
+[	DB 0X04 , 0X66 , 0X05 , 0X18 , 0X04 , 0X66 , 0X05 , 0X11 , 0X04 , 0X66 , 0X04 , 0X11 , 0X05 , 0X66 , 0X04 , 0X11]
+008eae: 04 66 05 18 04 66 05 11
+008eb6: 04 66 04 11 05 66 04 11
+
+[	DB 0X05 , 0X66 , 0X04 , 0X18 , 0X04 , 0X66 , 0X05 , 0X11 , 0X04 , 0X66 , 0X05 , 0X10 , 0X04 , 0X66 , 0X05 , 0X10]
+008ebe: 05 66 04 18 04 66 05 11
+008ec6: 04 66 05 10 04 66 05 10
+
+[	DB 0X04 , 0X66 , 0X04 , 0X13 , 0X05 , 0X66 , 0X04 , 0X10 , 0X05 , 0X66 , 0X04 , 0X10 , 0X05 , 0X66 , 0X04 , 0X10]
+008ece: 04 66 04 13 05 66 04 10
+008ed6: 05 66 04 10 05 66 04 10
+
+[	DB 0X04 , 0X66 , 0X05 , 0X13 , 0X04 , 0X66 , 0X05 , 0X17 , 0X04 , 0X66 , 0X04 , 0X18 , 0X05 , 0X66 , 0X04 , 0X15]
+008ede: 04 66 05 13 04 66 05 17
+008ee6: 04 66 04 18 05 66 04 15
+
+[	DB 0X05 , 0X66 , 0X04 , 0X13 , 0X05 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X05 , 0X10 , 0X04 , 0X66 , 0X05 , 0X10]
+008eee: 05 66 04 13 05 66 04 15
+008ef6: 04 66 05 10 04 66 05 10
+
+[	DB 0X04 , 0X66 , 0X05 , 0X13 , 0X04 , 0X66 , 0X04 , 0X10 , 0X05 , 0X66 , 0X04 , 0X18 , 0X05 , 0X66 , 0X04 , 0X15]
+008efe: 04 66 05 13 04 66 04 10
+008f06: 05 66 04 18 05 66 04 15
+
+[	DB 0X04 , 0X66 , 0X05 , 0X13 , 0X04 , 0X66 , 0X05 , 0X15 , 0X04 , 0X66 , 0X05 , 0X10 , 0X04 , 0X66 , 0X04 , 0X10]
+008f0e: 04 66 05 13 04 66 05 15
+008f16: 04 66 05 10 04 66 04 10
+
+[	DB 0X05 , 0X66 , 0X04 , 0X13 , 0X05 , 0X66 , 0X04 , 0X18 , 0X05 , 0X66 , 0X04 , 0X17 , 0X04 , 0X66 , 0X05 , 0X13]
+008f1e: 05 66 04 13 05 66 04 18
+008f26: 05 66 04 17 04 66 05 13
+
+[	DB 0X04 , 0X66 , 0X05 , 0X10 , 0X04 , 0X66 , 0X04 , 0X13 , 0X05 , 0X66 , 0X04 , 0X10 , 0X05 , 0X66 , 0X04 , 0X10]
+008f2e: 04 66 05 10 04 66 04 13
+008f36: 05 66 04 10 05 66 04 10
+
+[	DB 0X05 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X05 , 0X10 , 0X04 , 0X66 , 0X05 , 0X17 , 0X04 , 0X66 , 0X05 , 0X13]
+008f3e: 05 66 04 13 04 66 05 10
+008f46: 04 66 05 17 04 66 05 13
+
+[	DB 0X04 , 0X66 , 0X04 , 0X10 , 0X05 , 0X66 , 0X04 , 0X13 , 0X05 , 0X66 , 0X04 , 0X10 , 0X05 , 0X66 , 0X04 , 0X10]
+008f4e: 04 66 04 10 05 66 04 13
+008f56: 05 66 04 10 05 66 04 10
+
+[	DB 0X04 , 0X66 , 0X05 , 0X13 , 0X04 , 0X66 , 0X05 , 0X17 , 0X04 , 0X66 , 0X04 , 0X18 , 0X05 , 0X66 , 0X04 , 0X15]
+008f5e: 04 66 05 13 04 66 05 17
+008f66: 04 66 04 18 05 66 04 15
+
+[	DB 0X05 , 0X66 , 0X04 , 0X13 , 0X05 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X05 , 0X10 , 0X04 , 0X66 , 0X05 , 0X10]
+008f6e: 05 66 04 13 05 66 04 15
+008f76: 04 66 05 10 04 66 05 10
+
+[	DB 0X04 , 0X66 , 0X05 , 0X13 , 0X04 , 0X66 , 0X04 , 0X10 , 0X05 , 0X66 , 0X04 , 0X18 , 0X05 , 0X66 , 0X04 , 0X15]
+008f7e: 04 66 05 13 04 66 04 10
+008f86: 05 66 04 18 05 66 04 15
+
+[	DB 0X04 , 0X66 , 0X05 , 0X13 , 0X04 , 0X66 , 0X05 , 0X15 , 0X04 , 0X66 , 0X05 , 0X10 , 0X04 , 0X66 , 0X04 , 0X10]
+008f8e: 04 66 05 13 04 66 05 15
+008f96: 04 66 05 10 04 66 04 10
+
+[	DB 0X05 , 0X66 , 0X04 , 0X13 , 0X05 , 0X66 , 0X04 , 0X18 , 0X05 , 0X66 , 0X04 , 0X17 , 0X04 , 0X66 , 0X05 , 0X13]
+008f9e: 05 66 04 13 05 66 04 18
+008fa6: 05 66 04 17 04 66 05 13
+
+[	DB 0X04 , 0X66 , 0X05 , 0X10 , 0X04 , 0X66 , 0X04 , 0X13 , 0X05 , 0X66 , 0X04 , 0X10 , 0X05 , 0X66 , 0X04 , 0X10]
+008fae: 04 66 05 10 04 66 04 13
+008fb6: 05 66 04 10 05 66 04 10
+
+[	DB 0X05 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X05 , 0X10 , 0X04 , 0X66 , 0X05 , 0X17 , 0X04 , 0X66 , 0X05 , 0X17]
+008fbe: 05 66 04 13 04 66 05 10
+008fc6: 04 66 05 17 04 66 05 17
+
+[	DB 0X04 , 0X66 , 0X04 , 0X17 , 0X05 , 0X66 , 0X04 , 0X17 , 0X05 , 0X66 , 0X04 , 0X17 , 0X04 , 0X66 , 0X05 , 0X10]
+008fce: 04 66 04 17 05 66 04 17
+008fd6: 05 66 04 17 04 66 05 10
+
+[	DB 0X04 , 0X66 , 0X05 , 0X13 , 0X04 , 0X66 , 0X05 , 0X17 , 0X04 , 0X66 , 0X04 , 0X69 , 0XFB , 0X00 , 0X6A]
+008fde: 04 66 05 13 04 66 05 17
+008fe6: 04 66 04 69 fb 00 6a
+
+[	DB 0X00 , 0X01 , 0X02 , 0X02 , 0X02 , 0X00 , 0XFE , 0XFD , 0XFD , 0XFD , 0XFE , 0X00 , 0X02 , 0X02 , 0X02 , 0X01]
+008fed: 00 01 02 02 02 00 fe fd
+008ff5: fd fd fe 00 02 02 02 01
+
+[	DB 0X00 , 0XFE , 0XFD , 0XFD , 0XFD , 0XFF , 0X01 , 0X02 , 0X03 , 0X02 , 0X01 , 0XFF , 0XFD , 0XFD , 0XFD , 0XFE]
+008ffd: 00 fe fd fd fd ff 01 02
+009005: 03 02 01 ff fd fd fd fe
+
+[	DB 0XFF , 0X02 , 0XE0 , 0X01 , 0X1E , 0X14 , 0X00 , 0X00 , 0X00]
+00900d: ff 02 e0 01 1e 14 00 00
+009015: 00
+
+[	INCLUDE ".//stage1_bgm.asm"] end
+
+[_BGM_STAGE2 :]
+	label address: 0x009016
+
+[	INCLUDE ".//stage2_bgm.asm"] begin
+[	DB 0X06 , 0X00 , 0X4E , 0X01 , 0XA6 , 0X03 , 0X68 , 0XA7 , 0X03 , 0X67 , 0X05 , 0X34 , 0X03 , 0X66 , 0X04 , 0X34]
+009016: 06 00 4e 01 a6 03 68 a7
+00901e: 03 67 05 34 03 66 04 34
+
+[	DB 0X04 , 0X66 , 0X04 , 0X67 , 0X07 , 0X34 , 0X04 , 0X66 , 0X04 , 0X34 , 0X03 , 0X66 , 0X04 , 0X67 , 0X09 , 0X34]
+009026: 04 66 04 67 07 34 04 66
+00902e: 04 34 03 66 04 67 09 34
+
+[	DB 0X04 , 0X66 , 0X04 , 0X34 , 0X04 , 0X66 , 0X04 , 0X67 , 0X0B , 0X34 , 0X03 , 0X66 , 0X04 , 0X34 , 0X04 , 0X66]
+009036: 04 66 04 34 04 66 04 67
+00903e: 0b 34 03 66 04 34 04 66
+
+[	DB 0X04 , 0X67 , 0X0D , 0X34 , 0X04 , 0X66 , 0X04 , 0X34 , 0X03 , 0X66 , 0X04 , 0X67 , 0X0F , 0X34 , 0X04 , 0X66]
+009046: 04 67 0d 34 04 66 04 34
+00904e: 03 66 04 67 0f 34 04 66
+
+[	DB 0X04 , 0X34 , 0X04 , 0X66 , 0X04 , 0X34 , 0X03 , 0X66 , 0X04 , 0X67 , 0X0F , 0X28 , 0X04 , 0X66 , 0X04 , 0X2B]
+009056: 04 34 04 66 04 34 03 66
+00905e: 04 67 0f 28 04 66 04 2b
+
+[	DB 0X04 , 0X66 , 0X04 , 0X30 , 0X04 , 0X66 , 0X03 , 0X2D , 0X26 , 0X66 , 0X09 , 0X30 , 0X04 , 0X66 , 0X03 , 0X2D]
+009066: 04 66 04 30 04 66 03 2d
+00906e: 26 66 09 30 04 66 03 2d
+
+[	DB 0X04 , 0X66 , 0X04 , 0X30 , 0X04 , 0X66 , 0X04 , 0X2D , 0X25 , 0X66 , 0X09 , 0X30 , 0X04 , 0X66 , 0X04 , 0X2F]
+009076: 04 66 04 30 04 66 04 2d
+00907e: 25 66 09 30 04 66 04 2f
+
+[	DB 0X04 , 0X66 , 0X04 , 0X30 , 0X03 , 0X66 , 0X04 , 0X2F , 0X26 , 0X66 , 0X09 , 0X2F , 0X03 , 0X66 , 0X04 , 0X2D]
+009086: 04 66 04 30 03 66 04 2f
+00908e: 26 66 09 2f 03 66 04 2d
+
+[	DB 0X04 , 0X66 , 0X04 , 0X29 , 0X04 , 0X66 , 0X04 , 0X2B , 0X1C , 0X2D , 0X08 , 0X2F , 0X26 , 0X2D , 0X26 , 0X66]
+009096: 04 66 04 29 04 66 04 2b
+00909e: 1c 2d 08 2f 26 2d 26 66
+
+[	DB 0X08 , 0X30 , 0X04 , 0X66 , 0X04 , 0X2D , 0X04 , 0X66 , 0X04 , 0X30 , 0X04 , 0X66 , 0X03 , 0X2D , 0X26 , 0X66]
+0090a6: 08 30 04 66 04 2d 04 66
+0090ae: 04 30 04 66 03 2d 26 66
+
+[	DB 0X09 , 0X30 , 0X04 , 0X66 , 0X04 , 0X2F , 0X03 , 0X66 , 0X04 , 0X30 , 0X04 , 0X66 , 0X04 , 0X2F , 0X26 , 0X66]
+0090b6: 09 30 04 66 04 2f 03 66
+0090be: 04 30 04 66 04 2f 26 66
+
+[	DB 0X08 , 0X2F , 0X04 , 0X66 , 0X04 , 0X2B , 0X04 , 0X66 , 0X04 , 0X32 , 0X03 , 0X66 , 0X04 , 0X34 , 0X04 , 0X66]
+0090c6: 08 2f 04 66 04 2b 04 66
+0090ce: 04 32 03 66 04 34 04 66
+
+[	DB 0X04 , 0X34 , 0X04 , 0X66 , 0X04 , 0X34 , 0X03 , 0X66 , 0X04 , 0X34 , 0X04 , 0X66 , 0X0E , 0X34 , 0X1C , 0X35]
+0090d6: 04 34 04 66 04 34 03 66
+0090de: 04 34 04 66 0e 34 1c 35
+
+[	DB 0X1C , 0X66 , 0X08 , 0X35 , 0X09 , 0X34 , 0X09 , 0X32 , 0X08 , 0X30 , 0X09 , 0X2F , 0X26 , 0X35 , 0X26 , 0X34]
+0090e6: 1c 66 08 35 09 34 09 32
+0090ee: 08 30 09 2f 26 35 26 34
+
+[	DB 0X1C , 0X66 , 0X08 , 0X34 , 0X09 , 0X32 , 0X09 , 0X30 , 0X08 , 0X2F , 0X09 , 0X2D , 0X26 , 0X66 , 0X12 , 0X2D]
+0090f6: 1c 66 08 34 09 32 09 30
+0090fe: 08 2f 09 2d 26 66 12 2d
+
+[	DB 0X12 , 0X32 , 0X1C , 0X66 , 0X09 , 0X32 , 0X09 , 0X30 , 0X08 , 0X2F , 0X09 , 0X2D , 0X09 , 0X2F , 0X1C , 0X32]
+009106: 12 32 1c 66 09 32 09 30
+00910e: 08 2f 09 2d 09 2f 1c 32
+
+[	DB 0X09 , 0X35 , 0X25 , 0X34 , 0X04 , 0X66 , 0X04 , 0X34 , 0X04 , 0X66 , 0X04 , 0X34 , 0X03 , 0X66 , 0X04 , 0X34]
+009116: 09 35 25 34 04 66 04 34
+00911e: 04 66 04 34 03 66 04 34
+
+[	DB 0X04 , 0X66 , 0X0E , 0X34 , 0X03 , 0X66 , 0X0E , 0X34 , 0X04 , 0X66 , 0X0D , 0X34 , 0X04 , 0X66 , 0X0E , 0X34]
+009126: 04 66 0e 34 03 66 0e 34
+00912e: 04 66 0d 34 04 66 0e 34
+
+[	DB 0X04 , 0X66 , 0X0D , 0X34 , 0X04 , 0X66 , 0X0D , 0X34 , 0X04 , 0X66 , 0X04 , 0X34 , 0X04 , 0X66 , 0X04 , 0X34]
+009136: 04 66 0d 34 04 66 0d 34
+00913e: 04 66 04 34 04 66 04 34
+
+[	DB 0X04 , 0X66 , 0X03 , 0X34 , 0X04 , 0X66 , 0X04 , 0X34 , 0X04 , 0X66 , 0X0D , 0X34 , 0X04 , 0X66 , 0X0E , 0X34]
+009146: 04 66 03 34 04 66 04 34
+00914e: 04 66 0d 34 04 66 0e 34
+
+[	DB 0X04 , 0X66 , 0X0D , 0X34 , 0X04 , 0X66 , 0X0E , 0X34 , 0X03 , 0X66 , 0X0E , 0X69 , 0X49 , 0X00 , 0X68 , 0XA7]
+009156: 04 66 0d 34 04 66 0e 34
+00915e: 03 66 0e 69 49 00 68 a7
+
+[	DB 0X03 , 0X67 , 0X03 , 0X17 , 0X03 , 0X66 , 0X04 , 0X17 , 0X04 , 0X66 , 0X04 , 0X67 , 0X05 , 0X17 , 0X04 , 0X66]
+009166: 03 67 03 17 03 66 04 17
+00916e: 04 66 04 67 05 17 04 66
+
+[	DB 0X04 , 0X17 , 0X03 , 0X66 , 0X04 , 0X67 , 0X07 , 0X17 , 0X04 , 0X66 , 0X04 , 0X17 , 0X04 , 0X66 , 0X04 , 0X67]
+009176: 04 17 03 66 04 67 07 17
+00917e: 04 66 04 17 04 66 04 67
+
+[	DB 0X09 , 0X17 , 0X03 , 0X66 , 0X04 , 0X17 , 0X04 , 0X66 , 0X04 , 0X67 , 0X0B , 0X1C , 0X04 , 0X66 , 0X04 , 0X1C]
+009186: 09 17 03 66 04 17 04 66
+00918e: 04 67 0b 1c 04 66 04 1c
+
+[	DB 0X03 , 0X66 , 0X04 , 0X67 , 0X0D , 0X1C , 0X04 , 0X66 , 0X04 , 0X1C , 0X04 , 0X66 , 0X04 , 0X1C , 0X03 , 0X66]
+009196: 03 66 04 67 0d 1c 04 66
+00919e: 04 1c 04 66 04 1c 03 66
+
+[	DB 0X04 , 0X66 , 0X1C , 0X67 , 0X0D , 0X09 , 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66]
+0091a6: 04 66 1c 67 0d 09 04 66
+0091ae: 04 15 04 66 04 09 04 66
+
+[	DB 0X03 , 0X15 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X03 , 0X09 , 0X04 , 0X66]
+0091b6: 03 15 04 66 04 09 04 66
+0091be: 04 15 04 66 03 09 04 66
+
+[	DB 0X04 , 0X15 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X03 , 0X15 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66]
+0091c6: 04 15 04 66 04 09 04 66
+0091ce: 03 15 04 66 04 09 04 66
+
+[	DB 0X04 , 0X15 , 0X04 , 0X66 , 0X03 , 0X09 , 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66]
+0091d6: 04 15 04 66 03 09 04 66
+0091de: 04 15 04 66 04 09 04 66
+
+[	DB 0X04 , 0X15 , 0X03 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X04 , 0X07 , 0X03 , 0X66]
+0091e6: 04 15 03 66 04 07 04 66
+0091ee: 04 13 04 66 04 07 03 66
+
+[	DB 0X04 , 0X13 , 0X04 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66 , 0X04 , 0X13 , 0X03 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66]
+0091f6: 04 13 04 66 04 07 04 66
+0091fe: 04 13 03 66 04 07 04 66
+
+[	DB 0X04 , 0X13 , 0X04 , 0X66 , 0X04 , 0X07 , 0X03 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66]
+009206: 04 13 04 66 04 07 03 66
+00920e: 04 13 04 66 04 07 04 66
+
+[	DB 0X04 , 0X13 , 0X03 , 0X66 , 0X04 , 0X08 , 0X04 , 0X66 , 0X04 , 0X14 , 0X04 , 0X66 , 0X04 , 0X08 , 0X04 , 0X66]
+009216: 04 13 03 66 04 08 04 66
+00921e: 04 14 04 66 04 08 04 66
+
+[	DB 0X03 , 0X14 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X03 , 0X09 , 0X04 , 0X66]
+009226: 03 14 04 66 04 09 04 66
+00922e: 04 15 04 66 03 09 04 66
+
+[	DB 0X04 , 0X15 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X03 , 0X15 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66]
+009236: 04 15 04 66 04 09 04 66
+00923e: 03 15 04 66 04 09 04 66
+
+[	DB 0X04 , 0X15 , 0X04 , 0X66 , 0X03 , 0X09 , 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66]
+009246: 04 15 04 66 03 09 04 66
+00924e: 04 15 04 66 04 09 04 66
+
+[	DB 0X03 , 0X15 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X04 , 0X09 , 0X03 , 0X66]
+009256: 03 15 04 66 04 09 04 66
+00925e: 04 15 04 66 04 09 03 66
+
+[	DB 0X04 , 0X15 , 0X04 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66 , 0X04 , 0X13 , 0X03 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66]
+009266: 04 15 04 66 04 07 04 66
+00926e: 04 13 03 66 04 07 04 66
+
+[	DB 0X04 , 0X13 , 0X04 , 0X66 , 0X04 , 0X07 , 0X03 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66]
+009276: 04 13 04 66 04 07 03 66
+00927e: 04 13 04 66 04 07 04 66
+
+[	DB 0X04 , 0X13 , 0X03 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X04 , 0X07 , 0X03 , 0X66]
+009286: 04 13 03 66 04 07 04 66
+00928e: 04 13 04 66 04 07 03 66
+
+[	DB 0X04 , 0X13 , 0X04 , 0X66 , 0X04 , 0X08 , 0X04 , 0X66 , 0X04 , 0X14 , 0X04 , 0X66 , 0X03 , 0X08 , 0X04 , 0X66]
+009296: 04 13 04 66 04 08 04 66
+00929e: 04 14 04 66 03 08 04 66
+
+[	DB 0X04 , 0X14 , 0X04 , 0X66 , 0X04 , 0X0E , 0X04 , 0X66 , 0X03 , 0X0E , 0X04 , 0X66 , 0X04 , 0X0E , 0X04 , 0X66]
+0092a6: 04 14 04 66 04 0e 04 66
+0092ae: 03 0e 04 66 04 0e 04 66
+
+[	DB 0X04 , 0X0E , 0X04 , 0X66 , 0X03 , 0X0E , 0X04 , 0X66 , 0X04 , 0X0E , 0X04 , 0X66 , 0X04 , 0X0B , 0X04 , 0X66]
+0092b6: 04 0e 04 66 03 0e 04 66
+0092be: 04 0e 04 66 04 0b 04 66
+
+[	DB 0X03 , 0X0E , 0X04 , 0X66 , 0X04 , 0X0B , 0X04 , 0X66 , 0X04 , 0X0B , 0X04 , 0X66 , 0X03 , 0X0B , 0X04 , 0X66]
+0092c6: 03 0e 04 66 04 0b 04 66
+0092ce: 04 0b 04 66 03 0b 04 66
+
+[	DB 0X04 , 0X0B , 0X04 , 0X66 , 0X04 , 0X0B , 0X04 , 0X66 , 0X04 , 0X0B , 0X03 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66]
+0092d6: 04 0b 04 66 04 0b 04 66
+0092de: 04 0b 03 66 04 07 04 66
+
+[	DB 0X04 , 0X0B , 0X04 , 0X66 , 0X04 , 0X0C , 0X03 , 0X66 , 0X04 , 0X0C , 0X04 , 0X66 , 0X04 , 0X0C , 0X04 , 0X66]
+0092e6: 04 0b 04 66 04 0c 03 66
+0092ee: 04 0c 04 66 04 0c 04 66
+
+[	DB 0X04 , 0X0C , 0X03 , 0X66 , 0X04 , 0X0C , 0X04 , 0X66 , 0X04 , 0X0C , 0X04 , 0X66 , 0X04 , 0X09 , 0X03 , 0X66]
+0092f6: 04 0c 03 66 04 0c 04 66
+0092fe: 04 0c 04 66 04 09 03 66
+
+[	DB 0X04 , 0X0C , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X03 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66]
+009306: 04 0c 04 66 04 09 04 66
+00930e: 04 09 03 66 04 09 04 66
+
+[	DB 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X03 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66]
+009316: 04 09 04 66 04 09 04 66
+00931e: 03 09 04 66 04 09 04 66
+
+[	DB 0X04 , 0X09 , 0X04 , 0X66 , 0X03 , 0X0E , 0X04 , 0X66 , 0X04 , 0X0E , 0X04 , 0X66 , 0X04 , 0X0E , 0X04 , 0X66]
+009326: 04 09 04 66 03 0e 04 66
+00932e: 04 0e 04 66 04 0e 04 66
+
+[	DB 0X03 , 0X0E , 0X04 , 0X66 , 0X04 , 0X0E , 0X04 , 0X66 , 0X04 , 0X0E , 0X04 , 0X66 , 0X03 , 0X0B , 0X04 , 0X66]
+009336: 03 0e 04 66 04 0e 04 66
+00933e: 04 0e 04 66 03 0b 04 66
+
+[	DB 0X04 , 0X0E , 0X04 , 0X66 , 0X04 , 0X0B , 0X04 , 0X66 , 0X03 , 0X0B , 0X04 , 0X66 , 0X04 , 0X0B , 0X04 , 0X66]
+009346: 04 0e 04 66 04 0b 04 66
+00934e: 03 0b 04 66 04 0b 04 66
+
+[	DB 0X04 , 0X0B , 0X04 , 0X66 , 0X04 , 0X0B , 0X03 , 0X66 , 0X04 , 0X0B , 0X04 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66]
+009356: 04 0b 04 66 04 0b 03 66
+00935e: 04 0b 04 66 04 07 04 66
+
+[	DB 0X04 , 0X11 , 0X03 , 0X66 , 0X04 , 0X67 , 0X0F , 0X0B , 0X04 , 0X66 , 0X04 , 0X0B , 0X04 , 0X66 , 0X04 , 0X0B]
+009366: 04 11 03 66 04 67 0f 0b
+00936e: 04 66 04 0b 04 66 04 0b
+
+[	DB 0X03 , 0X66 , 0X04 , 0X0B , 0X04 , 0X66 , 0X0E , 0X0B , 0X03 , 0X66 , 0X0E , 0X0B , 0X04 , 0X66 , 0X0D , 0X0B]
+009376: 03 66 04 0b 04 66 0e 0b
+00937e: 03 66 0e 0b 04 66 0d 0b
+
+[	DB 0X04 , 0X66 , 0X0E , 0X0B , 0X04 , 0X66 , 0X0D , 0X0B , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X03 , 0X0B]
+009386: 04 66 0e 0b 04 66 0d 0b
+00938e: 04 66 04 09 04 66 03 0b
+
+[	DB 0X04 , 0X66 , 0X04 , 0X10 , 0X04 , 0X66 , 0X04 , 0X10 , 0X04 , 0X66 , 0X03 , 0X10 , 0X04 , 0X66 , 0X04 , 0X10]
+009396: 04 66 04 10 04 66 04 10
+00939e: 04 66 03 10 04 66 04 10
+
+[	DB 0X04 , 0X66 , 0X0D , 0X10 , 0X04 , 0X66 , 0X0E , 0X10 , 0X04 , 0X66 , 0X0D , 0X10 , 0X04 , 0X66 , 0X0E , 0X10]
+0093a6: 04 66 0d 10 04 66 0e 10
+0093ae: 04 66 0d 10 04 66 0e 10
+
+[	DB 0X03 , 0X66 , 0X0E , 0X69 , 0X91 , 0X01 , 0X6A]
+0093b6: 03 66 0e 69 91 01 6a
+
+[	DB 0X00 , 0X01 , 0X02 , 0X02 , 0X02 , 0X00 , 0XFE , 0XFD , 0XFD , 0XFD , 0XFE , 0X00 , 0X02 , 0X02 , 0X02 , 0X01]
+0093bd: 00 01 02 02 02 00 fe fd
+0093c5: fd fd fe 00 02 02 02 01
+
+[	DB 0X00 , 0XFE , 0XFD , 0XFD , 0XFD , 0XFF , 0X01 , 0X02 , 0X03 , 0X02 , 0X01 , 0XFF , 0XFD , 0XFD , 0XFD , 0XFE]
+0093cd: 00 fe fd fd fd ff 01 02
+0093d5: 03 02 01 ff fd fd fd fe
+
+[	DB 0XFF , 0X02 , 0XE0 , 0X01 , 0X1E , 0X14 , 0X00 , 0X00 , 0X00]
+0093dd: ff 02 e0 01 1e 14 00 00
+0093e5: 00
+
+[	INCLUDE ".//stage2_bgm.asm"] end
+
+[_BGM_STAGE3 :]
+	label address: 0x0093e6
+
+[	INCLUDE ".//stage3_bgm.asm"] begin
+[	DB 0X06 , 0X00 , 0XB4 , 0X00 , 0X78 , 0X01 , 0X68 , 0X79 , 0X01 , 0X67 , 0X0D , 0X35 , 0X11 , 0X32 , 0X12 , 0X30]
+0093e6: 06 00 b4 00 78 01 68 79
+0093ee: 01 67 0d 35 11 32 12 30
+
+[	DB 0X12 , 0X32 , 0X12 , 0X35 , 0X11 , 0X3C , 0X12 , 0X39 , 0X12 , 0X3C , 0X12 , 0X35 , 0X11 , 0X32 , 0X12 , 0X30]
+0093f6: 12 32 12 35 11 3c 12 39
+0093fe: 12 3c 12 35 11 32 12 30
+
+[	DB 0X12 , 0X32 , 0X12 , 0X35 , 0X11 , 0X3C , 0X12 , 0X39 , 0X12 , 0X3C , 0X12 , 0X34 , 0X11 , 0X32 , 0X12 , 0X2D]
+009406: 12 32 12 35 11 3c 12 39
+00940e: 12 3c 12 34 11 32 12 2d
+
+[	DB 0X12 , 0X2F , 0X12 , 0X32 , 0X11 , 0X39 , 0X12 , 0X37 , 0X12 , 0X39 , 0X12 , 0X34 , 0X11 , 0X32 , 0X12 , 0X2D]
+009416: 12 2f 12 32 11 39 12 37
+00941e: 12 39 12 34 11 32 12 2d
+
+[	DB 0X12 , 0X2F , 0X12 , 0X32 , 0X11 , 0X39 , 0X12 , 0X37 , 0X12 , 0X39 , 0X12 , 0X35 , 0X11 , 0X32 , 0X12 , 0X30]
+009426: 12 2f 12 32 11 39 12 37
+00942e: 12 39 12 35 11 32 12 30
+
+[	DB 0X12 , 0X32 , 0X12 , 0X35 , 0X11 , 0X3C , 0X12 , 0X39 , 0X12 , 0X3C , 0X12 , 0X35 , 0X11 , 0X32 , 0X12 , 0X30]
+009436: 12 32 12 35 11 3c 12 39
+00943e: 12 3c 12 35 11 32 12 30
+
+[	DB 0X12 , 0X32 , 0X12 , 0X35 , 0X11 , 0X3C , 0X12 , 0X39 , 0X12 , 0X3C , 0X12 , 0X34 , 0X11 , 0X32 , 0X12 , 0X2D]
+009446: 12 32 12 35 11 3c 12 39
+00944e: 12 3c 12 34 11 32 12 2d
+
+[	DB 0X12 , 0X2F , 0X12 , 0X32 , 0X11 , 0X39 , 0X12 , 0X37 , 0X12 , 0X39 , 0X12 , 0X34 , 0X11 , 0X32 , 0X12 , 0X2D]
+009456: 12 2f 12 32 11 39 12 37
+00945e: 12 39 12 34 11 32 12 2d
+
+[	DB 0X12 , 0X2F , 0X12 , 0X32 , 0X11 , 0X39 , 0X12 , 0X37 , 0X12 , 0X39 , 0X12 , 0X34 , 0X37 , 0X39 , 0X95 , 0X3C]
+009466: 12 2f 12 32 11 39 12 37
+00946e: 12 39 12 34 37 39 95 3c
+
+[	DB 0X24 , 0X3B , 0X25 , 0X39 , 0X12 , 0X3B , 0X37 , 0X34 , 0X95 , 0X32 , 0X12 , 0X39 , 0X11 , 0X37 , 0X12 , 0X39]
+009476: 24 3b 25 39 12 3b 37 34
+00947e: 95 32 12 39 11 37 12 39
+
+[	DB 0X12 , 0X35 , 0X12 , 0X34 , 0X37 , 0X39 , 0X95 , 0X3C , 0X24 , 0X3B , 0X25 , 0X39 , 0X12 , 0X3B , 0X95 , 0X66]
+009486: 12 35 12 34 37 39 95 3c
+00948e: 24 3b 25 39 12 3b 95 66
+
+[	DB 0X95 , 0X69 , 0X0B , 0X00 , 0X68 , 0X79 , 0X01 , 0X67 , 0X0E , 0X11 , 0XE0 , 0X66 , 0X11 , 0X15 , 0X25 , 0X11]
+009496: 95 69 0b 00 68 79 01 67
+00949e: 0e 11 e0 66 11 15 25 11
+
+[	DB 0X12 , 0X10 , 0X37 , 0X09 , 0XE0 , 0X66 , 0X12 , 0X11 , 0XE0 , 0X66 , 0X11 , 0X15 , 0X25 , 0X11 , 0X12 , 0X10]
+0094a6: 12 10 37 09 e0 66 12 11
+0094ae: e0 66 11 15 25 11 12 10
+
+[	DB 0X37 , 0X15 , 0XE0 , 0X66 , 0X12 , 0X09 , 0X08 , 0X66 , 0X08 , 0X09 , 0X09 , 0X66 , 0X08 , 0X66 , 0X37 , 0X09]
+0094b6: 37 15 e0 66 12 09 08 66
+0094be: 08 09 09 66 08 66 37 09
+
+[	DB 0X09 , 0X0E , 0X08 , 0X10 , 0X08 , 0X07 , 0X1C , 0X09 , 0X08 , 0X66 , 0X08 , 0X09 , 0X09 , 0X66 , 0X08 , 0X66]
+0094c6: 09 0e 08 10 08 07 1c 09
+0094ce: 08 66 08 09 09 66 08 66
+
+[	DB 0X37 , 0X09 , 0X09 , 0X0E , 0X08 , 0X10 , 0X08 , 0X0B , 0X12 , 0X09 , 0X09 , 0X07 , 0X08 , 0X66 , 0X08 , 0X07]
+0094d6: 37 09 09 0e 08 10 08 0b
+0094de: 12 09 09 07 08 66 08 07
+
+[	DB 0X09 , 0X66 , 0X08 , 0X66 , 0X37 , 0X07 , 0X09 , 0X0C , 0X08 , 0X0E , 0X08 , 0X09 , 0X1C , 0X07 , 0X08 , 0X66]
+0094e6: 09 66 08 66 37 07 09 0c
+0094ee: 08 0e 08 09 1c 07 08 66
+
+[	DB 0X08 , 0X07 , 0X09 , 0X66 , 0X08 , 0X66 , 0X37 , 0X07 , 0X09 , 0X0C , 0X08 , 0X0E , 0X08 , 0X0C , 0X12 , 0X13]
+0094f6: 08 07 09 66 08 66 37 07
+0094fe: 09 0c 08 0e 08 0c 12 13
+
+[	DB 0X09 , 0X09 , 0X08 , 0X66 , 0X08 , 0X09 , 0X09 , 0X66 , 0X08 , 0X66 , 0X37 , 0X09 , 0X09 , 0X0E , 0X08 , 0X10]
+009506: 09 09 08 66 08 09 09 66
+00950e: 08 66 37 09 09 0e 08 10
+
+[	DB 0X08 , 0X07 , 0X1C , 0X09 , 0X08 , 0X66 , 0X08 , 0X09 , 0X09 , 0X66 , 0X08 , 0X66 , 0X37 , 0X09 , 0X09 , 0X0E]
+009516: 08 07 1c 09 08 66 08 09
+00951e: 09 66 08 66 37 09 09 0e
+
+[	DB 0X08 , 0X10 , 0X08 , 0X0B , 0X12 , 0X09 , 0X09 , 0X07 , 0X08 , 0X66 , 0X08 , 0X07 , 0X09 , 0X66 , 0X08 , 0X66]
+009526: 08 10 08 0b 12 09 09 07
+00952e: 08 66 08 07 09 66 08 66
+
+[	DB 0X37 , 0X07 , 0X09 , 0X0C , 0X08 , 0X0E , 0X08 , 0X09 , 0X1C , 0X07 , 0X08 , 0X66 , 0X08 , 0X07 , 0X09 , 0X66]
+009536: 37 07 09 0c 08 0e 08 09
+00953e: 1c 07 08 66 08 07 09 66
+
+[	DB 0X08 , 0X66 , 0X12 , 0X07 , 0X08 , 0X66 , 0X09 , 0X66 , 0X11 , 0X07 , 0X09 , 0X66 , 0X08 , 0X0C , 0X08 , 0X66]
+009546: 08 66 12 07 08 66 09 66
+00954e: 11 07 09 66 08 0c 08 66
+
+[	DB 0X09 , 0X0E , 0X08 , 0X10 , 0X09 , 0X69 , 0XB9 , 0X00 , 0X6A]
+009556: 09 0e 08 10 09 69 b9 00
+00955e: 6a
+
+[	DB 0X00 , 0X01 , 0X02 , 0X02 , 0X02 , 0X00 , 0XFE , 0XFD , 0XFD , 0XFD , 0XFE , 0X00 , 0X02 , 0X02 , 0X02 , 0X01]
+00955f: 00 01 02 02 02 00 fe fd
+009567: fd fd fe 00 02 02 02 01
+
+[	DB 0X00 , 0XFE , 0XFD , 0XFD , 0XFD , 0XFF , 0X01 , 0X02 , 0X03 , 0X02 , 0X01 , 0XFF , 0XFD , 0XFD , 0XFD , 0XFE]
+00956f: 00 fe fd fd fd ff 01 02
+009577: 03 02 01 ff fd fd fd fe
+
+[	DB 0XFF , 0X02 , 0XE0 , 0X01 , 0X1E , 0X14 , 0X00 , 0X00 , 0X00]
+00957f: ff 02 e0 01 1e 14 00 00
+009587: 00
+
+[	INCLUDE ".//stage3_bgm.asm"] end
+
+[_BGM_STAGE4 :]
+	label address: 0x009588
+
+[	INCLUDE ".//stage4_bgm.asm"] begin
+[	DB 0X06 , 0X00 , 0XCC , 0X00 , 0X54 , 0X03 , 0X68 , 0X55 , 0X03 , 0X67 , 0X0E , 0X28 , 0X09 , 0X2B , 0X09 , 0X2D]
+009588: 06 00 cc 00 54 03 68 55
+009590: 03 67 0e 28 09 2b 09 2d
+
+[	DB 0X09 , 0X28 , 0X09 , 0X2B , 0X09 , 0X2D , 0X13 , 0X34 , 0X14 , 0X32 , 0X13 , 0X30 , 0X13 , 0X2F , 0X13 , 0X2B]
+009598: 09 28 09 2b 09 2d 13 34
+0095a0: 14 32 13 30 13 2f 13 2b
+
+[	DB 0X09 , 0X26 , 0X09 , 0X29 , 0X0A , 0X2B , 0X09 , 0X26 , 0X09 , 0X29 , 0X09 , 0X2B , 0X13 , 0X32 , 0X13 , 0X30]
+0095a8: 09 26 09 29 0a 2b 09 26
+0095b0: 09 29 09 2b 13 32 13 30
+
+[	DB 0X14 , 0X2F , 0X13 , 0X2B , 0X13 , 0X26 , 0X09 , 0X24 , 0X09 , 0X27 , 0X09 , 0X29 , 0X09 , 0X24 , 0X0A , 0X27]
+0095b8: 14 2f 13 2b 13 26 09 24
+0095c0: 09 27 09 29 09 24 0a 27
+
+[	DB 0X09 , 0X29 , 0X13 , 0X30 , 0X13 , 0X2E , 0X13 , 0X2D , 0X14 , 0X29 , 0X13 , 0X26 , 0X09 , 0X28 , 0X27 , 0X24]
+0095c8: 09 29 13 30 13 2e 13 2d
+0095d0: 14 29 13 26 09 28 27 24
+
+[	DB 0X09 , 0X29 , 0X0A , 0X66 , 0X09 , 0X28 , 0X50 , 0X66 , 0X09 , 0X28 , 0X09 , 0X2B , 0X09 , 0X2D , 0X09 , 0X28]
+0095d8: 09 29 0a 66 09 28 50 66
+0095e0: 09 28 09 2b 09 2d 09 28
+
+[	DB 0X09 , 0X2B , 0X09 , 0X2D , 0X1E , 0X67 , 0X0C , 0X34 , 0X09 , 0X37 , 0X09 , 0X39 , 0X09 , 0X34 , 0X09 , 0X37]
+0095e8: 09 2b 09 2d 1e 67 0c 34
+0095f0: 09 37 09 39 09 34 09 37
+
+[	DB 0X09 , 0X39 , 0X1D , 0X67 , 0X0E , 0X26 , 0X0A , 0X29 , 0X09 , 0X2B , 0X09 , 0X26 , 0X09 , 0X29 , 0X09 , 0X2B]
+0095f8: 09 39 1d 67 0e 26 0a 29
+009600: 09 2b 09 26 09 29 09 2b
+
+[	DB 0X1D , 0X67 , 0X0C , 0X32 , 0X0A , 0X35 , 0X09 , 0X37 , 0X09 , 0X32 , 0X09 , 0X35 , 0X09 , 0X37 , 0X1D , 0X67]
+009608: 1d 67 0c 32 0a 35 09 37
+009610: 09 32 09 35 09 37 1d 67
+
+[	DB 0X0E , 0X24 , 0X09 , 0X27 , 0X0A , 0X29 , 0X09 , 0X24 , 0X09 , 0X27 , 0X09 , 0X29 , 0X13 , 0X30 , 0X13 , 0X2E]
+009618: 0e 24 09 27 0a 29 09 24
+009620: 09 27 09 29 13 30 13 2e
+
+[	DB 0X14 , 0X2D , 0X13 , 0X29 , 0X13 , 0X26 , 0X09 , 0X28 , 0X50 , 0X30 , 0X04 , 0X66 , 0X04 , 0X30 , 0X04 , 0X66]
+009628: 14 2d 13 29 13 26 09 28
+009630: 50 30 04 66 04 30 04 66
+
+[	DB 0X04 , 0X66 , 0X09 , 0X2F , 0X28 , 0X66 , 0X09 , 0X2D , 0X50 , 0X66 , 0X50 , 0X66 , 0X50 , 0X34 , 0X09 , 0X32]
+009638: 04 66 09 2f 28 66 09 2d
+009640: 50 66 50 66 50 34 09 32
+
+[	DB 0X09 , 0X30 , 0X09 , 0X32 , 0X09 , 0X2F , 0X09 , 0X34 , 0X1D , 0X69 , 0X0B , 0X00 , 0X68 , 0X55 , 0X03 , 0X67]
+009648: 09 30 09 32 09 2f 09 34
+009650: 1d 69 0b 00 68 55 03 67
+
+[	DB 0X0E , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66]
+009658: 0e 09 04 66 04 09 04 66
+009660: 04 09 04 66 04 09 04 66
+
+[	DB 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66]
+009668: 04 09 04 66 04 09 04 66
+009670: 04 09 04 66 04 09 04 66
+
+[	DB 0X04 , 0X09 , 0X04 , 0X66 , 0X05 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66]
+009678: 04 09 04 66 05 09 04 66
+009680: 04 09 04 66 04 15 04 66
+
+[	DB 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66]
+009688: 04 09 04 66 04 15 04 66
+009690: 04 09 04 66 04 15 04 66
+
+[	DB 0X04 , 0X07 , 0X04 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66 , 0X05 , 0X07 , 0X04 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66]
+009698: 04 07 04 66 04 07 04 66
+0096a0: 05 07 04 66 04 07 04 66
+
+[	DB 0X04 , 0X07 , 0X04 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66]
+0096a8: 04 07 04 66 04 07 04 66
+0096b0: 04 07 04 66 04 07 04 66
+
+[	DB 0X04 , 0X07 , 0X04 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66 , 0X05 , 0X13 , 0X04 , 0X66]
+0096b8: 04 07 04 66 04 07 04 66
+0096c0: 04 07 04 66 05 13 04 66
+
+[	DB 0X04 , 0X07 , 0X04 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66]
+0096c8: 04 07 04 66 04 13 04 66
+0096d0: 04 07 04 66 04 13 04 66
+
+[	DB 0X04 , 0X05 , 0X04 , 0X66 , 0X04 , 0X05 , 0X04 , 0X66 , 0X04 , 0X05 , 0X04 , 0X66 , 0X04 , 0X05 , 0X04 , 0X66]
+0096d8: 04 05 04 66 04 05 04 66
+0096e0: 04 05 04 66 04 05 04 66
+
+[	DB 0X05 , 0X05 , 0X04 , 0X66 , 0X04 , 0X05 , 0X04 , 0X66 , 0X04 , 0X05 , 0X04 , 0X66 , 0X04 , 0X05 , 0X04 , 0X66]
+0096e8: 05 05 04 66 04 05 04 66
+0096f0: 04 05 04 66 04 05 04 66
+
+[	DB 0X04 , 0X05 , 0X04 , 0X66 , 0X04 , 0X05 , 0X04 , 0X66 , 0X04 , 0X05 , 0X04 , 0X66 , 0X04 , 0X11 , 0X04 , 0X66]
+0096f8: 04 05 04 66 04 05 04 66
+009700: 04 05 04 66 04 11 04 66
+
+[	DB 0X04 , 0X05 , 0X05 , 0X66 , 0X04 , 0X11 , 0X04 , 0X66 , 0X04 , 0X05 , 0X04 , 0X66 , 0X04 , 0X11 , 0X04 , 0X66]
+009708: 04 05 05 66 04 11 04 66
+009710: 04 05 04 66 04 11 04 66
+
+[	DB 0X04 , 0X04 , 0X04 , 0X66 , 0X04 , 0X04 , 0X04 , 0X66 , 0X04 , 0X04 , 0X04 , 0X66 , 0X04 , 0X04 , 0X04 , 0X66]
+009718: 04 04 04 66 04 04 04 66
+009720: 04 04 04 66 04 04 04 66
+
+[	DB 0X04 , 0X04 , 0X04 , 0X66 , 0X04 , 0X04 , 0X05 , 0X66 , 0X04 , 0X04 , 0X04 , 0X66 , 0X04 , 0X04 , 0X04 , 0X66]
+009728: 04 04 04 66 04 04 05 66
+009730: 04 04 04 66 04 04 04 66
+
+[	DB 0X04 , 0X04 , 0X04 , 0X66 , 0X04 , 0X04 , 0X04 , 0X66 , 0X04 , 0X04 , 0X04 , 0X66 , 0X04 , 0X10 , 0X04 , 0X66]
+009738: 04 04 04 66 04 04 04 66
+009740: 04 04 04 66 04 10 04 66
+
+[	DB 0X04 , 0X04 , 0X04 , 0X66 , 0X04 , 0X10 , 0X04 , 0X66 , 0X04 , 0X04 , 0X05 , 0X66 , 0X04 , 0X10 , 0X04 , 0X66]
+009748: 04 04 04 66 04 10 04 66
+009750: 04 04 05 66 04 10 04 66
+
+[	DB 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66]
+009758: 04 09 04 66 04 09 04 66
+009760: 04 09 04 66 04 09 04 66
+
+[	DB 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X05 , 0X66]
+009768: 04 09 04 66 04 09 04 66
+009770: 04 09 04 66 04 09 05 66
+
+[	DB 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66]
+009778: 04 09 04 66 04 09 04 66
+009780: 04 09 04 66 04 15 04 66
+
+[	DB 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66]
+009788: 04 09 04 66 04 15 04 66
+009790: 04 09 04 66 04 15 04 66
+
+[	DB 0X04 , 0X07 , 0X05 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66]
+009798: 04 07 05 66 04 07 04 66
+0097a0: 04 07 04 66 04 07 04 66
+
+[	DB 0X04 , 0X07 , 0X04 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66]
+0097a8: 04 07 04 66 04 07 04 66
+0097b0: 04 07 04 66 04 07 04 66
+
+[	DB 0X04 , 0X07 , 0X04 , 0X66 , 0X05 , 0X07 , 0X04 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66]
+0097b8: 04 07 04 66 05 07 04 66
+0097c0: 04 07 04 66 04 13 04 66
+
+[	DB 0X04 , 0X07 , 0X04 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X04 , 0X07 , 0X04 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66]
+0097c8: 04 07 04 66 04 13 04 66
+0097d0: 04 07 04 66 04 13 04 66
+
+[	DB 0X04 , 0X05 , 0X04 , 0X66 , 0X04 , 0X05 , 0X04 , 0X66 , 0X05 , 0X05 , 0X04 , 0X66 , 0X04 , 0X05 , 0X04 , 0X66]
+0097d8: 04 05 04 66 04 05 04 66
+0097e0: 05 05 04 66 04 05 04 66
+
+[	DB 0X04 , 0X05 , 0X04 , 0X66 , 0X04 , 0X05 , 0X04 , 0X66 , 0X04 , 0X05 , 0X04 , 0X66 , 0X04 , 0X05 , 0X04 , 0X66]
+0097e8: 04 05 04 66 04 05 04 66
+0097f0: 04 05 04 66 04 05 04 66
+
+[	DB 0X04 , 0X05 , 0X04 , 0X66 , 0X04 , 0X05 , 0X04 , 0X66 , 0X04 , 0X05 , 0X04 , 0X66 , 0X05 , 0X11 , 0X04 , 0X66]
+0097f8: 04 05 04 66 04 05 04 66
+009800: 04 05 04 66 05 11 04 66
+
+[	DB 0X04 , 0X05 , 0X04 , 0X66 , 0X04 , 0X11 , 0X04 , 0X66 , 0X04 , 0X05 , 0X04 , 0X66 , 0X04 , 0X11 , 0X04 , 0X66]
+009808: 04 05 04 66 04 11 04 66
+009810: 04 05 04 66 04 11 04 66
+
+[	DB 0X04 , 0X04 , 0X04 , 0X66 , 0X04 , 0X04 , 0X04 , 0X66 , 0X04 , 0X04 , 0X04 , 0X66 , 0X04 , 0X04 , 0X04 , 0X66]
+009818: 04 04 04 66 04 04 04 66
+009820: 04 04 04 66 04 04 04 66
+
+[	DB 0X05 , 0X04 , 0X04 , 0X66 , 0X04 , 0X04 , 0X04 , 0X66 , 0X04 , 0X04 , 0X04 , 0X66 , 0X04 , 0X04 , 0X04 , 0X66]
+009828: 05 04 04 66 04 04 04 66
+009830: 04 04 04 66 04 04 04 66
+
+[	DB 0X04 , 0X04 , 0X04 , 0X66 , 0X04 , 0X04 , 0X04 , 0X66 , 0X04 , 0X04 , 0X04 , 0X66 , 0X04 , 0X10 , 0X04 , 0X66]
+009838: 04 04 04 66 04 04 04 66
+009840: 04 04 04 66 04 10 04 66
+
+[	DB 0X04 , 0X04 , 0X04 , 0X66 , 0X05 , 0X10 , 0X04 , 0X66 , 0X04 , 0X04 , 0X04 , 0X66 , 0X04 , 0X10 , 0X04 , 0X66]
+009848: 04 04 04 66 05 10 04 66
+009850: 04 04 04 66 04 10 04 66
+
+[	DB 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66]
+009858: 04 09 04 66 04 09 04 66
+009860: 04 09 04 66 04 09 04 66
+
+[	DB 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X05 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66]
+009868: 04 09 04 66 04 09 05 66
+009870: 04 09 04 66 04 09 04 66
+
+[	DB 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66]
+009878: 04 09 04 66 04 09 04 66
+009880: 04 09 04 66 04 09 04 66
+
+[	DB 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X05 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66]
+009888: 04 09 04 66 04 09 04 66
+009890: 04 09 05 66 04 09 04 66
+
+[	DB 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66]
+009898: 04 09 04 66 04 09 04 66
+0098a0: 04 09 04 66 04 09 04 66
+
+[	DB 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X04 , 0X66 , 0X04 , 0X09 , 0X05 , 0X66]
+0098a8: 04 09 04 66 04 09 04 66
+0098b0: 04 09 04 66 04 09 05 66
+
+[	DB 0X04 , 0X10 , 0X04 , 0X66 , 0X04 , 0X10 , 0X04 , 0X66 , 0X04 , 0X10 , 0X04 , 0X66 , 0X04 , 0X10 , 0X04 , 0X66]
+0098b8: 04 10 04 66 04 10 04 66
+0098c0: 04 10 04 66 04 10 04 66
+
+[	DB 0X04 , 0X0C , 0X04 , 0X66 , 0X04 , 0X0C , 0X04 , 0X66 , 0X04 , 0X0B , 0X04 , 0X66 , 0X04 , 0X0B , 0X04 , 0X66]
+0098c8: 04 0c 04 66 04 0c 04 66
+0098d0: 04 0b 04 66 04 0b 04 66
+
+[	DB 0X04 , 0X69 , 0XD1 , 0X00 , 0X6A]
+0098d8: 04 69 d1 00 6a
+
+[	DB 0X00 , 0X01 , 0X02 , 0X02 , 0X02 , 0X00 , 0XFE , 0XFD , 0XFD , 0XFD , 0XFE , 0X00 , 0X02 , 0X02 , 0X02 , 0X01]
+0098dd: 00 01 02 02 02 00 fe fd
+0098e5: fd fd fe 00 02 02 02 01
+
+[	DB 0X00 , 0XFE , 0XFD , 0XFD , 0XFD , 0XFF , 0X01 , 0X02 , 0X03 , 0X02 , 0X01 , 0XFF , 0XFD , 0XFD , 0XFD , 0XFE]
+0098ed: 00 fe fd fd fd ff 01 02
+0098f5: 03 02 01 ff fd fd fd fe
+
+[	DB 0XFF , 0X02 , 0XE0 , 0X01 , 0X1E , 0X14 , 0X00 , 0X00 , 0X00]
+0098fd: ff 02 e0 01 1e 14 00 00
+009905: 00
+
+[	INCLUDE ".//stage4_bgm.asm"] end
+
+[_BGM_STAGE5 :]
+	label address: 0x009906
+
+[	INCLUDE ".//stage5_bgm.asm"] begin
+[	DB 0X06 , 0X00 , 0XCE , 0X00 , 0XCA , 0X02 , 0X68 , 0XCB , 0X02 , 0X67 , 0X0F , 0X32 , 0X40 , 0X32 , 0X14 , 0X35]
+009906: 06 00 ce 00 ca 02 68 cb
+00990e: 02 67 0f 32 40 32 14 35
+
+[	DB 0X05 , 0X66 , 0X04 , 0X32 , 0X05 , 0X66 , 0X04 , 0X66 , 0X2A , 0X2D , 0X15 , 0X32 , 0X40 , 0X2D , 0X0A , 0X32]
+009916: 05 66 04 32 05 66 04 66
+00991e: 2a 2d 15 32 40 2d 0a 32
+
+[	DB 0X0A , 0X35 , 0X04 , 0X37 , 0X05 , 0X32 , 0X04 , 0X66 , 0X0F , 0X32 , 0X05 , 0X66 , 0X0F , 0X32 , 0X04 , 0X66]
+009926: 0a 35 04 37 05 32 04 66
+00992e: 0f 32 05 66 0f 32 04 66
+
+[	DB 0X10 , 0X32 , 0X04 , 0X66 , 0X04 , 0X32 , 0X41 , 0X32 , 0X14 , 0X35 , 0X05 , 0X66 , 0X04 , 0X32 , 0X04 , 0X66]
+009936: 10 32 04 66 04 32 41 32
+00993e: 14 35 05 66 04 32 04 66
+
+[	DB 0X05 , 0X66 , 0X2A , 0X2D , 0X15 , 0X32 , 0X40 , 0X2D , 0X0A , 0X32 , 0X0A , 0X35 , 0X04 , 0X37 , 0X05 , 0X32]
+009946: 05 66 2a 2d 15 32 40 2d
+00994e: 0a 32 0a 35 04 37 05 32
+
+[	DB 0X04 , 0X66 , 0X0F , 0X32 , 0X05 , 0X66 , 0X0F , 0X32 , 0X04 , 0X66 , 0X10 , 0X37 , 0X04 , 0X66 , 0X04 , 0X39]
+009956: 04 66 0f 32 05 66 0f 32
+00995e: 04 66 10 37 04 66 04 39
+
+[	DB 0X0A , 0X37 , 0X0A , 0X35 , 0X0A , 0X37 , 0X0A , 0X35 , 0X0A , 0X32 , 0X0A , 0X35 , 0X09 , 0X30 , 0X0A , 0X35]
+009966: 0a 37 0a 35 0a 37 0a 35
+00996e: 0a 32 0a 35 09 30 0a 35
+
+[	DB 0X0A , 0X32 , 0X0A , 0X30 , 0X0A , 0X32 , 0X0A , 0X35 , 0X09 , 0X32 , 0X0A , 0X35 , 0X0A , 0X3C , 0X0A , 0X39]
+009976: 0a 32 0a 30 0a 32 0a 35
+00997e: 09 32 0a 35 0a 3c 0a 39
+
+[	DB 0X04 , 0X37 , 0X15 , 0X66 , 0X04 , 0X39 , 0X2B , 0X66 , 0X0A , 0X66 , 0X55 , 0X39 , 0X0A , 0X37 , 0X0A , 0X35]
+009986: 04 37 15 66 04 39 2b 66
+00998e: 0a 66 55 39 0a 37 0a 35
+
+[	DB 0X0A , 0X37 , 0X0A , 0X35 , 0X0A , 0X32 , 0X0A , 0X35 , 0X09 , 0X30 , 0X0A , 0X35 , 0X0A , 0X32 , 0X0A , 0X30]
+009996: 0a 37 0a 35 0a 32 0a 35
+00999e: 09 30 0a 35 0a 32 0a 30
+
+[	DB 0X0A , 0X32 , 0X0A , 0X35 , 0X09 , 0X32 , 0X0A , 0X35 , 0X0A , 0X3C , 0X0A , 0X66 , 0X0A , 0X37 , 0X0A , 0X39]
+0099a6: 0a 32 0a 35 09 32 0a 35
+0099ae: 0a 3c 0a 66 0a 37 0a 39
+
+[	DB 0X09 , 0X3B , 0X0A , 0X3C , 0X0A , 0X37 , 0X0A , 0X39 , 0X0A , 0X3C , 0X0A , 0X66 , 0X0A , 0X3E , 0X04 , 0X66]
+0099b6: 09 3b 0a 3c 0a 37 0a 39
+0099be: 0a 3c 0a 66 0a 3e 04 66
+
+[	DB 0X0A , 0X3E , 0X04 , 0X66 , 0X0A , 0X3E , 0X04 , 0X66 , 0X05 , 0X66 , 0X1F , 0X69 , 0X0B , 0X00 , 0X68 , 0XCB]
+0099c6: 0a 3e 04 66 0a 3e 04 66
+0099ce: 05 66 1f 69 0b 00 68 cb
+
+[	DB 0X02 , 0X67 , 0X0E , 0X0E , 0X04 , 0X66 , 0X04 , 0X0E , 0X05 , 0X66 , 0X04 , 0X0E , 0X05 , 0X66 , 0X04 , 0X0E]
+0099d6: 02 67 0e 0e 04 66 04 0e
+0099de: 05 66 04 0e 05 66 04 0e
+
+[	DB 0X04 , 0X66 , 0X05 , 0X0E , 0X04 , 0X66 , 0X05 , 0X0E , 0X04 , 0X66 , 0X05 , 0X0E , 0X04 , 0X66 , 0X04 , 0X09]
+0099e6: 04 66 05 0e 04 66 05 0e
+0099ee: 04 66 05 0e 04 66 04 09
+
+[	DB 0X05 , 0X0E , 0X04 , 0X11 , 0X05 , 0X66 , 0X04 , 0X0E , 0X05 , 0X66 , 0X04 , 0X0E , 0X04 , 0X66 , 0X05 , 0X0E]
+0099f6: 05 0e 04 11 05 66 04 0e
+0099fe: 05 66 04 0e 04 66 05 0e
+
+[	DB 0X04 , 0X66 , 0X05 , 0X0E , 0X04 , 0X66 , 0X04 , 0X0E , 0X05 , 0X66 , 0X04 , 0X0E , 0X05 , 0X66 , 0X04 , 0X0B]
+009a06: 04 66 05 0e 04 66 04 0e
+009a0e: 05 66 04 0e 05 66 04 0b
+
+[	DB 0X05 , 0X09 , 0X04 , 0X0E , 0X04 , 0X66 , 0X05 , 0X0E , 0X04 , 0X66 , 0X05 , 0X0E , 0X04 , 0X66 , 0X05 , 0X0E]
+009a16: 05 09 04 0e 04 66 05 0e
+009a1e: 04 66 05 0e 04 66 05 0e
+
+[	DB 0X04 , 0X66 , 0X04 , 0X0E , 0X05 , 0X0C , 0X04 , 0X0E , 0X05 , 0X66 , 0X04 , 0X0E , 0X04 , 0X66 , 0X05 , 0X09]
+009a26: 04 66 04 0e 05 0c 04 0e
+009a2e: 05 66 04 0e 04 66 05 09
+
+[	DB 0X04 , 0X0E , 0X05 , 0X11 , 0X04 , 0X66 , 0X05 , 0X0E , 0X04 , 0X66 , 0X04 , 0X0E , 0X05 , 0X66 , 0X04 , 0X0E]
+009a36: 04 0e 05 11 04 66 05 0e
+009a3e: 04 66 04 0e 05 66 04 0e
+
+[	DB 0X05 , 0X66 , 0X04 , 0X0E , 0X05 , 0X66 , 0X04 , 0X0E , 0X04 , 0X66 , 0X05 , 0X0E , 0X04 , 0X66 , 0X05 , 0X0B]
+009a46: 05 66 04 0e 05 66 04 0e
+009a4e: 04 66 05 0e 04 66 05 0b
+
+[	DB 0X04 , 0X09 , 0X04 , 0X0E , 0X05 , 0X66 , 0X04 , 0X0E , 0X05 , 0X66 , 0X04 , 0X0E , 0X05 , 0X66 , 0X04 , 0X0E]
+009a56: 04 09 04 0e 05 66 04 0e
+009a5e: 05 66 04 0e 05 66 04 0e
+
+[	DB 0X04 , 0X66 , 0X05 , 0X0E , 0X04 , 0X66 , 0X05 , 0X0E , 0X04 , 0X66 , 0X05 , 0X0E , 0X04 , 0X66 , 0X04 , 0X09]
+009a66: 04 66 05 0e 04 66 05 0e
+009a6e: 04 66 05 0e 04 66 04 09
+
+[	DB 0X05 , 0X0E , 0X04 , 0X11 , 0X05 , 0X66 , 0X04 , 0X0E , 0X04 , 0X66 , 0X05 , 0X0E , 0X04 , 0X66 , 0X05 , 0X0E]
+009a76: 05 0e 04 11 05 66 04 0e
+009a7e: 04 66 05 0e 04 66 05 0e
+
+[	DB 0X04 , 0X66 , 0X05 , 0X0E , 0X04 , 0X0C , 0X04 , 0X0E , 0X05 , 0X66 , 0X04 , 0X0E , 0X05 , 0X66 , 0X04 , 0X0B]
+009a86: 04 66 05 0e 04 0c 04 0e
+009a8e: 05 66 04 0e 05 66 04 0b
+
+[	DB 0X05 , 0X09 , 0X04 , 0X0E , 0X04 , 0X66 , 0X05 , 0X0E , 0X04 , 0X66 , 0X05 , 0X0E , 0X04 , 0X66 , 0X05 , 0X0E]
+009a96: 05 09 04 0e 04 66 05 0e
+009a9e: 04 66 05 0e 04 66 05 0e
+
+[	DB 0X04 , 0X66 , 0X04 , 0X0E , 0X05 , 0X0C , 0X04 , 0X0E , 0X05 , 0X66 , 0X04 , 0X0E , 0X04 , 0X66 , 0X05 , 0X09]
+009aa6: 04 66 04 0e 05 0c 04 0e
+009aae: 05 66 04 0e 04 66 05 09
+
+[	DB 0X04 , 0X0E , 0X05 , 0X11 , 0X04 , 0X66 , 0X05 , 0X0E , 0X04 , 0X66 , 0X04 , 0X0E , 0X05 , 0X66 , 0X04 , 0X0E]
+009ab6: 04 0e 05 11 04 66 05 0e
+009abe: 04 66 04 0e 05 66 04 0e
+
+[	DB 0X05 , 0X66 , 0X04 , 0X0E , 0X05 , 0X66 , 0X04 , 0X0E , 0X04 , 0X66 , 0X05 , 0X0E , 0X04 , 0X66 , 0X05 , 0X0B]
+009ac6: 05 66 04 0e 05 66 04 0e
+009ace: 04 66 05 0e 04 66 05 0b
+
+[	DB 0X04 , 0X09 , 0X04 , 0X15 , 0X05 , 0X66 , 0X04 , 0X15 , 0X05 , 0X66 , 0X04 , 0X15 , 0X05 , 0X66 , 0X04 , 0X15]
+009ad6: 04 09 04 15 05 66 04 15
+009ade: 05 66 04 15 05 66 04 15
+
+[	DB 0X04 , 0X66 , 0X05 , 0X15 , 0X04 , 0X66 , 0X05 , 0X15 , 0X04 , 0X66 , 0X05 , 0X15 , 0X04 , 0X66 , 0X04 , 0X13]
+009ae6: 04 66 05 15 04 66 05 15
+009aee: 04 66 05 15 04 66 04 13
+
+[	DB 0X05 , 0X10 , 0X04 , 0X13 , 0X05 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X05 , 0X13 , 0X04 , 0X66 , 0X05 , 0X13]
+009af6: 05 10 04 13 05 66 04 13
+009afe: 04 66 05 13 04 66 05 13
+
+[	DB 0X04 , 0X66 , 0X05 , 0X13 , 0X04 , 0X66 , 0X04 , 0X13 , 0X05 , 0X66 , 0X04 , 0X13 , 0X05 , 0X11 , 0X04 , 0X10]
+009b06: 04 66 05 13 04 66 04 13
+009b0e: 05 66 04 13 05 11 04 10
+
+[	DB 0X05 , 0X0C , 0X04 , 0X11 , 0X04 , 0X66 , 0X05 , 0X11 , 0X04 , 0X66 , 0X05 , 0X11 , 0X04 , 0X66 , 0X04 , 0X11]
+009b16: 05 0c 04 11 04 66 05 11
+009b1e: 04 66 05 11 04 66 04 11
+
+[	DB 0X05 , 0X66 , 0X04 , 0X11 , 0X05 , 0X66 , 0X04 , 0X11 , 0X05 , 0X66 , 0X04 , 0X11 , 0X04 , 0X66 , 0X05 , 0X11]
+009b26: 05 66 04 11 05 66 04 11
+009b2e: 05 66 04 11 04 66 05 11
+
+[	DB 0X04 , 0X0C , 0X05 , 0X0E , 0X04 , 0X66 , 0X05 , 0X0E , 0X04 , 0X66 , 0X04 , 0X0E , 0X05 , 0X66 , 0X04 , 0X0E]
+009b36: 04 0c 05 0e 04 66 05 0e
+009b3e: 04 66 04 0e 05 66 04 0e
+
+[	DB 0X05 , 0X0C , 0X04 , 0X0E , 0X05 , 0X66 , 0X04 , 0X0E , 0X04 , 0X66 , 0X05 , 0X11 , 0X04 , 0X0E , 0X05 , 0X0C]
+009b46: 05 0c 04 0e 05 66 04 0e
+009b4e: 04 66 05 11 04 0e 05 0c
+
+[	DB 0X04 , 0X0E , 0X04 , 0X15 , 0X05 , 0X66 , 0X04 , 0X15 , 0X05 , 0X66 , 0X04 , 0X15 , 0X05 , 0X66 , 0X04 , 0X15]
+009b56: 04 0e 04 15 05 66 04 15
+009b5e: 05 66 04 15 05 66 04 15
+
+[	DB 0X04 , 0X66 , 0X05 , 0X15 , 0X04 , 0X66 , 0X05 , 0X15 , 0X04 , 0X66 , 0X05 , 0X15 , 0X04 , 0X66 , 0X04 , 0X13]
+009b66: 04 66 05 15 04 66 05 15
+009b6e: 04 66 05 15 04 66 04 13
+
+[	DB 0X05 , 0X10 , 0X04 , 0X13 , 0X05 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X05 , 0X13 , 0X04 , 0X66 , 0X05 , 0X13]
+009b76: 05 10 04 13 05 66 04 13
+009b7e: 04 66 05 13 04 66 05 13
+
+[	DB 0X04 , 0X66 , 0X05 , 0X13 , 0X04 , 0X66 , 0X04 , 0X13 , 0X05 , 0X66 , 0X04 , 0X13 , 0X05 , 0X11 , 0X04 , 0X10]
+009b86: 04 66 05 13 04 66 04 13
+009b8e: 05 66 04 13 05 11 04 10
+
+[	DB 0X05 , 0X0C , 0X04 , 0X0E , 0X04 , 0X66 , 0X05 , 0X0E , 0X04 , 0X0C , 0X05 , 0X0E , 0X04 , 0X66 , 0X04 , 0X0E]
+009b96: 05 0c 04 0e 04 66 05 0e
+009b9e: 04 0c 05 0e 04 66 04 0e
+
+[	DB 0X05 , 0X66 , 0X04 , 0X0E , 0X05 , 0X0C , 0X04 , 0X0E , 0X05 , 0X66 , 0X04 , 0X11 , 0X04 , 0X0E , 0X05 , 0X0C]
+009ba6: 05 66 04 0e 05 0c 04 0e
+009bae: 05 66 04 11 04 0e 05 0c
+
+[	DB 0X04 , 0X10 , 0X05 , 0X66 , 0X0A , 0X0E , 0X04 , 0X66 , 0X0A , 0X0E , 0X04 , 0X66 , 0X0A , 0X0E , 0X04 , 0X15]
+009bb6: 04 10 05 66 0a 0e 04 66
+009bbe: 0a 0e 04 66 0a 0e 04 15
+
+[	DB 0X05 , 0X11 , 0X04 , 0X13 , 0X05 , 0X0E , 0X14 , 0X69 , 0XD3 , 0X00 , 0X6A]
+009bc6: 05 11 04 13 05 0e 14 69
+009bce: d3 00 6a
+
+[	DB 0X00 , 0X01 , 0X02 , 0X02 , 0X02 , 0X00 , 0XFE , 0XFD , 0XFD , 0XFD , 0XFE , 0X00 , 0X02 , 0X02 , 0X02 , 0X01]
+009bd1: 00 01 02 02 02 00 fe fd
+009bd9: fd fd fe 00 02 02 02 01
+
+[	DB 0X00 , 0XFE , 0XFD , 0XFD , 0XFD , 0XFF , 0X01 , 0X02 , 0X03 , 0X02 , 0X01 , 0XFF , 0XFD , 0XFD , 0XFD , 0XFE]
+009be1: 00 fe fd fd fd ff 01 02
+009be9: 03 02 01 ff fd fd fd fe
+
+[	DB 0XFF , 0X02 , 0XE0 , 0X01 , 0X1E , 0X14 , 0X00 , 0X00 , 0X00]
+009bf1: ff 02 e0 01 1e 14 00 00
+009bf9: 00
+
+[	INCLUDE ".//stage5_bgm.asm"] end
+
+[_BGM_STAGE6 :]
+	label address: 0x009bfa
+
+[	INCLUDE ".//stage6_bgm.asm"] begin
+[	DB 0X06 , 0X00 , 0XB6 , 0X01 , 0X5C , 0X02 , 0X68 , 0X5D , 0X02 , 0X67 , 0X0B , 0X66 , 0X14 , 0X2D , 0X04 , 0X34]
+009bfa: 06 00 b6 01 5c 02 68 5d
+009c02: 02 67 0b 66 14 2d 04 34
+
+[	DB 0X05 , 0X39 , 0X09 , 0X2D , 0X05 , 0X34 , 0X04 , 0X39 , 0X0A , 0X2D , 0X04 , 0X34 , 0X04 , 0X39 , 0X0A , 0X2D]
+009c0a: 05 39 09 2d 05 34 04 39
+009c12: 0a 2d 04 34 04 39 0a 2d
+
+[	DB 0X05 , 0X34 , 0X04 , 0X39 , 0X0A , 0X2D , 0X04 , 0X34 , 0X04 , 0X39 , 0X0A , 0X2D , 0X04 , 0X34 , 0X05 , 0X39]
+009c1a: 05 34 04 39 0a 2d 04 34
+009c22: 04 39 0a 2d 04 34 05 39
+
+[	DB 0X09 , 0X2D , 0X05 , 0X34 , 0X04 , 0X39 , 0X0A , 0X2D , 0X04 , 0X34 , 0X05 , 0X39 , 0X09 , 0X2B , 0X05 , 0X32]
+009c2a: 09 2d 05 34 04 39 0a 2d
+009c32: 04 34 05 39 09 2b 05 32
+
+[	DB 0X04 , 0X37 , 0X0A , 0X2B , 0X04 , 0X32 , 0X04 , 0X37 , 0X0A , 0X2B , 0X05 , 0X32 , 0X04 , 0X37 , 0X0A , 0X2B]
+009c3a: 04 37 0a 2b 04 32 04 37
+009c42: 0a 2b 05 32 04 37 0a 2b
+
+[	DB 0X04 , 0X32 , 0X04 , 0X37 , 0X0A , 0X28 , 0X04 , 0X2F , 0X05 , 0X34 , 0X09 , 0X28 , 0X05 , 0X2F , 0X04 , 0X34]
+009c4a: 04 32 04 37 0a 28 04 2f
+009c52: 05 34 09 28 05 2f 04 34
+
+[	DB 0X0A , 0X2B , 0X04 , 0X32 , 0X05 , 0X37 , 0X09 , 0X2B , 0X05 , 0X32 , 0X04 , 0X37 , 0X0A , 0X2D , 0X04 , 0X34]
+009c5a: 0a 2b 04 32 05 37 09 2b
+009c62: 05 32 04 37 0a 2d 04 34
+
+[	DB 0X04 , 0X39 , 0X0A , 0X2D , 0X05 , 0X34 , 0X04 , 0X39 , 0X0A , 0X2D , 0X04 , 0X34 , 0X04 , 0X39 , 0X0A , 0X2D]
+009c6a: 04 39 0a 2d 05 34 04 39
+009c72: 0a 2d 04 34 04 39 0a 2d
+
+[	DB 0X04 , 0X34 , 0X05 , 0X39 , 0X09 , 0X2D , 0X05 , 0X34 , 0X04 , 0X39 , 0X0A , 0X2D , 0X04 , 0X34 , 0X05 , 0X39]
+009c7a: 04 34 05 39 09 2d 05 34
+009c82: 04 39 0a 2d 04 34 05 39
+
+[	DB 0X09 , 0X2D , 0X05 , 0X34 , 0X04 , 0X39 , 0X0A , 0X2D , 0X04 , 0X34 , 0X04 , 0X39 , 0X0A , 0X2B , 0X05 , 0X32]
+009c8a: 09 2d 05 34 04 39 0a 2d
+009c92: 04 34 04 39 0a 2b 05 32
+
+[	DB 0X04 , 0X37 , 0X0A , 0X2B , 0X04 , 0X32 , 0X04 , 0X37 , 0X0A , 0X2B , 0X04 , 0X32 , 0X05 , 0X37 , 0X09 , 0X2B]
+009c9a: 04 37 0a 2b 04 32 04 37
+009ca2: 0a 2b 04 32 05 37 09 2b
+
+[	DB 0X05 , 0X32 , 0X04 , 0X37 , 0X0A , 0X28 , 0X04 , 0X2F , 0X05 , 0X34 , 0X09 , 0X28 , 0X05 , 0X2F , 0X04 , 0X34]
+009caa: 05 32 04 37 0a 28 04 2f
+009cb2: 05 34 09 28 05 2f 04 34
+
+[	DB 0X0A , 0X28 , 0X04 , 0X34 , 0X04 , 0X40 , 0X0A , 0X28 , 0X05 , 0X34 , 0X04 , 0X40 , 0X0A , 0X30 , 0X04 , 0X37]
+009cba: 0a 28 04 34 04 40 0a 28
+009cc2: 05 34 04 40 0a 30 04 37
+
+[	DB 0X04 , 0X3C , 0X05 , 0X37 , 0X04 , 0X30 , 0X04 , 0X37 , 0X05 , 0X3C , 0X04 , 0X37 , 0X04 , 0X2F , 0X05 , 0X35]
+009cca: 04 3c 05 37 04 30 04 37
+009cd2: 05 3c 04 37 04 2f 05 35
+
+[	DB 0X04 , 0X3B , 0X05 , 0X35 , 0X04 , 0X2F , 0X04 , 0X35 , 0X05 , 0X3B , 0X04 , 0X35 , 0X04 , 0X2D , 0X05 , 0X34]
+009cda: 04 3b 05 35 04 2f 04 35
+009ce2: 05 3b 04 35 04 2d 05 34
+
+[	DB 0X04 , 0X39 , 0X04 , 0X34 , 0X05 , 0X2D , 0X04 , 0X34 , 0X04 , 0X39 , 0X05 , 0X34 , 0X04 , 0X2D , 0X05 , 0X34]
+009cea: 04 39 04 34 05 2d 04 34
+009cf2: 04 39 05 34 04 2d 05 34
+
+[	DB 0X04 , 0X39 , 0X04 , 0X34 , 0X05 , 0X2D , 0X04 , 0X34 , 0X04 , 0X39 , 0X05 , 0X34 , 0X04 , 0X2F , 0X04 , 0X35]
+009cfa: 04 39 04 34 05 2d 04 34
+009d02: 04 39 05 34 04 2f 04 35
+
+[	DB 0X05 , 0X3B , 0X04 , 0X35 , 0X04 , 0X2F , 0X05 , 0X35 , 0X04 , 0X3B , 0X05 , 0X35 , 0X04 , 0X2B , 0X04 , 0X32]
+009d0a: 05 3b 04 35 04 2f 05 35
+009d12: 04 3b 05 35 04 2b 04 32
+
+[	DB 0X05 , 0X37 , 0X04 , 0X32 , 0X04 , 0X2B , 0X05 , 0X32 , 0X04 , 0X37 , 0X04 , 0X32 , 0X05 , 0X2D , 0X04 , 0X34]
+009d1a: 05 37 04 32 04 2b 05 32
+009d22: 04 37 04 32 05 2d 04 34
+
+[	DB 0X04 , 0X39 , 0X05 , 0X34 , 0X04 , 0X2D , 0X05 , 0X34 , 0X04 , 0X39 , 0X04 , 0X34 , 0X05 , 0X2D , 0X04 , 0X34]
+009d2a: 04 39 05 34 04 2d 05 34
+009d32: 04 39 04 34 05 2d 04 34
+
+[	DB 0X04 , 0X39 , 0X05 , 0X34 , 0X04 , 0X2D , 0X04 , 0X34 , 0X05 , 0X39 , 0X04 , 0X34 , 0X04 , 0X28 , 0X05 , 0X2D]
+009d3a: 04 39 05 34 04 2d 04 34
+009d42: 05 39 04 34 04 28 05 2d
+
+[	DB 0X04 , 0X34 , 0X05 , 0X2D , 0X04 , 0X28 , 0X04 , 0X2D , 0X05 , 0X34 , 0X04 , 0X2D , 0X04 , 0X2F , 0X05 , 0X35]
+009d4a: 04 34 05 2d 04 28 04 2d
+009d52: 05 34 04 2d 04 2f 05 35
+
+[	DB 0X04 , 0X3B , 0X04 , 0X35 , 0X05 , 0X2F , 0X04 , 0X35 , 0X04 , 0X3B , 0X05 , 0X35 , 0X04 , 0X2D , 0X05 , 0X34]
+009d5a: 04 3b 04 35 05 2f 04 35
+009d62: 04 3b 05 35 04 2d 05 34
+
+[	DB 0X04 , 0X39 , 0X04 , 0X34 , 0X05 , 0X2D , 0X04 , 0X34 , 0X04 , 0X39 , 0X0A , 0X34 , 0X0A , 0X66 , 0X1F , 0X2D]
+009d6a: 04 39 04 34 05 2d 04 34
+009d72: 04 39 0a 34 0a 66 1f 2d
+
+[	DB 0X04 , 0X34 , 0X05 , 0X39 , 0X04 , 0X34 , 0X04 , 0X2D , 0X05 , 0X34 , 0X04 , 0X39 , 0X04 , 0X34 , 0X05 , 0X2D]
+009d7a: 04 34 05 39 04 34 04 2d
+009d82: 05 34 04 39 04 34 05 2d
+
+[	DB 0X04 , 0X34 , 0X04 , 0X39 , 0X05 , 0X34 , 0X04 , 0X2D , 0X05 , 0X34 , 0X04 , 0X39 , 0X04 , 0X34 , 0X05 , 0X66]
+009d8a: 04 34 04 39 05 34 04 2d
+009d92: 05 34 04 39 04 34 05 66
+
+[	DB 0X09 , 0X67 , 0X0D , 0X39 , 0X05 , 0X66 , 0X04 , 0X39 , 0X04 , 0X66 , 0X05 , 0X37 , 0X04 , 0X39 , 0X04 , 0X66]
+009d9a: 09 67 0d 39 05 66 04 39
+009da2: 04 66 05 37 04 39 04 66
+
+[	DB 0X15 , 0X67 , 0X0B , 0X69 , 0X0B , 0X00 , 0X68 , 0X5D , 0X02 , 0X67 , 0X0F , 0X10 , 0X14 , 0X15 , 0X2A , 0X15]
+009daa: 15 67 0b 69 0b 00 68 5d
+009db2: 02 67 0f 10 14 15 2a 15
+
+[	DB 0X09 , 0X13 , 0X0A , 0X15 , 0X0A , 0X17 , 0X0A , 0X18 , 0X29 , 0X1A , 0X0A , 0X18 , 0X0A , 0X17 , 0X0A , 0X15]
+009dba: 09 13 0a 15 0a 17 0a 18
+009dc2: 29 1a 0a 18 0a 17 0a 15
+
+[	DB 0X09 , 0X17 , 0X40 , 0X15 , 0X14 , 0X13 , 0X1F , 0X15 , 0X0A , 0X17 , 0X2A , 0X15 , 0X2A , 0X15 , 0X09 , 0X13]
+009dca: 09 17 40 15 14 13 1f 15
+009dd2: 0a 17 2a 15 2a 15 09 13
+
+[	DB 0X0A , 0X15 , 0X0A , 0X17 , 0X09 , 0X18 , 0X2A , 0X1A , 0X0A , 0X18 , 0X0A , 0X17 , 0X09 , 0X15 , 0X0A , 0X17]
+009dda: 0a 15 0a 17 09 18 2a 1a
+009de2: 0a 18 0a 17 09 15 0a 17
+
+[	DB 0X2A , 0X17 , 0X0F , 0X15 , 0X0F , 0X10 , 0X0A , 0X1C , 0X3F , 0X18 , 0X0A , 0X1A , 0X0A , 0X1C , 0X0F , 0X1A]
+009dea: 2a 17 0f 15 0f 10 0a 1c
+009df2: 3f 18 0a 1a 0a 1c 0f 1a
+
+[	DB 0X0F , 0X18 , 0X09 , 0X1A , 0X10 , 0X17 , 0X0F , 0X10 , 0X09 , 0X15 , 0X0F , 0X13 , 0X0F , 0X15 , 0X0A , 0X17]
+009dfa: 0f 18 09 1a 10 17 0f 10
+009e02: 09 15 0f 13 0f 15 0a 17
+
+[	DB 0X2A , 0X10 , 0X0F , 0X13 , 0X0F , 0X15 , 0X0A , 0X17 , 0X0F , 0X13 , 0X0F , 0X10 , 0X0A , 0X1C , 0X2A , 0X1A]
+009e0a: 2a 10 0f 13 0f 15 0a 17
+009e12: 0f 13 0f 10 0a 1c 2a 1a
+
+[	DB 0X09 , 0X18 , 0X0A , 0X17 , 0X0A , 0X1A , 0X09 , 0X10 , 0X10 , 0X13 , 0X0F , 0X10 , 0X09 , 0X1A , 0X0A , 0X18]
+009e1a: 09 18 0a 17 0a 1a 09 10
+009e22: 10 13 0f 10 09 1a 0a 18
+
+[	DB 0X0A , 0X17 , 0X09 , 0X18 , 0X0A , 0X15 , 0X2A , 0X10 , 0X1F , 0X13 , 0X05 , 0X17 , 0X04 , 0X18 , 0X0A , 0X17]
+009e2a: 0a 17 09 18 0a 15 2a 10
+009e32: 1f 13 05 17 04 18 0a 17
+
+[	DB 0X09 , 0X15 , 0X40 , 0X67 , 0X0D , 0X09 , 0X04 , 0X66 , 0X04 , 0X15 , 0X05 , 0X66 , 0X04 , 0X10 , 0X04 , 0X13]
+009e3a: 09 15 40 67 0d 09 04 66
+009e42: 04 15 05 66 04 10 04 13
+
+[	DB 0X05 , 0X0C , 0X04 , 0X09 , 0X04 , 0X67 , 0X0F , 0X66 , 0X15 , 0X69 , 0XBB , 0X01 , 0X6A]
+009e4a: 05 0c 04 09 04 67 0f 66
+009e52: 15 69 bb 01 6a
+
+[	DB 0X00 , 0X01 , 0X02 , 0X02 , 0X02 , 0X00 , 0XFE , 0XFD , 0XFD , 0XFD , 0XFE , 0X00 , 0X02 , 0X02 , 0X02 , 0X01]
+009e57: 00 01 02 02 02 00 fe fd
+009e5f: fd fd fe 00 02 02 02 01
+
+[	DB 0X00 , 0XFE , 0XFD , 0XFD , 0XFD , 0XFF , 0X01 , 0X02 , 0X03 , 0X02 , 0X01 , 0XFF , 0XFD , 0XFD , 0XFD , 0XFE]
+009e67: 00 fe fd fd fd ff 01 02
+009e6f: 03 02 01 ff fd fd fd fe
+
+[	DB 0XFF , 0X02 , 0XE0 , 0X01 , 0X1E , 0X14 , 0X00 , 0X00 , 0X00]
+009e77: ff 02 e0 01 1e 14 00 00
+009e7f: 00
+
+[	INCLUDE ".//stage6_bgm.asm"] end
+
+[_BGM_STAGE7 :]
+	label address: 0x009e80
+
+[	INCLUDE ".//stage7_bgm.asm"] begin
+[	DB 0X06 , 0X00 , 0X80 , 0X01 , 0XE4 , 0X01 , 0X68 , 0XE5 , 0X01 , 0X67 , 0X0F , 0X67 , 0X0F , 0X21 , 0X0F , 0X28]
+009e80: 06 00 80 01 e4 01 68 e5
+009e88: 01 67 0f 67 0f 21 0f 28
+
+[	DB 0X0F , 0X2B , 0X0F , 0X28 , 0X0F , 0X2D , 0X0F , 0X28 , 0X0F , 0X21 , 0X0F , 0X28 , 0X0F , 0X2B , 0X0F , 0X28]
+009e90: 0f 2b 0f 28 0f 2d 0f 28
+009e98: 0f 21 0f 28 0f 2b 0f 28
+
+[	DB 0X0F , 0X2D , 0X0F , 0X28 , 0X0F , 0X21 , 0X0F , 0X28 , 0X10 , 0X2B , 0X0F , 0X28 , 0X0F , 0X2D , 0X0F , 0X28]
+009ea0: 0f 2d 0f 28 0f 21 0f 28
+009ea8: 10 2b 0f 28 0f 2d 0f 28
+
+[	DB 0X0F , 0X21 , 0X0F , 0X28 , 0X0F , 0X2B , 0X0F , 0X28 , 0X0F , 0X2D , 0X0F , 0X28 , 0X0F , 0X67 , 0X0D , 0X2D]
+009eb0: 0f 21 0f 28 0f 2b 0f 28
+009eb8: 0f 2d 0f 28 0f 67 0d 2d
+
+[	DB 0X07 , 0X66 , 0X07 , 0X34 , 0X07 , 0X66 , 0X07 , 0X37 , 0X07 , 0X66 , 0X07 , 0X34 , 0X07 , 0X66 , 0X08 , 0X39]
+009ec0: 07 66 07 34 07 66 07 37
+009ec8: 07 66 07 34 07 66 08 39
+
+[	DB 0X07 , 0X66 , 0X07 , 0X34 , 0X07 , 0X66 , 0X07 , 0X2D , 0X07 , 0X66 , 0X07 , 0X34 , 0X07 , 0X66 , 0X07 , 0X37]
+009ed0: 07 66 07 34 07 66 07 2d
+009ed8: 07 66 07 34 07 66 07 37
+
+[	DB 0X07 , 0X66 , 0X07 , 0X34 , 0X07 , 0X66 , 0X07 , 0X39 , 0X07 , 0X66 , 0X07 , 0X34 , 0X07 , 0X66 , 0X07 , 0X2D]
+009ee0: 07 66 07 34 07 66 07 39
+009ee8: 07 66 07 34 07 66 07 2d
+
+[	DB 0X07 , 0X66 , 0X07 , 0X34 , 0X07 , 0X66 , 0X07 , 0X37 , 0X07 , 0X66 , 0X07 , 0X34 , 0X07 , 0X66 , 0X07 , 0X39]
+009ef0: 07 66 07 34 07 66 07 37
+009ef8: 07 66 07 34 07 66 07 39
+
+[	DB 0X07 , 0X66 , 0X07 , 0X34 , 0X07 , 0X66 , 0X08 , 0X2D , 0X07 , 0X66 , 0X07 , 0X34 , 0X07 , 0X66 , 0X07 , 0X37]
+009f00: 07 66 07 34 07 66 08 2d
+009f08: 07 66 07 34 07 66 07 37
+
+[	DB 0X07 , 0X66 , 0X07 , 0X34 , 0X07 , 0X66 , 0X07 , 0X39 , 0X07 , 0X66 , 0X07 , 0X34 , 0X07 , 0X66 , 0X07 , 0X67]
+009f10: 07 66 07 34 07 66 07 39
+009f18: 07 66 07 34 07 66 07 67
+
+[	DB 0X0F , 0X1F , 0X0F , 0X26 , 0X0F , 0X29 , 0X0F , 0X26 , 0X0F , 0X2B , 0X0F , 0X26 , 0X0F , 0X1F , 0X0F , 0X26]
+009f20: 0f 1f 0f 26 0f 29 0f 26
+009f28: 0f 2b 0f 26 0f 1f 0f 26
+
+[	DB 0X10 , 0X29 , 0X0F , 0X26 , 0X0F , 0X2B , 0X0F , 0X26 , 0X0F , 0X1F , 0X0F , 0X26 , 0X0F , 0X29 , 0X0F , 0X26]
+009f30: 10 29 0f 26 0f 2b 0f 26
+009f38: 0f 1f 0f 26 0f 29 0f 26
+
+[	DB 0X0F , 0X2B , 0X0F , 0X26 , 0X0F , 0X1F , 0X0F , 0X26 , 0X0F , 0X29 , 0X0F , 0X26 , 0X10 , 0X2B , 0X0F , 0X26]
+009f40: 0f 2b 0f 26 0f 1f 0f 26
+009f48: 0f 29 0f 26 10 2b 0f 26
+
+[	DB 0X0F , 0X67 , 0X0D , 0X2B , 0X07 , 0X66 , 0X07 , 0X32 , 0X07 , 0X66 , 0X07 , 0X35 , 0X07 , 0X66 , 0X07 , 0X32]
+009f50: 0f 67 0d 2b 07 66 07 32
+009f58: 07 66 07 35 07 66 07 32
+
+[	DB 0X07 , 0X66 , 0X07 , 0X37 , 0X07 , 0X66 , 0X07 , 0X32 , 0X07 , 0X66 , 0X07 , 0X2B , 0X07 , 0X66 , 0X07 , 0X32]
+009f60: 07 66 07 37 07 66 07 32
+009f68: 07 66 07 2b 07 66 07 32
+
+[	DB 0X07 , 0X66 , 0X07 , 0X35 , 0X07 , 0X66 , 0X07 , 0X32 , 0X07 , 0X66 , 0X07 , 0X37 , 0X07 , 0X66 , 0X07 , 0X32]
+009f70: 07 66 07 35 07 66 07 32
+009f78: 07 66 07 37 07 66 07 32
+
+[	DB 0X07 , 0X66 , 0X08 , 0X2B , 0X07 , 0X66 , 0X07 , 0X32 , 0X07 , 0X66 , 0X07 , 0X35 , 0X07 , 0X66 , 0X07 , 0X32]
+009f80: 07 66 08 2b 07 66 07 32
+009f88: 07 66 07 35 07 66 07 32
+
+[	DB 0X07 , 0X66 , 0X07 , 0X37 , 0X07 , 0X66 , 0X07 , 0X32 , 0X07 , 0X66 , 0X07 , 0X2B , 0X07 , 0X66 , 0X07 , 0X32]
+009f90: 07 66 07 37 07 66 07 32
+009f98: 07 66 07 2b 07 66 07 32
+
+[	DB 0X07 , 0X66 , 0X07 , 0X35 , 0X07 , 0X66 , 0X07 , 0X32 , 0X07 , 0X66 , 0X07 , 0X37 , 0X07 , 0X66 , 0X07 , 0X32]
+009fa0: 07 66 07 35 07 66 07 32
+009fa8: 07 66 07 37 07 66 07 32
+
+[	DB 0X07 , 0X66 , 0X07 , 0X67 , 0X0F , 0X2D , 0X0F , 0X2B , 0X10 , 0X2D , 0X3F , 0X30 , 0X0F , 0X2F , 0X0F , 0X30]
+009fb0: 07 66 07 67 0f 2d 0f 2b
+009fb8: 10 2d 3f 30 0f 2f 0f 30
+
+[	DB 0X3F , 0X2F , 0X0F , 0X2D , 0X0F , 0X2B , 0X40 , 0X28 , 0X3F , 0X2B , 0X1F , 0X67 , 0X0D , 0X39 , 0X07 , 0X66]
+009fc0: 3f 2f 0f 2d 0f 2b 40 28
+009fc8: 3f 2b 1f 67 0d 39 07 66
+
+[	DB 0X07 , 0X37 , 0X07 , 0X66 , 0X07 , 0X39 , 0X07 , 0X66 , 0X07 , 0X66 , 0X30 , 0X3C , 0X07 , 0X66 , 0X07 , 0X3B]
+009fd0: 07 37 07 66 07 39 07 66
+009fd8: 07 66 30 3c 07 66 07 3b
+
+[	DB 0X07 , 0X66 , 0X07 , 0X3C , 0X07 , 0X66 , 0X07 , 0X66 , 0X2F , 0X3B , 0X07 , 0X66 , 0X07 , 0X39 , 0X07 , 0X66]
+009fe0: 07 66 07 3c 07 66 07 66
+009fe8: 2f 3b 07 66 07 39 07 66
+
+[	DB 0X07 , 0X37 , 0X07 , 0X66 , 0X07 , 0X66 , 0X2F , 0X3B , 0X40 , 0X67 , 0X0F , 0X2B , 0X1F , 0X69 , 0X0B , 0X00]
+009ff0: 07 37 07 66 07 66 2f 3b
+009ff8: 40 67 0f 2b 1f 69 0b 00
+
+[	DB 0X68 , 0XE5 , 0X01 , 0X67 , 0X0E , 0X09 , 0X5F , 0X09 , 0X5F , 0X09 , 0X60 , 0X09 , 0X3F , 0X66 , 0X0F , 0X07]
+00a000: 68 e5 01 67 0e 09 5f 09
+00a008: 5f 09 60 09 3f 66 0f 07
+
+[	DB 0X0F , 0X09 , 0X07 , 0X66 , 0X07 , 0X09 , 0X07 , 0X66 , 0X07 , 0X66 , 0X20 , 0X66 , 0X3F , 0X66 , 0X7F , 0X66]
+00a010: 0f 09 07 66 07 09 07 66
+00a018: 07 66 20 66 3f 66 7f 66
+
+[	DB 0X80 , 0X07 , 0X5F , 0X07 , 0X60 , 0X07 , 0X5F , 0X07 , 0X40 , 0X66 , 0X0F , 0X05 , 0X0F , 0X07 , 0X07 , 0X66]
+00a020: 80 07 5f 07 60 07 5f 07
+00a028: 40 66 0f 05 0f 07 07 66
+
+[	DB 0X07 , 0X07 , 0X07 , 0X66 , 0X07 , 0X66 , 0X1F , 0X66 , 0X3F , 0X66 , 0X80 , 0X66 , 0X7F , 0X09 , 0X40 , 0X09]
+00a030: 07 07 07 66 07 66 1f 66
+00a038: 3f 66 80 66 7f 09 40 09
+
+[	DB 0X0F , 0X0B , 0X0F , 0X0C , 0X3F , 0X0E , 0X0F , 0X0C , 0X0F , 0X0B , 0X40 , 0X0B , 0X0F , 0X09 , 0X0F , 0X07]
+00a040: 0f 0b 0f 0c 3f 0e 0f 0c
+00a048: 0f 0b 40 0b 0f 09 0f 07
+
+[	DB 0X3F , 0X0B , 0X0F , 0X07 , 0X0F , 0X09 , 0X07 , 0X66 , 0X17 , 0X66 , 0X1F , 0X66 , 0X40 , 0X66 , 0X7F , 0X66]
+00a050: 3f 0b 0f 07 0f 09 07 66
+00a058: 17 66 1f 66 40 66 7f 66
+
+[	DB 0X80 , 0X69 , 0X85 , 0X01 , 0X6A]
+00a060: 80 69 85 01 6a
+
+[	DB 0X00 , 0X01 , 0X02 , 0X02 , 0X02 , 0X00 , 0XFE , 0XFD , 0XFD , 0XFD , 0XFE , 0X00 , 0X02 , 0X02 , 0X02 , 0X01]
+00a065: 00 01 02 02 02 00 fe fd
+00a06d: fd fd fe 00 02 02 02 01
+
+[	DB 0X00 , 0XFE , 0XFD , 0XFD , 0XFD , 0XFF , 0X01 , 0X02 , 0X03 , 0X02 , 0X01 , 0XFF , 0XFD , 0XFD , 0XFD , 0XFE]
+00a075: 00 fe fd fd fd ff 01 02
+00a07d: 03 02 01 ff fd fd fd fe
+
+[	DB 0XFF , 0X02 , 0XE0 , 0X01 , 0X1E , 0X14 , 0X00 , 0X00 , 0X00]
+00a085: ff 02 e0 01 1e 14 00 00
+00a08d: 00
+
+[	INCLUDE ".//stage7_bgm.asm"] end
+
+[_BGM_STAGE8 :]
+	label address: 0x00a08e
+
+[	INCLUDE ".//stage8_bgm.asm"] begin
+[	DB 0X06 , 0X00 , 0X1E , 0X02 , 0X92 , 0X04 , 0X68 , 0X93 , 0X04 , 0X67 , 0X0F , 0X39 , 0X03 , 0X37 , 0X04 , 0X39]
+00a08e: 06 00 1e 02 92 04 68 93
+00a096: 04 67 0f 39 03 37 04 39
+
+[	DB 0X04 , 0X3B , 0X04 , 0X3C , 0X03 , 0X39 , 0X04 , 0X37 , 0X04 , 0X39 , 0X04 , 0X3B , 0X04 , 0X3C , 0X03 , 0X3B]
+00a09e: 04 3b 04 3c 03 39 04 37
+00a0a6: 04 39 04 3b 04 3c 03 3b
+
+[	DB 0X04 , 0X3E , 0X04 , 0X40 , 0X04 , 0X3E , 0X04 , 0X3B , 0X03 , 0X34 , 0X04 , 0X39 , 0X04 , 0X37 , 0X04 , 0X39]
+00a0ae: 04 3e 04 40 04 3e 04 3b
+00a0b6: 03 34 04 39 04 37 04 39
+
+[	DB 0X03 , 0X3B , 0X04 , 0X3C , 0X04 , 0X3B , 0X04 , 0X35 , 0X04 , 0X32 , 0X03 , 0X34 , 0X04 , 0X32 , 0X04 , 0X34]
+00a0be: 03 3b 04 3c 04 3b 04 35
+00a0c6: 04 32 03 34 04 32 04 34
+
+[	DB 0X04 , 0X35 , 0X04 , 0X34 , 0X03 , 0X37 , 0X04 , 0X34 , 0X04 , 0X37 , 0X04 , 0X39 , 0X03 , 0X3C , 0X04 , 0X3B]
+00a0ce: 04 35 04 34 03 37 04 34
+00a0d6: 04 37 04 39 03 3c 04 3b
+
+[	DB 0X04 , 0X39 , 0X04 , 0X32 , 0X04 , 0X35 , 0X03 , 0X34 , 0X04 , 0X37 , 0X04 , 0X39 , 0X04 , 0X37 , 0X04 , 0X34]
+00a0de: 04 39 04 32 04 35 03 34
+00a0e6: 04 37 04 39 04 37 04 34
+
+[	DB 0X03 , 0X30 , 0X04 , 0X32 , 0X04 , 0X37 , 0X04 , 0X34 , 0X04 , 0X3B , 0X03 , 0X3C , 0X04 , 0X39 , 0X04 , 0X3C]
+00a0ee: 03 30 04 32 04 37 04 34
+00a0f6: 04 3b 03 3c 04 39 04 3c
+
+[	DB 0X04 , 0X3B , 0X03 , 0X3E , 0X04 , 0X39 , 0X04 , 0X37 , 0X04 , 0X35 , 0X04 , 0X34 , 0X03 , 0X39 , 0X04 , 0X3C]
+00a0fe: 04 3b 03 3e 04 39 04 37
+00a106: 04 35 04 34 03 39 04 3c
+
+[	DB 0X04 , 0X3B , 0X04 , 0X3C , 0X04 , 0X3B , 0X03 , 0X39 , 0X04 , 0X34 , 0X04 , 0X39 , 0X04 , 0X37 , 0X03 , 0X34]
+00a10e: 04 3b 04 3c 04 3b 03 39
+00a116: 04 34 04 39 04 37 03 34
+
+[	DB 0X04 , 0X37 , 0X04 , 0X39 , 0X04 , 0X37 , 0X04 , 0X39 , 0X03 , 0X3C , 0X04 , 0X40 , 0X04 , 0X3E , 0X04 , 0X3B]
+00a11e: 04 37 04 39 04 37 04 39
+00a126: 03 3c 04 40 04 3e 04 3b
+
+[	DB 0X04 , 0X37 , 0X03 , 0X34 , 0X04 , 0X37 , 0X04 , 0X3B , 0X04 , 0X37 , 0X03 , 0X39 , 0X04 , 0X34 , 0X04 , 0X39]
+00a12e: 04 37 03 34 04 37 04 3b
+00a136: 04 37 03 39 04 34 04 39
+
+[	DB 0X04 , 0X3C , 0X04 , 0X3B , 0X03 , 0X39 , 0X04 , 0X34 , 0X04 , 0X37 , 0X04 , 0X39 , 0X04 , 0X37 , 0X03 , 0X35]
+00a13e: 04 3c 04 3b 03 39 04 34
+00a146: 04 37 04 39 04 37 03 35
+
+[	DB 0X04 , 0X32 , 0X04 , 0X3C , 0X04 , 0X3B , 0X04 , 0X3C , 0X03 , 0X3B , 0X04 , 0X39 , 0X04 , 0X37 , 0X04 , 0X39]
+00a14e: 04 32 04 3c 04 3b 04 3c
+00a156: 03 3b 04 39 04 37 04 39
+
+[	DB 0X03 , 0X3B , 0X04 , 0X3C , 0X04 , 0X39 , 0X04 , 0X34 , 0X04 , 0X37 , 0X03 , 0X39 , 0X04 , 0X3C , 0X04 , 0X3B]
+00a15e: 03 3b 04 3c 04 39 04 34
+00a166: 04 37 03 39 04 3c 04 3b
+
+[	DB 0X04 , 0X39 , 0X04 , 0X3B , 0X03 , 0X34 , 0X04 , 0X37 , 0X04 , 0X3B , 0X04 , 0X39 , 0X03 , 0X3C , 0X04 , 0X3B]
+00a16e: 04 39 04 3b 03 34 04 37
+00a176: 04 3b 04 39 03 3c 04 3b
+
+[	DB 0X04 , 0X39 , 0X04 , 0X3B , 0X04 , 0X37 , 0X03 , 0X3B , 0X04 , 0X37 , 0X04 , 0X39 , 0X04 , 0X37 , 0X04 , 0X34]
+00a17e: 04 39 04 3b 04 37 03 3b
+00a186: 04 37 04 39 04 37 04 34
+
+[	DB 0X03 , 0X37 , 0X04 , 0X3B , 0X04 , 0X34 , 0X04 , 0X40 , 0X03 , 0X3B , 0X04 , 0X39 , 0X4C , 0X66 , 0X4B , 0X66]
+00a18e: 03 37 04 3b 04 34 04 40
+00a196: 03 3b 04 39 4c 66 4b 66
+
+[	DB 0X4C , 0X45 , 0X4C , 0X39 , 0X03 , 0X21 , 0X04 , 0X23 , 0X04 , 0X30 , 0X04 , 0X1F , 0X04 , 0X1C , 0X03 , 0X3B]
+00a19e: 4c 45 4c 39 03 21 04 23
+00a1a6: 04 30 04 1f 04 1c 03 3b
+
+[	DB 0X04 , 0X37 , 0X04 , 0X39 , 0X04 , 0X1F , 0X04 , 0X1C , 0X03 , 0X29 , 0X04 , 0X28 , 0X04 , 0X3C , 0X04 , 0X1C]
+00a1ae: 04 37 04 39 04 1f 04 1c
+00a1b6: 03 29 04 28 04 3c 04 1c
+
+[	DB 0X03 , 0X2B , 0X04 , 0X2D , 0X04 , 0X37 , 0X04 , 0X1C , 0X04 , 0X2B , 0X03 , 0X39 , 0X04 , 0X28 , 0X04 , 0X37]
+00a1be: 03 2b 04 2d 04 37 04 1c
+00a1c6: 04 2b 03 39 04 28 04 37
+
+[	DB 0X04 , 0X23 , 0X04 , 0X39 , 0X03 , 0X2B , 0X04 , 0X2D , 0X04 , 0X23 , 0X04 , 0X3C , 0X03 , 0X3B , 0X04 , 0X1F]
+00a1ce: 04 23 04 39 03 2b 04 2d
+00a1d6: 04 23 04 3c 03 3b 04 1f
+
+[	DB 0X04 , 0X2F , 0X04 , 0X21 , 0X04 , 0X3B , 0X03 , 0X39 , 0X04 , 0X2F , 0X04 , 0X24 , 0X04 , 0X40 , 0X04 , 0X32]
+00a1de: 04 2f 04 21 04 3b 03 39
+00a1e6: 04 2f 04 24 04 40 04 32
+
+[	DB 0X03 , 0X23 , 0X04 , 0X30 , 0X04 , 0X23 , 0X04 , 0X39 , 0X04 , 0X37 , 0X03 , 0X28 , 0X04 , 0X1F , 0X04 , 0X34]
+00a1ee: 03 23 04 30 04 23 04 39
+00a1f6: 04 37 03 28 04 1f 04 34
+
+[	DB 0X04 , 0X2B , 0X03 , 0X2D , 0X04 , 0X23 , 0X04 , 0X3C , 0X04 , 0X3B , 0X04 , 0X2B , 0X03 , 0X1D , 0X04 , 0X34]
+00a1fe: 04 2b 03 2d 04 23 04 3c
+00a206: 04 3b 04 2b 03 1d 04 34
+
+[	DB 0X04 , 0X37 , 0X04 , 0X21 , 0X04 , 0X2F , 0X03 , 0X3C , 0X04 , 0X1D , 0X04 , 0X28 , 0X04 , 0X37 , 0X03 , 0X1C]
+00a20e: 04 37 04 21 04 2f 03 3c
+00a216: 04 1d 04 28 04 37 03 1c
+
+[	DB 0X04 , 0X2B , 0X04 , 0X39 , 0X04 , 0X37 , 0X04 , 0X35 , 0X03 , 0X32 , 0X04 , 0X34 , 0X04 , 0X2F , 0X04 , 0X30]
+00a21e: 04 2b 04 39 04 37 04 35
+00a226: 03 32 04 34 04 2f 04 30
+
+[	DB 0X04 , 0X28 , 0X03 , 0X2D , 0X04 , 0X29 , 0X04 , 0X28 , 0X04 , 0X29 , 0X03 , 0X28 , 0X04 , 0X26 , 0X04 , 0X23]
+00a22e: 04 28 03 2d 04 29 04 28
+00a236: 04 29 03 28 04 26 04 23
+
+[	DB 0X04 , 0X1F , 0X04 , 0X21 , 0X03 , 0X1C , 0X04 , 0X1F , 0X04 , 0X23 , 0X04 , 0X21 , 0X04 , 0X26 , 0X03 , 0X24]
+00a23e: 04 1f 04 21 03 1c 04 1f
+00a246: 04 23 04 21 04 26 03 24
+
+[	DB 0X04 , 0X28 , 0X04 , 0X29 , 0X04 , 0X28 , 0X04 , 0X26 , 0X03 , 0X29 , 0X04 , 0X2B , 0X04 , 0X28 , 0X04 , 0X2B]
+00a24e: 04 28 04 29 04 28 04 26
+00a256: 03 29 04 2b 04 28 04 2b
+
+[	DB 0X03 , 0X2F , 0X04 , 0X2D , 0X04 , 0X30 , 0X04 , 0X32 , 0X04 , 0X30 , 0X03 , 0X34 , 0X04 , 0X30 , 0X04 , 0X34]
+00a25e: 03 2f 04 2d 04 30 04 32
+00a266: 04 30 03 34 04 30 04 34
+
+[	DB 0X04 , 0X3B , 0X04 , 0X39 , 0X03 , 0X37 , 0X04 , 0X35 , 0X04 , 0X32 , 0X04 , 0X34 , 0X03 , 0X32 , 0X04 , 0X34]
+00a26e: 04 3b 04 39 03 37 04 35
+00a276: 04 32 04 34 03 32 04 34
+
+[	DB 0X04 , 0X3B , 0X04 , 0X39 , 0X04 , 0X37 , 0X03 , 0X34 , 0X04 , 0X2F , 0X04 , 0X2D , 0X04 , 0X26 , 0X04 , 0X28]
+00a27e: 04 3b 04 39 04 37 03 34
+00a286: 04 2f 04 2d 04 26 04 28
+
+[	DB 0X03 , 0X23 , 0X04 , 0X21 , 0X04 , 0X24 , 0X04 , 0X28 , 0X03 , 0X24 , 0X04 , 0X28 , 0X04 , 0X2B , 0X04 , 0X30]
+00a28e: 03 23 04 21 04 24 04 28
+00a296: 03 24 04 28 04 2b 04 30
+
+[	DB 0X04 , 0X37 , 0X03 , 0X39 , 0X4C , 0X66 , 0X4C , 0X66 , 0X4B , 0X66 , 0X4C , 0X69 , 0X0B , 0X00 , 0X68 , 0X93]
+00a29e: 04 37 03 39 4c 66 4c 66
+00a2a6: 4b 66 4c 69 0b 00 68 93
+
+[	DB 0X04 , 0X67 , 0X0E , 0X15 , 0X03 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X0D , 0X15 , 0X04 , 0X66 , 0X04 , 0X15]
+00a2ae: 04 67 0e 15 03 66 04 15
+00a2b6: 04 66 0d 15 04 66 04 15
+
+[	DB 0X04 , 0X66 , 0X03 , 0X15 , 0X04 , 0X66 , 0X0E , 0X15 , 0X03 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X04 , 0X13]
+00a2be: 04 66 03 15 04 66 0e 15
+00a2c6: 03 66 04 13 04 66 04 13
+
+[	DB 0X03 , 0X66 , 0X0E , 0X13 , 0X04 , 0X66 , 0X03 , 0X13 , 0X04 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X0D , 0X13]
+00a2ce: 03 66 0e 13 04 66 03 13
+00a2d6: 04 66 04 13 04 66 0d 13
+
+[	DB 0X04 , 0X66 , 0X04 , 0X11 , 0X03 , 0X66 , 0X04 , 0X11 , 0X04 , 0X66 , 0X0D , 0X11 , 0X04 , 0X66 , 0X04 , 0X11]
+00a2de: 04 66 04 11 03 66 04 11
+00a2e6: 04 66 0d 11 04 66 04 11
+
+[	DB 0X04 , 0X66 , 0X04 , 0X11 , 0X03 , 0X66 , 0X04 , 0X0E , 0X04 , 0X66 , 0X04 , 0X11 , 0X04 , 0X66 , 0X03 , 0X13]
+00a2ee: 04 66 04 11 03 66 04 0e
+00a2f6: 04 66 04 11 04 66 03 13
+
+[	DB 0X04 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X0D , 0X13 , 0X04 , 0X66 , 0X04 , 0X13 , 0X03 , 0X66 , 0X04 , 0X13]
+00a2fe: 04 66 04 13 04 66 0d 13
+00a306: 04 66 04 13 03 66 04 13
+
+[	DB 0X04 , 0X66 , 0X04 , 0X10 , 0X04 , 0X13 , 0X03 , 0X66 , 0X04 , 0X13 , 0X04 , 0X15 , 0X04 , 0X66 , 0X03 , 0X15]
+00a30e: 04 66 04 10 04 13 03 66
+00a316: 04 13 04 15 04 66 03 15
+
+[	DB 0X04 , 0X66 , 0X0E , 0X15 , 0X03 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X03 , 0X15]
+00a31e: 04 66 0e 15 03 66 04 15
+00a326: 04 66 04 15 04 66 03 15
+
+[	DB 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X03 , 0X13 , 0X04 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X0D , 0X13]
+00a32e: 04 66 04 15 04 66 03 13
+00a336: 04 66 04 13 04 66 0d 13
+
+[	DB 0X04 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X03 , 0X13 , 0X04 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X04 , 0X13]
+00a33e: 04 66 04 13 04 66 03 13
+00a346: 04 66 04 13 04 66 04 13
+
+[	DB 0X03 , 0X66 , 0X04 , 0X11 , 0X04 , 0X66 , 0X04 , 0X11 , 0X03 , 0X66 , 0X0E , 0X11 , 0X04 , 0X66 , 0X03 , 0X11]
+00a34e: 03 66 04 11 04 66 04 11
+00a356: 03 66 0e 11 04 66 03 11
+
+[	DB 0X04 , 0X66 , 0X04 , 0X11 , 0X04 , 0X66 , 0X04 , 0X0E , 0X03 , 0X66 , 0X04 , 0X11 , 0X04 , 0X66 , 0X04 , 0X13]
+00a35e: 04 66 04 11 04 66 04 0e
+00a366: 03 66 04 11 04 66 04 13
+
+[	DB 0X03 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X0D , 0X13 , 0X04 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X04 , 0X13]
+00a36e: 03 66 04 13 04 66 0d 13
+00a376: 04 66 04 13 04 66 04 13
+
+[	DB 0X03 , 0X66 , 0X04 , 0X10 , 0X04 , 0X13 , 0X04 , 0X66 , 0X03 , 0X13 , 0X04 , 0X15 , 0X04 , 0X66 , 0X04 , 0X15]
+00a37e: 03 66 04 10 04 13 04 66
+00a386: 03 13 04 15 04 66 04 15
+
+[	DB 0X04 , 0X66 , 0X0D , 0X15 , 0X04 , 0X66 , 0X04 , 0X15 , 0X03 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X0D , 0X15]
+00a38e: 04 66 0d 15 04 66 04 15
+00a396: 03 66 04 15 04 66 0d 15
+
+[	DB 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X03 , 0X15 , 0X04 , 0X66 , 0X0E , 0X15 , 0X03 , 0X66 , 0X04 , 0X15]
+00a39e: 04 66 04 15 04 66 03 15
+00a3a6: 04 66 0e 15 03 66 04 15
+
+[	DB 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X0D , 0X15 , 0X04 , 0X66 , 0X03 , 0X15 , 0X04 , 0X66 , 0X04 , 0X15]
+00a3ae: 04 66 04 15 04 66 0d 15
+00a3b6: 04 66 03 15 04 66 04 15
+
+[	DB 0X04 , 0X66 , 0X0D , 0X15 , 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X03 , 0X15 , 0X04 , 0X66 , 0X0D , 0X15]
+00a3be: 04 66 0d 15 04 66 04 15
+00a3c6: 04 66 03 15 04 66 0d 15
+
+[	DB 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X04 , 0X15 , 0X03 , 0X66 , 0X0E , 0X15 , 0X04 , 0X66 , 0X03 , 0X15]
+00a3ce: 04 66 04 15 04 66 04 15
+00a3d6: 03 66 0e 15 04 66 03 15
+
+[	DB 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X04 , 0X15 , 0X03 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X04 , 0X15]
+00a3de: 04 66 04 15 04 66 04 15
+00a3e6: 03 66 04 15 04 66 04 15
+
+[	DB 0X03 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X0D , 0X15 , 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X04 , 0X15]
+00a3ee: 03 66 04 15 04 66 0d 15
+00a3f6: 04 66 04 15 04 66 04 15
+
+[	DB 0X03 , 0X66 , 0X0E , 0X15 , 0X03 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X0D , 0X13]
+00a3fe: 03 66 0e 15 03 66 04 13
+00a406: 04 66 04 13 04 66 0d 13
+
+[	DB 0X04 , 0X66 , 0X04 , 0X13 , 0X03 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X0D , 0X13 , 0X04 , 0X66 , 0X04 , 0X11]
+00a40e: 04 66 04 13 03 66 04 13
+00a416: 04 66 0d 13 04 66 04 11
+
+[	DB 0X04 , 0X66 , 0X03 , 0X11 , 0X04 , 0X66 , 0X0E , 0X11 , 0X03 , 0X66 , 0X04 , 0X11 , 0X04 , 0X66 , 0X04 , 0X11]
+00a41e: 04 66 03 11 04 66 0e 11
+00a426: 03 66 04 11 04 66 04 11
+
+[	DB 0X04 , 0X66 , 0X03 , 0X0E , 0X04 , 0X66 , 0X04 , 0X11 , 0X04 , 0X66 , 0X03 , 0X13 , 0X04 , 0X66 , 0X04 , 0X13]
+00a42e: 04 66 03 0e 04 66 04 11
+00a436: 04 66 03 13 04 66 04 13
+
+[	DB 0X04 , 0X66 , 0X0D , 0X13 , 0X04 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X03 , 0X13 , 0X04 , 0X66 , 0X04 , 0X10]
+00a43e: 04 66 0d 13 04 66 04 13
+00a446: 04 66 03 13 04 66 04 10
+
+[	DB 0X04 , 0X13 , 0X03 , 0X66 , 0X04 , 0X13 , 0X04 , 0X15 , 0X04 , 0X66 , 0X04 , 0X15 , 0X03 , 0X66 , 0X0E , 0X15]
+00a44e: 04 13 03 66 04 13 04 15
+00a456: 04 66 04 15 03 66 0e 15
+
+[	DB 0X04 , 0X66 , 0X03 , 0X15 , 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X03 , 0X15 , 0X04 , 0X66 , 0X04 , 0X15]
+00a45e: 04 66 03 15 04 66 04 15
+00a466: 04 66 03 15 04 66 04 15
+
+[	DB 0X04 , 0X66 , 0X04 , 0X13 , 0X03 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X0D , 0X13 , 0X04 , 0X66 , 0X04 , 0X13]
+00a46e: 04 66 04 13 03 66 04 13
+00a476: 04 66 0d 13 04 66 04 13
+
+[	DB 0X04 , 0X66 , 0X04 , 0X13 , 0X03 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X04 , 0X13 , 0X03 , 0X66 , 0X04 , 0X11]
+00a47e: 04 66 04 13 03 66 04 13
+00a486: 04 66 04 13 03 66 04 11
+
+[	DB 0X04 , 0X66 , 0X04 , 0X11 , 0X04 , 0X66 , 0X0D , 0X11 , 0X04 , 0X66 , 0X04 , 0X11 , 0X03 , 0X66 , 0X04 , 0X11]
+00a48e: 04 66 04 11 04 66 0d 11
+00a496: 04 66 04 11 03 66 04 11
+
+[	DB 0X04 , 0X66 , 0X04 , 0X0E , 0X03 , 0X66 , 0X04 , 0X11 , 0X04 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X03 , 0X13]
+00a49e: 04 66 04 0e 03 66 04 11
+00a4a6: 04 66 04 13 04 66 03 13
+
+[	DB 0X04 , 0X66 , 0X0E , 0X13 , 0X03 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X04 , 0X13 , 0X03 , 0X66 , 0X04 , 0X10]
+00a4ae: 04 66 0e 13 03 66 04 13
+00a4b6: 04 66 04 13 03 66 04 10
+
+[	DB 0X04 , 0X13 , 0X04 , 0X66 , 0X04 , 0X13 , 0X03 , 0X15 , 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X0D , 0X15]
+00a4be: 04 13 04 66 04 13 03 15
+00a4c6: 04 66 04 15 04 66 0d 15
+
+[	DB 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X03 , 0X15 , 0X04 , 0X66 , 0X0D , 0X15 , 0X04 , 0X66 , 0X04 , 0X13]
+00a4ce: 04 66 04 15 04 66 03 15
+00a4d6: 04 66 0d 15 04 66 04 13
+
+[	DB 0X04 , 0X66 , 0X04 , 0X13 , 0X03 , 0X66 , 0X0E , 0X13 , 0X04 , 0X66 , 0X03 , 0X13 , 0X04 , 0X66 , 0X04 , 0X13]
+00a4de: 04 66 04 13 03 66 0e 13
+00a4e6: 04 66 03 13 04 66 04 13
+
+[	DB 0X04 , 0X66 , 0X0D , 0X13 , 0X04 , 0X66 , 0X04 , 0X11 , 0X03 , 0X66 , 0X04 , 0X11 , 0X04 , 0X66 , 0X0D , 0X11]
+00a4ee: 04 66 0d 13 04 66 04 11
+00a4f6: 03 66 04 11 04 66 0d 11
+
+[	DB 0X04 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X03 , 0X13 , 0X04 , 0X66 , 0X0E , 0X13 , 0X03 , 0X66 , 0X04 , 0X15]
+00a4fe: 04 66 04 13 04 66 03 13
+00a506: 04 66 0e 13 03 66 04 15
+
+[	DB 0X26 , 0X66 , 0X08 , 0X10 , 0X04 , 0X66 , 0X04 , 0X17 , 0X03 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X04 , 0X69]
+00a50e: 26 66 08 10 04 66 04 17
+00a516: 03 66 04 13 04 66 04 69
+
+[	DB 0X23 , 0X02 , 0X6A]
+00a51e: 23 02 6a
+
+[	DB 0X00 , 0X01 , 0X02 , 0X02 , 0X02 , 0X00 , 0XFE , 0XFD , 0XFD , 0XFD , 0XFE , 0X00 , 0X02 , 0X02 , 0X02 , 0X01]
+00a521: 00 01 02 02 02 00 fe fd
+00a529: fd fd fe 00 02 02 02 01
+
+[	DB 0X00 , 0XFE , 0XFD , 0XFD , 0XFD , 0XFF , 0X01 , 0X02 , 0X03 , 0X02 , 0X01 , 0XFF , 0XFD , 0XFD , 0XFD , 0XFE]
+00a531: 00 fe fd fd fd ff 01 02
+00a539: 03 02 01 ff fd fd fd fe
+
+[	DB 0XFF , 0X02 , 0XE0 , 0X01 , 0X1E , 0X14 , 0X00 , 0X00 , 0X00]
+00a541: ff 02 e0 01 1e 14 00 00
+00a549: 00
+
+[	INCLUDE ".//stage8_bgm.asm"] end
+
+[_BGM_BOSS_BUZ :]
+	label address: 0x00a54a
+
+[	INCLUDE ".//warning_bgm.asm"] begin
+[	DB 0X06 , 0X00 , 0X2C , 0X00 , 0X52 , 0X00 , 0X68 , 0X7A , 0X00 , 0X67 , 0X0F , 0X26 , 0X03 , 0X29 , 0X03 , 0X2B]
+00a54a: 06 00 2c 00 52 00 68 7a
+00a552: 00 67 0f 26 03 29 03 2b
+
+[	DB 0X1A , 0X66 , 0X22 , 0X26 , 0X04 , 0X29 , 0X03 , 0X2B , 0X19 , 0X66 , 0X23 , 0X26 , 0X03 , 0X29 , 0X04 , 0X2B]
+00a55a: 1a 66 22 26 04 29 03 2b
+00a562: 19 66 23 26 03 29 04 2b
+
+[	DB 0X19 , 0X66 , 0X22 , 0X26 , 0X04 , 0X29 , 0X03 , 0X2B , 0X1A , 0X66 , 0X22 , 0X6A , 0X68 , 0X7A , 0X00 , 0X67]
+00a56a: 19 66 22 26 04 29 03 2b
+00a572: 1a 66 22 6a 68 7a 00 67
+
+[	DB 0X0D , 0X1A , 0X03 , 0X1D , 0X03 , 0X1F , 0X1A , 0X66 , 0X22 , 0X1A , 0X04 , 0X1D , 0X03 , 0X1F , 0X19 , 0X66]
+00a57a: 0d 1a 03 1d 03 1f 1a 66
+00a582: 22 1a 04 1d 03 1f 19 66
+
+[	DB 0X23 , 0X1A , 0X03 , 0X1D , 0X04 , 0X1F , 0X19 , 0X66 , 0X22 , 0X1A , 0X04 , 0X1D , 0X03 , 0X1F , 0X1A , 0X66]
+00a58a: 23 1a 03 1d 04 1f 19 66
+00a592: 22 1a 04 1d 03 1f 1a 66
+
+[	DB 0X22 , 0X6A , 0X68 , 0X7A , 0X00 , 0X66 , 0X10 , 0X67 , 0X0B , 0X26 , 0X04 , 0X29 , 0X03 , 0X2B , 0X19 , 0X66]
+00a59a: 22 6a 68 7a 00 66 10 67
+00a5a2: 0b 26 04 29 03 2b 19 66
+
+[	DB 0X23 , 0X26 , 0X03 , 0X29 , 0X04 , 0X2B , 0X19 , 0X66 , 0X22 , 0X26 , 0X04 , 0X29 , 0X03 , 0X2B , 0X1A , 0X66]
+00a5aa: 23 26 03 29 04 2b 19 66
+00a5b2: 22 26 04 29 03 2b 1a 66
+
+[	DB 0X22 , 0X26 , 0X03 , 0X29 , 0X04 , 0X2B , 0X19 , 0X66 , 0X23 , 0X6A]
+00a5ba: 22 26 03 29 04 2b 19 66
+00a5c2: 23 6a
+
+[	DB 0X02 , 0XFC , 0X04 , 0XFC , 0X04 , 0XFC , 0X04 , 0XFC , 0X03 , 0XFD , 0X03 , 0XFD , 0X03 , 0XFD , 0X03 , 0XFD]
+00a5c4: 02 fc 04 fc 04 fc 04 fc
+00a5cc: 03 fd 03 fd 03 fd 03 fd
+
+[	DB 0X02 , 0XFE , 0X02 , 0XFE , 0X02 , 0XFE , 0X02 , 0XFE , 0X01 , 0XFF , 0X01 , 0XFF , 0X01 , 0XFF , 0X01 , 0XFF]
+00a5d4: 02 fe 02 fe 02 fe 02 fe
+00a5dc: 01 ff 01 ff 01 ff 01 ff
+
+[	DB 0XFF , 0XE0 , 0XE0 , 0X01 , 0X1E , 0X00 , 0X00 , 0X00 , 0X00]
+00a5e4: ff e0 e0 01 1e 00 00 00
+00a5ec: 00
+
+[	INCLUDE ".//warning_bgm.asm"] end
+
+[_BGM_BOSS1 :]
+	label address: 0x00a5ed
+
+[	INCLUDE ".//boss_bgm.asm"] begin
+[	DB 0X06 , 0X00 , 0XBC , 0X01 , 0XA4 , 0X03 , 0X68 , 0XCE , 0X03 , 0X67 , 0X0D , 0X39 , 0X03 , 0X66 , 0X04 , 0X39]
+00a5ed: 06 00 bc 01 a4 03 68 ce
+00a5f5: 03 67 0d 39 03 66 04 39
+
+[	DB 0X04 , 0X66 , 0X04 , 0X39 , 0X03 , 0X66 , 0X04 , 0X39 , 0X04 , 0X66 , 0X04 , 0X39 , 0X04 , 0X66 , 0X03 , 0X39]
+00a5fd: 04 66 04 39 03 66 04 39
+00a605: 04 66 04 39 04 66 03 39
+
+[	DB 0X04 , 0X66 , 0X04 , 0X67 , 0X0B , 0X39 , 0X04 , 0X66 , 0X04 , 0X39 , 0X03 , 0X66 , 0X04 , 0X39 , 0X04 , 0X66]
+00a60d: 04 66 04 67 0b 39 04 66
+00a615: 04 39 03 66 04 39 04 66
+
+[	DB 0X04 , 0X39 , 0X03 , 0X66 , 0X04 , 0X39 , 0X04 , 0X66 , 0X04 , 0X39 , 0X04 , 0X66 , 0X03 , 0X67 , 0X0D , 0X37]
+00a61d: 04 39 03 66 04 39 04 66
+00a625: 04 39 04 66 03 67 0d 37
+
+[	DB 0X04 , 0X66 , 0X04 , 0X37 , 0X04 , 0X66 , 0X04 , 0X37 , 0X03 , 0X66 , 0X04 , 0X37 , 0X04 , 0X66 , 0X04 , 0X37]
+00a62d: 04 66 04 37 04 66 04 37
+00a635: 03 66 04 37 04 66 04 37
+
+[	DB 0X03 , 0X66 , 0X04 , 0X37 , 0X04 , 0X66 , 0X04 , 0X67 , 0X0D , 0X37 , 0X04 , 0X66 , 0X03 , 0X37 , 0X04 , 0X66]
+00a63d: 03 66 04 37 04 66 04 67
+00a645: 0d 37 04 66 03 37 04 66
+
+[	DB 0X04 , 0X37 , 0X04 , 0X66 , 0X04 , 0X37 , 0X03 , 0X66 , 0X04 , 0X37 , 0X04 , 0X66 , 0X04 , 0X37 , 0X04 , 0X66]
+00a64d: 04 37 04 66 04 37 03 66
+00a655: 04 37 04 66 04 37 04 66
+
+[	DB 0X03 , 0X67 , 0X0D , 0X39 , 0X04 , 0X66 , 0X04 , 0X39 , 0X04 , 0X66 , 0X03 , 0X39 , 0X04 , 0X66 , 0X04 , 0X39]
+00a65d: 03 67 0d 39 04 66 04 39
+00a665: 04 66 03 39 04 66 04 39
+
+[	DB 0X04 , 0X66 , 0X04 , 0X39 , 0X03 , 0X66 , 0X04 , 0X39 , 0X04 , 0X66 , 0X04 , 0X67 , 0X0B , 0X39 , 0X04 , 0X66]
+00a66d: 04 66 04 39 03 66 04 39
+00a675: 04 66 04 67 0b 39 04 66
+
+[	DB 0X03 , 0X39 , 0X04 , 0X66 , 0X04 , 0X39 , 0X04 , 0X66 , 0X03 , 0X39 , 0X04 , 0X66 , 0X04 , 0X39 , 0X04 , 0X66]
+00a67d: 03 39 04 66 04 39 04 66
+00a685: 03 39 04 66 04 39 04 66
+
+[	DB 0X04 , 0X39 , 0X03 , 0X66 , 0X04 , 0X67 , 0X0D , 0X37 , 0X04 , 0X66 , 0X04 , 0X37 , 0X04 , 0X66 , 0X03 , 0X37]
+00a68d: 04 39 03 66 04 67 0d 37
+00a695: 04 66 04 37 04 66 03 37
+
+[	DB 0X04 , 0X66 , 0X04 , 0X37 , 0X04 , 0X66 , 0X03 , 0X37 , 0X04 , 0X66 , 0X04 , 0X37 , 0X04 , 0X66 , 0X04 , 0X67]
+00a69d: 04 66 04 37 04 66 03 37
+00a6a5: 04 66 04 37 04 66 04 67
+
+[	DB 0X0B , 0X37 , 0X03 , 0X66 , 0X04 , 0X37 , 0X04 , 0X66 , 0X04 , 0X37 , 0X04 , 0X66 , 0X03 , 0X37 , 0X04 , 0X66]
+00a6ad: 0b 37 03 66 04 37 04 66
+00a6b5: 04 37 04 66 03 37 04 66
+
+[	DB 0X04 , 0X37 , 0X04 , 0X66 , 0X04 , 0X37 , 0X03 , 0X66 , 0X04 , 0X67 , 0X0D , 0X39 , 0X04 , 0X66 , 0X04 , 0X39]
+00a6bd: 04 37 04 66 04 37 03 66
+00a6c5: 04 67 0d 39 04 66 04 39
+
+[	DB 0X03 , 0X66 , 0X04 , 0X40 , 0X04 , 0X66 , 0X04 , 0X3E , 0X04 , 0X66 , 0X03 , 0X3C , 0X04 , 0X66 , 0X04 , 0X37]
+00a6cd: 03 66 04 40 04 66 04 3e
+00a6d5: 04 66 03 3c 04 66 04 37
+
+[	DB 0X04 , 0X66 , 0X04 , 0X39 , 0X03 , 0X66 , 0X04 , 0X39 , 0X04 , 0X66 , 0X04 , 0X40 , 0X03 , 0X66 , 0X04 , 0X3E]
+00a6dd: 04 66 04 39 03 66 04 39
+00a6e5: 04 66 04 40 03 66 04 3e
+
+[	DB 0X04 , 0X66 , 0X04 , 0X3C , 0X04 , 0X66 , 0X03 , 0X3E , 0X04 , 0X66 , 0X04 , 0X37 , 0X04 , 0X66 , 0X04 , 0X37]
+00a6ed: 04 66 04 3c 04 66 03 3e
+00a6f5: 04 66 04 37 04 66 04 37
+
+[	DB 0X03 , 0X66 , 0X04 , 0X3E , 0X04 , 0X66 , 0X04 , 0X3C , 0X03 , 0X66 , 0X04 , 0X3B , 0X04 , 0X66 , 0X04 , 0X35]
+00a6fd: 03 66 04 3e 04 66 04 3c
+00a705: 03 66 04 3b 04 66 04 35
+
+[	DB 0X04 , 0X66 , 0X03 , 0X37 , 0X04 , 0X66 , 0X04 , 0X37 , 0X04 , 0X66 , 0X04 , 0X3E , 0X03 , 0X66 , 0X04 , 0X3C]
+00a70d: 04 66 03 37 04 66 04 37
+00a715: 04 66 04 3e 03 66 04 3c
+
+[	DB 0X04 , 0X66 , 0X04 , 0X3B , 0X04 , 0X66 , 0X03 , 0X3C , 0X04 , 0X66 , 0X04 , 0X39 , 0X04 , 0X66 , 0X03 , 0X39]
+00a71d: 04 66 04 3b 04 66 03 3c
+00a725: 04 66 04 39 04 66 03 39
+
+[	DB 0X04 , 0X66 , 0X04 , 0X40 , 0X04 , 0X66 , 0X04 , 0X3E , 0X03 , 0X66 , 0X04 , 0X3C , 0X04 , 0X66 , 0X04 , 0X37]
+00a72d: 04 66 04 40 04 66 04 3e
+00a735: 03 66 04 3c 04 66 04 37
+
+[	DB 0X04 , 0X66 , 0X03 , 0X39 , 0X04 , 0X66 , 0X04 , 0X39 , 0X04 , 0X66 , 0X03 , 0X40 , 0X04 , 0X66 , 0X04 , 0X3E]
+00a73d: 04 66 03 39 04 66 04 39
+00a745: 04 66 03 40 04 66 04 3e
+
+[	DB 0X04 , 0X66 , 0X04 , 0X3C , 0X03 , 0X66 , 0X04 , 0X3E , 0X04 , 0X66 , 0X04 , 0X37 , 0X04 , 0X66 , 0X03 , 0X37]
+00a74d: 04 66 04 3c 03 66 04 3e
+00a755: 04 66 04 37 04 66 03 37
+
+[	DB 0X04 , 0X66 , 0X04 , 0X3E , 0X04 , 0X66 , 0X03 , 0X3C , 0X04 , 0X66 , 0X04 , 0X3B , 0X04 , 0X66 , 0X04 , 0X35]
+00a75d: 04 66 04 3e 04 66 03 3c
+00a765: 04 66 04 3b 04 66 04 35
+
+[	DB 0X03 , 0X66 , 0X04 , 0X37 , 0X04 , 0X66 , 0X04 , 0X37 , 0X04 , 0X66 , 0X03 , 0X3E , 0X04 , 0X66 , 0X04 , 0X3C]
+00a76d: 03 66 04 37 04 66 04 37
+00a775: 04 66 03 3e 04 66 04 3c
+
+[	DB 0X04 , 0X66 , 0X04 , 0X3B , 0X03 , 0X66 , 0X04 , 0X3C , 0X04 , 0X66 , 0X04 , 0X39 , 0X72 , 0X66 , 0X25 , 0X66]
+00a77d: 04 66 04 3b 03 66 04 3c
+00a785: 04 66 04 39 72 66 25 66
+
+[	DB 0X12 , 0X40 , 0X04 , 0X66 , 0X04 , 0X3E , 0X03 , 0X66 , 0X04 , 0X3C , 0X04 , 0X66 , 0X04 , 0X3E , 0X04 , 0X66]
+00a78d: 12 40 04 66 04 3e 03 66
+00a795: 04 3c 04 66 04 3e 04 66
+
+[	DB 0X03 , 0X3B , 0X04 , 0X66 , 0X04 , 0X37 , 0X04 , 0X66 , 0X03 , 0X69 , 0X09 , 0X00 , 0X68 , 0XA5 , 0X03 , 0X67]
+00a79d: 03 3b 04 66 04 37 04 66
+00a7a5: 03 69 09 00 68 a5 03 67
+
+[	DB 0X0F , 0X15 , 0X03 , 0X66 , 0X04 , 0X15 , 0X04 , 0X13 , 0X04 , 0X15 , 0X03 , 0X66 , 0X04 , 0X1C , 0X04 , 0X66]
+00a7ad: 0f 15 03 66 04 15 04 13
+00a7b5: 04 15 03 66 04 1c 04 66
+
+[	DB 0X04 , 0X1A , 0X04 , 0X66 , 0X03 , 0X13 , 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X04 , 0X15 , 0X03 , 0X13]
+00a7bd: 04 1a 04 66 03 13 04 66
+00a7c5: 04 15 04 66 04 15 03 13
+
+[	DB 0X04 , 0X15 , 0X04 , 0X66 , 0X04 , 0X1C , 0X03 , 0X66 , 0X04 , 0X1A , 0X04 , 0X66 , 0X04 , 0X11 , 0X04 , 0X66]
+00a7cd: 04 15 04 66 04 1c 03 66
+00a7d5: 04 1a 04 66 04 11 04 66
+
+[	DB 0X03 , 0X13 , 0X04 , 0X66 , 0X04 , 0X13 , 0X04 , 0X11 , 0X04 , 0X13 , 0X03 , 0X66 , 0X04 , 0X1A , 0X04 , 0X66]
+00a7dd: 03 13 04 66 04 13 04 11
+00a7e5: 04 13 03 66 04 1a 04 66
+
+[	DB 0X04 , 0X18 , 0X03 , 0X66 , 0X04 , 0X11 , 0X04 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X03 , 0X13 , 0X04 , 0X11]
+00a7ed: 04 18 03 66 04 11 04 66
+00a7f5: 04 13 04 66 03 13 04 11
+
+[	DB 0X04 , 0X13 , 0X04 , 0X66 , 0X04 , 0X1A , 0X03 , 0X66 , 0X04 , 0X18 , 0X04 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66]
+00a7fd: 04 13 04 66 04 1a 03 66
+00a805: 04 18 04 66 04 13 04 66
+
+[	DB 0X03 , 0X15 , 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X13 , 0X03 , 0X15 , 0X04 , 0X66 , 0X04 , 0X1C , 0X04 , 0X66]
+00a80d: 03 15 04 66 04 15 04 13
+00a815: 03 15 04 66 04 1c 04 66
+
+[	DB 0X04 , 0X1A , 0X03 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X03 , 0X15 , 0X04 , 0X13]
+00a81d: 04 1a 03 66 04 13 04 66
+00a825: 04 15 04 66 03 15 04 13
+
+[	DB 0X04 , 0X15 , 0X04 , 0X66 , 0X03 , 0X1C , 0X04 , 0X66 , 0X04 , 0X1A , 0X04 , 0X66 , 0X04 , 0X11 , 0X03 , 0X66]
+00a82d: 04 15 04 66 03 1c 04 66
+00a835: 04 1a 04 66 04 11 03 66
+
+[	DB 0X04 , 0X13 , 0X04 , 0X66 , 0X04 , 0X13 , 0X04 , 0X11 , 0X03 , 0X13 , 0X04 , 0X66 , 0X04 , 0X1A , 0X04 , 0X66]
+00a83d: 04 13 04 66 04 13 04 11
+00a845: 03 13 04 66 04 1a 04 66
+
+[	DB 0X03 , 0X18 , 0X04 , 0X66 , 0X04 , 0X11 , 0X04 , 0X66 , 0X04 , 0X13 , 0X03 , 0X66 , 0X04 , 0X13 , 0X04 , 0X11]
+00a84d: 03 18 04 66 04 11 04 66
+00a855: 04 13 03 66 04 13 04 11
+
+[	DB 0X04 , 0X13 , 0X04 , 0X66 , 0X03 , 0X1A , 0X04 , 0X66 , 0X04 , 0X18 , 0X04 , 0X66 , 0X04 , 0X13 , 0X03 , 0X66]
+00a85d: 04 13 04 66 03 1a 04 66
+00a865: 04 18 04 66 04 13 03 66
+
+[	DB 0X04 , 0X15 , 0X04 , 0X13 , 0X04 , 0X15 , 0X03 , 0X66 , 0X04 , 0X1C , 0X04 , 0X66 , 0X04 , 0X1A , 0X04 , 0X66]
+00a86d: 04 15 04 13 04 15 03 66
+00a875: 04 1c 04 66 04 1a 04 66
+
+[	DB 0X03 , 0X18 , 0X04 , 0X1A , 0X04 , 0X17 , 0X04 , 0X13 , 0X04 , 0X15 , 0X03 , 0X13 , 0X04 , 0X15 , 0X04 , 0X66]
+00a87d: 03 18 04 1a 04 17 04 13
+00a885: 04 15 03 13 04 15 04 66
+
+[	DB 0X04 , 0X1C , 0X03 , 0X66 , 0X04 , 0X1A , 0X04 , 0X66 , 0X04 , 0X18 , 0X04 , 0X1A , 0X03 , 0X17 , 0X04 , 0X11]
+00a88d: 04 1c 03 66 04 1a 04 66
+00a895: 04 18 04 1a 03 17 04 11
+
+[	DB 0X04 , 0X13 , 0X04 , 0X11 , 0X04 , 0X13 , 0X03 , 0X66 , 0X04 , 0X1A , 0X04 , 0X66 , 0X04 , 0X18 , 0X03 , 0X66]
+00a89d: 04 13 04 11 04 13 03 66
+00a8a5: 04 1a 04 66 04 18 03 66
+
+[	DB 0X04 , 0X17 , 0X04 , 0X18 , 0X04 , 0X15 , 0X04 , 0X11 , 0X03 , 0X13 , 0X04 , 0X11 , 0X04 , 0X13 , 0X04 , 0X66]
+00a8ad: 04 17 04 18 04 15 04 11
+00a8b5: 03 13 04 11 04 13 04 66
+
+[	DB 0X04 , 0X1A , 0X03 , 0X66 , 0X04 , 0X18 , 0X04 , 0X66 , 0X04 , 0X17 , 0X04 , 0X18 , 0X03 , 0X15 , 0X04 , 0X13]
+00a8bd: 04 1a 03 66 04 18 04 66
+00a8c5: 04 17 04 18 03 15 04 13
+
+[	DB 0X04 , 0X15 , 0X04 , 0X13 , 0X03 , 0X15 , 0X04 , 0X66 , 0X04 , 0X1C , 0X04 , 0X66 , 0X04 , 0X1A , 0X03 , 0X66]
+00a8cd: 04 15 04 13 03 15 04 66
+00a8d5: 04 1c 04 66 04 1a 03 66
+
+[	DB 0X04 , 0X18 , 0X04 , 0X1A , 0X04 , 0X17 , 0X04 , 0X13 , 0X03 , 0X15 , 0X04 , 0X13 , 0X04 , 0X15 , 0X04 , 0X66]
+00a8dd: 04 18 04 1a 04 17 04 13
+00a8e5: 03 15 04 13 04 15 04 66
+
+[	DB 0X03 , 0X1C , 0X04 , 0X66 , 0X04 , 0X1A , 0X04 , 0X66 , 0X04 , 0X18 , 0X03 , 0X1A , 0X04 , 0X17 , 0X04 , 0X11]
+00a8ed: 03 1c 04 66 04 1a 04 66
+00a8f5: 04 18 03 1a 04 17 04 11
+
+[	DB 0X04 , 0X13 , 0X04 , 0X11 , 0X03 , 0X13 , 0X04 , 0X66 , 0X04 , 0X1A , 0X04 , 0X66 , 0X03 , 0X18 , 0X04 , 0X66]
+00a8fd: 04 13 04 11 03 13 04 66
+00a905: 04 1a 04 66 03 18 04 66
+
+[	DB 0X04 , 0X17 , 0X04 , 0X18 , 0X04 , 0X15 , 0X03 , 0X11 , 0X04 , 0X13 , 0X04 , 0X11 , 0X04 , 0X13 , 0X04 , 0X66]
+00a90d: 04 17 04 18 04 15 03 11
+00a915: 04 13 04 11 04 13 04 66
+
+[	DB 0X03 , 0X1A , 0X04 , 0X66 , 0X04 , 0X18 , 0X04 , 0X66 , 0X04 , 0X17 , 0X03 , 0X18 , 0X04 , 0X15 , 0X04 , 0X13]
+00a91d: 03 1a 04 66 04 18 04 66
+00a925: 04 17 03 18 04 15 04 13
+
+[	DB 0X04 , 0X15 , 0X03 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X03 , 0X15 , 0X04 , 0X66]
+00a92d: 04 15 03 66 04 15 04 66
+00a935: 04 15 04 66 03 15 04 66
+
+[	DB 0X04 , 0X15 , 0X04 , 0X66 , 0X04 , 0X15 , 0X03 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X04 , 0X15 , 0X03 , 0X66]
+00a93d: 04 15 04 66 04 15 03 66
+00a945: 04 15 04 66 04 15 03 66
+
+[	DB 0X04 , 0X15 , 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X03 , 0X15 , 0X04 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66]
+00a94d: 04 15 04 66 04 15 04 66
+00a955: 03 15 04 66 04 15 04 66
+
+[	DB 0X04 , 0X15 , 0X03 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66 , 0X04 , 0X15 , 0X03 , 0X66 , 0X04 , 0X15 , 0X04 , 0X66]
+00a95d: 04 15 03 66 04 15 04 66
+00a965: 04 15 03 66 04 15 04 66
+
+[	DB 0X04 , 0X15 , 0X04 , 0X66 , 0X03 , 0X15 , 0X04 , 0X66 , 0X04 , 0X1C , 0X04 , 0X66 , 0X04 , 0X1C , 0X03 , 0X66]
+00a96d: 04 15 04 66 03 15 04 66
+00a975: 04 1c 04 66 04 1c 03 66
+
+[	DB 0X04 , 0X1C , 0X04 , 0X66 , 0X04 , 0X1C , 0X04 , 0X66 , 0X03 , 0X18 , 0X04 , 0X66 , 0X04 , 0X13 , 0X04 , 0X66]
+00a97d: 04 1c 04 66 04 1c 04 66
+00a985: 03 18 04 66 04 13 04 66
+
+[	DB 0X03 , 0X69 , 0XC1 , 0X01 , 0X6A]
+00a98d: 03 69 c1 01 6a
+
+[	DB 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
+00a992: 00 00 00 00 00 00 00 00
+00a99a: 00 00 00 00 00 00 00 00
+
+[	DB 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
+00a9a2: 00 00 00 00 00 00 00 00
+00a9aa: 00 00 00 00 00 00 00 00
+
+[	DB 0XFF , 0X01 , 0X01 , 0X01 , 0X01 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X01 , 0X02 , 0X02 , 0X02 , 0X00 , 0XFE]
+00a9b2: ff 01 01 01 01 00 00 00
+00a9ba: 00 00 01 02 02 02 00 fe
+
+[	DB 0XFD , 0XFD , 0XFD , 0XFE , 0X00 , 0X02 , 0X02 , 0X02 , 0X01 , 0X00 , 0XFE , 0XFD , 0XFD , 0XFD , 0XFF , 0X01]
+00a9c2: fd fd fd fe 00 02 02 02
+00a9ca: 01 00 fe fd fd fd ff 01
+
+[	DB 0X02 , 0X03 , 0X02 , 0X01 , 0XFF , 0XFD , 0XFD , 0XFD , 0XFE , 0XFF , 0X02 , 0XE0 , 0X01 , 0X1E , 0X14 , 0X00]
+00a9d2: 02 03 02 01 ff fd fd fd
+00a9da: fe ff 02 e0 01 1e 14 00
+
+[	DB 0X00 , 0X00]
+00a9e2: 00 00
+
+[	INCLUDE ".//boss_bgm.asm"] end
+
+[_BGM_CLEAR :]
+	label address: 0x00a9e4
+
+[	INCLUDE ".//clear_bgm.asm"] begin
+[	DB 0X06 , 0X00 , 0X26 , 0X00 , 0X60 , 0X00 , 0X68 , 0X80 , 0X00 , 0X67 , 0X0F , 0X29 , 0X16 , 0X2B , 0X17 , 0X30]
+00a9e4: 06 00 26 00 60 00 68 80
+00a9ec: 00 67 0f 29 16 2b 17 30
+
+[	DB 0X05 , 0X66 , 0X05 , 0X2D , 0X05 , 0X66 , 0X05 , 0X35 , 0X0A , 0X34 , 0X05 , 0X32 , 0X05 , 0X66 , 0X2F , 0X66]
+00a9f4: 05 66 05 2d 05 66 05 35
+00a9fc: 0a 34 05 32 05 66 2f 66
+
+[	DB 0X0A , 0X32 , 0X0B , 0X66 , 0X17 , 0X6A , 0X68 , 0X80 , 0X00 , 0X67 , 0X0D , 0X0C , 0X04 , 0X66 , 0X05 , 0X0C]
+00aa04: 0a 32 0b 66 17 6a 68 80
+00aa0c: 00 67 0d 0c 04 66 05 0c
+
+[	DB 0X05 , 0X66 , 0X05 , 0X0C , 0X05 , 0X66 , 0X05 , 0X0C , 0X05 , 0X66 , 0X05 , 0X0C , 0X05 , 0X66 , 0X05 , 0X0C]
+00aa14: 05 66 05 0c 05 66 05 0c
+00aa1c: 05 66 05 0c 05 66 05 0c
+
+[	DB 0X05 , 0X66 , 0X05 , 0X0C , 0X04 , 0X09 , 0X05 , 0X0C , 0X05 , 0X0E , 0X05 , 0X66 , 0X0B , 0X0C , 0X05 , 0X0E]
+00aa24: 05 66 05 0c 04 09 05 0c
+00aa2c: 05 0e 05 66 0b 0c 05 0e
+
+[	DB 0X05 , 0X10 , 0X05 , 0X0E , 0X05 , 0X09 , 0X05 , 0X0C , 0X05 , 0X66 , 0X0A , 0X0E , 0X0B , 0X66 , 0X17 , 0X6A]
+00aa34: 05 10 05 0e 05 09 05 0c
+00aa3c: 05 66 0a 0e 0b 66 17 6a
+
+[	DB 0X68 , 0X80 , 0X00 , 0X67 , 0X0C , 0X1D , 0X16 , 0X1F , 0X17 , 0X24 , 0X05 , 0X66 , 0X05 , 0X21 , 0X05 , 0X66]
+00aa44: 68 80 00 67 0c 1d 16 1f
+00aa4c: 17 24 05 66 05 21 05 66
+
+[	DB 0X05 , 0X29 , 0X0A , 0X28 , 0X05 , 0X26 , 0X05 , 0X66 , 0X2F , 0X66 , 0X0A , 0X26 , 0X0B , 0X66 , 0X17 , 0X6A]
+00aa54: 05 29 0a 28 05 26 05 66
+00aa5c: 2f 66 0a 26 0b 66 17 6a
+
+[	DB 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
+00aa64: 00 00 00 00 00 00 00 00
+00aa6c: 00 00 00 00 00 00 00 00
+
+[	DB 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
+00aa74: 00 00 00 00 00 00 00 00
+00aa7c: 00 00 00 00 00 00 00 00
+
+[	DB 0XFF , 0X02 , 0X01 , 0X01 , 0X01 , 0X00 , 0X00 , 0X00 , 0X00]
+00aa84: ff 02 01 01 01 00 00 00
+00aa8c: 00
+
+[	INCLUDE ".//clear_bgm.asm"] end
+
+[_BGM_GAMEOVER :]
+	label address: 0x00aa8d
+
+[	INCLUDE ".//gameover_bgm.asm"] begin
+[	DB 0X06 , 0X00 , 0X26 , 0X00 , 0X46 , 0X00 , 0X68 , 0X66 , 0X00 , 0X67 , 0X0F , 0X66 , 0X31 , 0X39 , 0X31 , 0X37]
+00aa8d: 06 00 26 00 46 00 68 66
+00aa95: 00 67 0f 66 31 39 31 37
+
+[	DB 0X31 , 0X39 , 0X0F , 0X37 , 0X10 , 0X35 , 0X10 , 0X37 , 0X0F , 0X34 , 0X10 , 0X30 , 0X10 , 0X32 , 0X95 , 0X32]
+00aa9d: 31 39 0f 37 10 35 10 37
+00aaa5: 0f 34 10 30 10 32 95 32
+
+[	DB 0X18 , 0X39 , 0X18 , 0X39 , 0XC7 , 0X6A , 0X68 , 0X66 , 0X00 , 0X67 , 0X0D , 0X66 , 0X31 , 0X15 , 0X31 , 0X13]
+00aaad: 18 39 18 39 c7 6a 68 66
+00aab5: 00 67 0d 66 31 15 31 13
+
+[	DB 0X31 , 0X10 , 0X31 , 0X13 , 0X31 , 0X0E , 0X18 , 0X0C , 0X18 , 0X0E , 0X95 , 0X13 , 0X0B , 0X11 , 0X0C , 0X0E]
+00aabd: 31 10 31 13 31 0e 18 0c
+00aac5: 18 0e 95 13 0b 11 0c 0e
+
+[	DB 0X0B , 0X11 , 0X0C , 0X13 , 0X95 , 0X6A , 0X68 , 0X66 , 0X00 , 0X67 , 0X0C , 0X66 , 0X31 , 0X2D , 0X31 , 0X2B]
+00aacd: 0b 11 0c 13 95 6a 68 66
+00aad5: 00 67 0c 66 31 2d 31 2b
+
+[	DB 0X31 , 0X2D , 0X0F , 0X2B , 0X10 , 0X29 , 0X10 , 0X2B , 0X0F , 0X28 , 0X10 , 0X24 , 0X10 , 0X26 , 0X95 , 0X26]
+00aadd: 31 2d 0f 2b 10 29 10 2b
+00aae5: 0f 28 10 24 10 26 95 26
+
+[	DB 0X18 , 0X2D , 0X18 , 0X2D , 0XC7 , 0X6A]
+00aaed: 18 2d 18 2d c7 6a
+
+[	DB 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
+00aaf3: 00 00 00 00 00 00 00 00
+00aafb: 00 00 00 00 00 00 00 00
+
+[	DB 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00 , 0X00]
+00ab03: 00 00 00 00 00 00 00 00
+00ab0b: 00 00 00 00 00 00 00 00
+
+[	DB 0XFF , 0X02 , 0XE0 , 0X01 , 0X1E , 0X14 , 0X00 , 0X00 , 0X00]
+00ab13: ff 02 e0 01 1e 14 00 00
+00ab1b: 00
+
+[	INCLUDE ".//gameover_bgm.asm"] end
+
+[_BGM_FINALBOSS :]
+	label address: 0x00ab1c
+
+[	INCLUDE ".//finalboss_bgm.asm"] begin
+[	DB 0X06 , 0X00 , 0X3C , 0X00 , 0X34 , 0X01 , 0X68 , 0X35 , 0X01 , 0X67 , 0X0E , 0X66 , 0X63 , 0X66 , 0X63 , 0X35]
+00ab1c: 06 00 3c 00 34 01 68 35
+00ab24: 01 67 0e 66 63 66 63 35
+
+[	DB 0X31 , 0X34 , 0X31 , 0X32 , 0X31 , 0X2D , 0X18 , 0X34 , 0X18 , 0X35 , 0X31 , 0X34 , 0X31 , 0X37 , 0X31 , 0X35]
+00ab2c: 31 34 31 32 31 2d 18 34
+00ab34: 18 35 31 34 31 37 31 35
+
+[	DB 0X0B , 0X32 , 0X0C , 0X30 , 0X18 , 0X35 , 0X31 , 0X34 , 0X31 , 0X32 , 0X31 , 0X2D , 0X18 , 0X34 , 0X18 , 0X35]
+00ab3c: 0b 32 0c 30 18 35 31 34
+00ab44: 31 32 31 2d 18 34 18 35
+
+[	DB 0X0B , 0X34 , 0X0C , 0X32 , 0X31 , 0X30 , 0X18 , 0X32 , 0X63 , 0X69 , 0X0B , 0X00 , 0X68 , 0X35 , 0X01 , 0X67]
+00ab4c: 0b 34 0c 32 31 30 18 32
+00ab54: 63 69 0b 00 68 35 01 67
+
+[	DB 0X0F , 0X1A , 0X05 , 0X0E , 0X0B , 0X1A , 0X06 , 0X0E , 0X0B , 0X1A , 0X05 , 0X0E , 0X0C , 0X1A , 0X05 , 0X0E]
+00ab5c: 0f 1a 05 0e 0b 1a 06 0e
+00ab64: 0b 1a 05 0e 0c 1a 05 0e
+
+[	DB 0X0C , 0X1A , 0X05 , 0X0E , 0X05 , 0X1A , 0X05 , 0X0E , 0X06 , 0X1A , 0X05 , 0X0E , 0X0B , 0X1A , 0X06 , 0X0E]
+00ab6c: 0c 1a 05 0e 05 1a 05 0e
+00ab74: 06 1a 05 0e 0b 1a 06 0e
+
+[	DB 0X0B , 0X1A , 0X05 , 0X0E , 0X0C , 0X1A , 0X05 , 0X0E , 0X0C , 0X1A , 0X05 , 0X0E , 0X05 , 0X1A , 0X05 , 0X0E]
+00ab7c: 0b 1a 05 0e 0c 1a 05 0e
+00ab84: 0c 1a 05 0e 05 1a 05 0e
+
+[	DB 0X06 , 0X1A , 0X05 , 0X0E , 0X0B , 0X1A , 0X06 , 0X0E , 0X0B , 0X1A , 0X05 , 0X0E , 0X0C , 0X1A , 0X05 , 0X0E]
+00ab8c: 06 1a 05 0e 0b 1a 06 0e
+00ab94: 0b 1a 05 0e 0c 1a 05 0e
+
+[	DB 0X0C , 0X1A , 0X05 , 0X0E , 0X05 , 0X1A , 0X05 , 0X0E , 0X06 , 0X1A , 0X05 , 0X0E , 0X0B , 0X1A , 0X06 , 0X0E]
+00ab9c: 0c 1a 05 0e 05 1a 05 0e
+00aba4: 06 1a 05 0e 0b 1a 06 0e
+
+[	DB 0X0B , 0X1A , 0X05 , 0X0E , 0X06 , 0X18 , 0X05 , 0X0C , 0X0B , 0X18 , 0X06 , 0X0C , 0X0B , 0X18 , 0X05 , 0X0C]
+00abac: 0b 1a 05 0e 06 18 05 0c
+00abb4: 0b 18 06 0c 0b 18 05 0c
+
+[	DB 0X06 , 0X1A , 0X05 , 0X0E , 0X0B , 0X1A , 0X06 , 0X0E , 0X0B , 0X1A , 0X05 , 0X0E , 0X0C , 0X1A , 0X05 , 0X0E]
+00abbc: 06 1a 05 0e 0b 1a 06 0e
+00abc4: 0b 1a 05 0e 0c 1a 05 0e
+
+[	DB 0X0C , 0X1A , 0X05 , 0X0E , 0X05 , 0X1A , 0X05 , 0X0E , 0X06 , 0X1A , 0X05 , 0X0E , 0X0B , 0X1A , 0X06 , 0X0E]
+00abcc: 0c 1a 05 0e 05 1a 05 0e
+00abd4: 06 1a 05 0e 0b 1a 06 0e
+
+[	DB 0X0B , 0X1A , 0X05 , 0X0E , 0X06 , 0X15 , 0X05 , 0X09 , 0X0B , 0X15 , 0X06 , 0X09 , 0X0B , 0X15 , 0X05 , 0X09]
+00abdc: 0b 1a 05 0e 06 15 05 09
+00abe4: 0b 15 06 09 0b 15 05 09
+
+[	DB 0X06 , 0X1A , 0X05 , 0X0E , 0X0B , 0X1A , 0X06 , 0X0E , 0X0B , 0X1A , 0X05 , 0X0E , 0X0C , 0X1A , 0X05 , 0X0E]
+00abec: 06 1a 05 0e 0b 1a 06 0e
+00abf4: 0b 1a 05 0e 0c 1a 05 0e
+
+[	DB 0X0C , 0X1A , 0X05 , 0X0E , 0X05 , 0X1A , 0X05 , 0X0E , 0X06 , 0X1A , 0X05 , 0X0E , 0X0B , 0X1A , 0X06 , 0X0E]
+00abfc: 0c 1a 05 0e 05 1a 05 0e
+00ac04: 06 1a 05 0e 0b 1a 06 0e
+
+[	DB 0X0B , 0X1A , 0X05 , 0X0E , 0X06 , 0X18 , 0X05 , 0X0C , 0X0B , 0X18 , 0X06 , 0X0C , 0X0B , 0X18 , 0X05 , 0X0C]
+00ac0c: 0b 1a 05 0e 06 18 05 0c
+00ac14: 0b 18 06 0c 0b 18 05 0c
+
+[	DB 0X06 , 0X15 , 0X05 , 0X09 , 0X0B , 0X15 , 0X06 , 0X09 , 0X0B , 0X15 , 0X05 , 0X09 , 0X06 , 0X18 , 0X05 , 0X0C]
+00ac1c: 06 15 05 09 0b 15 06 09
+00ac24: 0b 15 05 09 06 18 05 0c
+
+[	DB 0X0B , 0X18 , 0X06 , 0X0C , 0X0B , 0X18 , 0X05 , 0X0C , 0X06 , 0X1A , 0X05 , 0X0E , 0X0B , 0X1A , 0X06 , 0X0E]
+00ac2c: 0b 18 06 0c 0b 18 05 0c
+00ac34: 06 1a 05 0e 0b 1a 06 0e
+
+[	DB 0X0B , 0X1A , 0X05 , 0X0E , 0X0C , 0X1A , 0X05 , 0X0E , 0X0C , 0X1A , 0X05 , 0X0E , 0X05 , 0X1A , 0X05 , 0X0E]
+00ac3c: 0b 1a 05 0e 0c 1a 05 0e
+00ac44: 0c 1a 05 0e 05 1a 05 0e
+
+[	DB 0X06 , 0X69 , 0X41 , 0X00 , 0X6A]
+00ac4c: 06 69 41 00 6a
+
+[	DB 0X00 , 0X01 , 0X02 , 0X02 , 0X02 , 0X00 , 0XFE , 0XFD , 0XFD , 0XFD , 0XFE , 0X00 , 0X02 , 0X02 , 0X02 , 0X01]
+00ac51: 00 01 02 02 02 00 fe fd
+00ac59: fd fd fe 00 02 02 02 01
+
+[	DB 0X00 , 0XFE , 0XFD , 0XFD , 0XFD , 0XFF , 0X01 , 0X02 , 0X03 , 0X02 , 0X01 , 0XFF , 0XFD , 0XFD , 0XFD , 0XFE]
+00ac61: 00 fe fd fd fd ff 01 02
+00ac69: 03 02 01 ff fd fd fd fe
+
+[	DB 0XFF , 0X02 , 0XE0 , 0X01 , 0X1E , 0X14 , 0X00 , 0X00 , 0X00]
+00ac71: ff 02 e0 01 1e 14 00 00
+00ac79: 00
+
+[	INCLUDE ".//finalboss_bgm.asm"] end
+
+[_BGM_NAMEENTRY :]
+	label address: 0x00ac7a
+
+[	INCLUDE ".//nameentry_bgm.asm"] begin
+[	DB 0X06 , 0X00 , 0X4C , 0X00 , 0XF6 , 0X00 , 0X68 , 0XF7 , 0X00 , 0X67 , 0X0F , 0X21 , 0X27 , 0X26 , 0X14 , 0X24]
+00ac7a: 06 00 4c 00 f6 00 68 f7
+00ac82: 00 67 0f 21 27 26 14 24
+
+[	DB 0X13 , 0X26 , 0X14 , 0X28 , 0X13 , 0X29 , 0X28 , 0X28 , 0X14 , 0X26 , 0X13 , 0X28 , 0X13 , 0X24 , 0X14 , 0X21]
+00ac8a: 13 26 14 28 13 29 28 28
+00ac92: 14 26 13 28 13 24 14 21
+
+[	DB 0X51 , 0X21 , 0X28 , 0X26 , 0X13 , 0X24 , 0X14 , 0X26 , 0X13 , 0X28 , 0X13 , 0X29 , 0X28 , 0X2B , 0X14 , 0X24]
+00ac9a: 51 21 28 26 13 24 14 26
+00aca2: 13 28 13 29 28 2b 14 24
+
+[	DB 0X13 , 0X2D , 0X7A , 0X29 , 0X13 , 0X2B , 0X14 , 0X2D , 0X3C , 0X30 , 0X3D , 0X2D , 0X28 , 0X2B , 0X3C , 0X2F]
+00acaa: 13 2d 7a 29 13 2b 14 2d
+00acb2: 3c 30 3d 2d 28 2b 3c 2f
+
+[	DB 0X51 , 0X24 , 0X13 , 0X28 , 0X51 , 0X24 , 0X51 , 0X26 , 0XA2 , 0X69 , 0X0D , 0X00 , 0X68 , 0XF7 , 0X00 , 0X67]
+00acba: 51 24 13 28 51 24 51 26
+00acc2: a2 69 0d 00 68 f7 00 67
+
+[	DB 0X0E , 0X66 , 0X27 , 0X0E , 0X0A , 0X66 , 0X09 , 0X0E , 0X09 , 0X66 , 0X09 , 0X66 , 0X51 , 0X66 , 0X14 , 0X0E]
+00acca: 0e 66 27 0e 0a 66 09 0e
+00acd2: 09 66 09 66 51 66 14 0e
+
+[	DB 0X13 , 0X09 , 0X09 , 0X66 , 0X09 , 0X09 , 0X0A , 0X66 , 0X09 , 0X66 , 0X51 , 0X09 , 0X13 , 0X0C , 0X14 , 0X0E]
+00acda: 13 09 09 66 09 09 0a 66
+00ace2: 09 66 51 09 13 0c 14 0e
+
+[	DB 0X09 , 0X66 , 0X09 , 0X0E , 0X09 , 0X66 , 0X0A , 0X66 , 0X50 , 0X0E , 0X14 , 0X0C , 0X13 , 0X09 , 0X0A , 0X66]
+00acea: 09 66 09 0e 09 66 0a 66
+00acf2: 50 0e 14 0c 13 09 0a 66
+
+[	DB 0X09 , 0X09 , 0X09 , 0X66 , 0X09 , 0X66 , 0X51 , 0X0C , 0X13 , 0X10 , 0X14 , 0X11 , 0X09 , 0X66 , 0X09 , 0X11]
+00acfa: 09 09 09 66 09 66 51 0c
+00ad02: 13 10 14 11 09 66 09 11
+
+[	DB 0X0A , 0X66 , 0X09 , 0X66 , 0X13 , 0X11 , 0X0A , 0X66 , 0X09 , 0X66 , 0X13 , 0X11 , 0X09 , 0X66 , 0X0A , 0X10]
+00ad0a: 0a 66 09 66 13 11 0a 66
+00ad12: 09 66 13 11 09 66 0a 10
+
+[	DB 0X09 , 0X66 , 0X09 , 0X0E , 0X09 , 0X66 , 0X0A , 0X10 , 0X09 , 0X66 , 0X09 , 0X10 , 0X09 , 0X66 , 0X09 , 0X66]
+00ad1a: 09 66 09 0e 09 66 0a 10
+00ad22: 09 66 09 10 09 66 09 66
+
+[	DB 0X14 , 0X10 , 0X09 , 0X66 , 0X09 , 0X66 , 0X14 , 0X10 , 0X09 , 0X66 , 0X09 , 0X10 , 0X0A , 0X66 , 0X09 , 0X0B]
+00ad2a: 14 10 09 66 09 66 14 10
+00ad32: 09 66 09 10 0a 66 09 0b
+
+[	DB 0X13 , 0X0C , 0X09 , 0X66 , 0X0A , 0X0C , 0X09 , 0X66 , 0X09 , 0X66 , 0X14 , 0X0C , 0X09 , 0X66 , 0X09 , 0X66]
+00ad3a: 13 0c 09 66 0a 0c 09 66
+00ad42: 09 66 14 0c 09 66 09 66
+
+[	DB 0X13 , 0X0C , 0X0A , 0X66 , 0X09 , 0X09 , 0X09 , 0X66 , 0X09 , 0X10 , 0X0A , 0X66 , 0X09 , 0X0E , 0X09 , 0X66]
+00ad4a: 13 0c 0a 66 09 09 09 66
+00ad52: 09 10 0a 66 09 0e 09 66
+
+[	DB 0X09 , 0X0E , 0X0A , 0X66 , 0X09 , 0X66 , 0X13 , 0X0E , 0X09 , 0X66 , 0X0A , 0X66 , 0X13 , 0X0E , 0X14 , 0X09]
+00ad5a: 09 0e 0a 66 09 66 13 0e
+00ad62: 09 66 0a 66 13 0e 14 09
+
+[	DB 0X13 , 0X0C , 0X13 , 0X69 , 0X53 , 0X00 , 0X6A]
+00ad6a: 13 0c 13 69 53 00 6a
+
+[	DB 0X00 , 0X01 , 0X02 , 0X02 , 0X02 , 0X00 , 0XFE , 0XFD , 0XFD , 0XFD , 0XFE , 0X00 , 0X02 , 0X02 , 0X02 , 0X01]
+00ad71: 00 01 02 02 02 00 fe fd
+00ad79: fd fd fe 00 02 02 02 01
+
+[	DB 0X00 , 0XFE , 0XFD , 0XFD , 0XFD , 0XFF , 0X01 , 0X02 , 0X03 , 0X02 , 0X01 , 0XFF , 0XFD , 0XFD , 0XFD , 0XFE]
+00ad81: 00 fe fd fd fd ff 01 02
+00ad89: 03 02 01 ff fd fd fd fe
+
+[	DB 0XFF , 0X02 , 0XE0 , 0X01 , 0X1E , 0X14 , 0X00 , 0X00 , 0X00]
+00ad91: ff 02 e0 01 1e 14 00 00
+00ad99: 00
+
+[	INCLUDE ".//nameentry_bgm.asm"] end
+
+[_SE_DAMAGE :]
+	label address: 0x00ad9a
+
+[	DB 64]
+00ad9a: 40
+
+[	DB BGM_SE_VOL]
+00ad9b: 01
+
+[	DB 12]
+00ad9c: 0c
+
+[	DB BGM_SE_FREQ]
+00ad9d: 00
+
+[	DW 30]
+00ad9e: 1e 00
+
+[	DB BGM_SE_NOISE_FREQ]
+00ada0: 02
+
+[	DB 0 + 0X80]
+00ada1: 80
+
+[	DB BGM_SE_WAIT]
+00ada2: 03
+
+[	DB 1]
+00ada3: 01
+
+[	DB BGM_SE_VOL]
+00ada4: 01
+
+[	DB 8]
+00ada5: 08
+
+[	DB BGM_SE_FREQ]
+00ada6: 00
+
+[	DW 28]
+00ada7: 1c 00
+
+[	DB BGM_SE_WAIT]
+00ada9: 03
+
+[	DB 1]
+00adaa: 01
+
+[	DB BGM_SE_VOL]
+00adab: 01
+
+[	DB 4]
+00adac: 04
+
+[	DB BGM_SE_FREQ]
+00adad: 00
+
+[	DW 26]
+00adae: 1a 00
+
+[	DB BGM_SE_WAIT]
+00adb0: 03
+
+[	DB 1]
+00adb1: 01
+
+[	DB BGM_SE_VOL]
+00adb2: 01
+
+[	DB 2]
+00adb3: 02
+
+[	DB BGM_SE_FREQ]
+00adb4: 00
+
+[	DW 24]
+00adb5: 18 00
+
+[	DB BGM_SE_WAIT]
+00adb7: 03
+
+[	DB 1]
+00adb8: 01
+
+[	DB BGM_SE_END]
+00adb9: 04
+
+[_SE_BOMB :]
+	label address: 0x00adba
+
+[	DB 128]
+00adba: 80
+
+[	DB BGM_SE_VOL]
+00adbb: 01
+
+[	DB 12]
+00adbc: 0c
+
+[	DB BGM_SE_FREQ]
+00adbd: 00
+
+[	DW 32768]
+00adbe: 00 80
+
+[	DB BGM_SE_NOISE_FREQ]
+00adc0: 02
+
+[	DB 20 + 0X80]
+00adc1: 94
+
+[	DB BGM_SE_WAIT]
+00adc2: 03
+
+[	DB 5]
+00adc3: 05
+
+[	DB BGM_SE_NOISE_FREQ]
+00adc4: 02
+
+[	DB 8 + 0X80]
+00adc5: 88
+
+[	DB BGM_SE_WAIT]
+00adc6: 03
+
+[	DB 5]
+00adc7: 05
+
+[	DB BGM_SE_NOISE_FREQ]
+00adc8: 02
+
+[	DB 28 + 0X80]
+00adc9: 9c
+
+[	DB BGM_SE_WAIT]
+00adca: 03
+
+[	DB 5]
+00adcb: 05
+
+[	DB BGM_SE_NOISE_FREQ]
+00adcc: 02
+
+[	DB 12 + 0X80]
+00adcd: 8c
+
+[	DB BGM_SE_WAIT]
+00adce: 03
+
+[	DB 5]
+00adcf: 05
+
+[	DB BGM_SE_NOISE_FREQ]
+00add0: 02
+
+[	DB 31 + 0X80]
+00add1: 9f
+
+[	DB BGM_SE_WAIT]
+00add2: 03
+
+[	DB 10]
+00add3: 0a
+
+[	DB BGM_SE_NOISE_FREQ]
+00add4: 02
+
+[	DB 15 + 0X80]
+00add5: 8f
+
+[	DB BGM_SE_WAIT]
+00add6: 03
+
+[	DB 10]
+00add7: 0a
+
+[	DB BGM_SE_END]
+00add8: 04
+
+[_SE_GET_ITEM :]
+	label address: 0x00add9
+
+[	DB 32]
+00add9: 20
+
+[	DB BGM_SE_VOL]
+00adda: 01
+
+[	DB 12]
+00addb: 0c
+
+[	DB BGM_SE_FREQ]
+00addc: 00
+
+[	DW 30]
+00addd: 1e 00
+
+[	DB BGM_SE_WAIT]
+00addf: 03
+
+[	DB 1]
+00ade0: 01
+
+[	DB BGM_SE_FREQ]
+00ade1: 00
+
+[	DW 25]
+00ade2: 19 00
+
+[	DB BGM_SE_WAIT]
+00ade4: 03
+
+[	DB 1]
+00ade5: 01
+
+[	DB BGM_SE_FREQ]
+00ade6: 00
+
+[	DW 20]
+00ade7: 14 00
+
+[	DB BGM_SE_WAIT]
+00ade9: 03
+
+[	DB 1]
+00adea: 01
+
+[	DB BGM_SE_FREQ]
+00adeb: 00
+
+[	DW 10]
+00adec: 0a 00
+
+[	DB BGM_SE_WAIT]
+00adee: 03
+
+[	DB 1]
+00adef: 01
+
+[	DB BGM_SE_FREQ]
+00adf0: 00
+
+[	DW 30]
+00adf1: 1e 00
+
+[	DB BGM_SE_WAIT]
+00adf3: 03
+
+[	DB 1]
+00adf4: 01
+
+[	DB BGM_SE_FREQ]
+00adf5: 00
+
+[	DW 25]
+00adf6: 19 00
+
+[	DB BGM_SE_WAIT]
+00adf8: 03
+
+[	DB 1]
+00adf9: 01
+
+[	DB BGM_SE_FREQ]
+00adfa: 00
+
+[	DW 20]
+00adfb: 14 00
+
+[	DB BGM_SE_WAIT]
+00adfd: 03
+
+[	DB 1]
+00adfe: 01
+
+[	DB BGM_SE_FREQ]
+00adff: 00
+
+[	DW 10]
+00ae00: 0a 00
+
+[	DB BGM_SE_WAIT]
+00ae02: 03
+
+[	DB 1]
+00ae03: 01
+
+[	DB BGM_SE_END]
+00ae04: 04
+
+[_SE_NO_DAMAGE :]
+	label address: 0x00ae05
+
+[	DB 192]
+00ae05: c0
+
+[	DB BGM_SE_VOL]
+00ae06: 01
+
+[	DB 12]
+00ae07: 0c
+
+[	DB BGM_SE_FREQ]
+00ae08: 00
+
+[	DW 15]
+00ae09: 0f 00
+
+[	DB BGM_SE_NOISE_FREQ]
+00ae0b: 02
+
+[	DB 0 + 0X80]
+00ae0c: 80
+
+[	DB BGM_SE_WAIT]
+00ae0d: 03
+
+[	DB 1]
+00ae0e: 01
+
+[	DB BGM_SE_VOL]
+00ae0f: 01
+
+[	DB 8]
+00ae10: 08
+
+[	DB BGM_SE_FREQ]
+00ae11: 00
+
+[	DW 14]
+00ae12: 0e 00
+
+[	DB BGM_SE_WAIT]
+00ae14: 03
+
+[	DB 1]
+00ae15: 01
+
+[	DB BGM_SE_VOL]
+00ae16: 01
+
+[	DB 4]
+00ae17: 04
+
+[	DB BGM_SE_FREQ]
+00ae18: 00
+
+[	DW 13]
+00ae19: 0d 00
+
+[	DB BGM_SE_WAIT]
+00ae1b: 03
+
+[	DB 1]
+00ae1c: 01
+
+[	DB BGM_SE_END]
+00ae1d: 04
+
+[_SE_SHOT :]
+	label address: 0x00ae1e
+
+[	DB 255]
+00ae1e: ff
+
+[	DB BGM_SE_VOL]
+00ae1f: 01
+
+[	DB 12]
+00ae20: 0c
+
+[	DB BGM_SE_FREQ]
+00ae21: 00
+
+[	DW 50]
+00ae22: 32 00
+
+[	DB BGM_SE_WAIT]
+00ae24: 03
+
+[	DB 1]
+00ae25: 01
+
+[	DB BGM_SE_FREQ]
+00ae26: 00
+
+[	DW 60]
+00ae27: 3c 00
+
+[	DB BGM_SE_WAIT]
+00ae29: 03
+
+[	DB 1]
+00ae2a: 01
+
+[	DB BGM_SE_FREQ]
+00ae2b: 00
+
+[	DW 70]
+00ae2c: 46 00
+
+[	DB BGM_SE_WAIT]
+00ae2e: 03
+
+[	DB 1]
+00ae2f: 01
+
+[	DB BGM_SE_FREQ]
+00ae30: 00
+
+[	DW 80]
+00ae31: 50 00
+
+[	DB BGM_SE_WAIT]
+00ae33: 03
+
+[	DB 1]
+00ae34: 01
+
+[	DB BGM_SE_END]
+00ae35: 04
+
+[_SE_START :]
+	label address: 0x00ae36
+
+[	DB 240]
+00ae36: f0
+
+[	DB BGM_SE_VOL]
+00ae37: 01
+
+[	DB 12]
+00ae38: 0c
+
+[	DB BGM_SE_FREQ]
+00ae39: 00
+
+[	DW 500]
+00ae3a: f4 01
+
+[	DB BGM_SE_WAIT]
+00ae3c: 03
+
+[	DB 5]
+00ae3d: 05
+
+[	DB BGM_SE_FREQ]
+00ae3e: 00
+
+[	DW 400]
+00ae3f: 90 01
+
+[	DB BGM_SE_WAIT]
+00ae41: 03
+
+[	DB 7]
+00ae42: 07
+
+[	DB BGM_SE_FREQ]
+00ae43: 00
+
+[	DW 300]
+00ae44: 2c 01
+
+[	DB BGM_SE_WAIT]
+00ae46: 03
+
+[	DB 10]
+00ae47: 0a
+
+[	DB BGM_SE_FREQ]
+00ae48: 00
+
+[	DW 200]
+00ae49: c8 00
+
+[	DB BGM_SE_WAIT]
+00ae4b: 03
+
+[	DB 15]
+00ae4c: 0f
+
+[	DB BGM_SE_VOL]
+00ae4d: 01
+
+[	DB 8]
+00ae4e: 08
+
+[	DB BGM_SE_FREQ]
+00ae4f: 00
+
+[	DW 400]
+00ae50: 90 01
+
+[	DB BGM_SE_WAIT]
+00ae52: 03
+
+[	DB 5]
+00ae53: 05
+
+[	DB BGM_SE_FREQ]
+00ae54: 00
+
+[	DW 300]
+00ae55: 2c 01
+
+[	DB BGM_SE_WAIT]
+00ae57: 03
+
+[	DB 7]
+00ae58: 07
+
+[	DB BGM_SE_FREQ]
+00ae59: 00
+
+[	DW 200]
+00ae5a: c8 00
+
+[	DB BGM_SE_WAIT]
+00ae5c: 03
+
+[	DB 10]
+00ae5d: 0a
+
+[	DB BGM_SE_FREQ]
+00ae5e: 00
+
+[	DW 100]
+00ae5f: 64 00
+
+[	DB BGM_SE_WAIT]
+00ae61: 03
+
+[	DB 15]
+00ae62: 0f
+
+[	DB BGM_SE_VOL]
+00ae63: 01
+
+[	DB 4]
+00ae64: 04
+
+[	DB BGM_SE_FREQ]
+00ae65: 00
+
+[	DW 300]
+00ae66: 2c 01
+
+[	DB BGM_SE_WAIT]
+00ae68: 03
+
+[	DB 5]
+00ae69: 05
+
+[	DB BGM_SE_FREQ]
+00ae6a: 00
+
+[	DW 200]
+00ae6b: c8 00
+
+[	DB BGM_SE_WAIT]
+00ae6d: 03
+
+[	DB 7]
+00ae6e: 07
+
+[	DB BGM_SE_FREQ]
+00ae6f: 00
+
+[	DW 100]
+00ae70: 64 00
+
+[	DB BGM_SE_WAIT]
+00ae72: 03
+
+[	DB 10]
+00ae73: 0a
+
+[	DB BGM_SE_FREQ]
+00ae74: 00
+
+[	DW 50]
+00ae75: 32 00
+
+[	DB BGM_SE_WAIT]
+00ae77: 03
+
+[	DB 15]
+00ae78: 0f
+
+[	DB BGM_SE_END]
+00ae79: 04
+
+[_SE_NAME :]
+	label address: 0x00ae7a
+
+[	DB 255]
+00ae7a: ff
+
+[	DB BGM_SE_VOL]
+00ae7b: 01
+
+[	DB 12]
+00ae7c: 0c
+
+[	DB BGM_SE_FREQ]
+00ae7d: 00
+
+[	DW 500]
+00ae7e: f4 01
+
+[	DB BGM_SE_WAIT]
+00ae80: 03
+
+[	DB 1]
+00ae81: 01
+
+[	DB BGM_SE_FREQ]
+00ae82: 00
+
+[	DW 250]
+00ae83: fa 00
+
+[	DB BGM_SE_WAIT]
+00ae85: 03
+
+[	DB 1]
+00ae86: 01
+
+[	DB BGM_SE_FREQ]
+00ae87: 00
+
+[	DW 500]
+00ae88: f4 01
+
+[	DB BGM_SE_WAIT]
+00ae8a: 03
+
+[	DB 1]
+00ae8b: 01
+
+[	DB BGM_SE_FREQ]
+00ae8c: 00
+
+[	DW 250]
+00ae8d: fa 00
+
+[	DB BGM_SE_WAIT]
+00ae8f: 03
+
+[	DB 1]
+00ae90: 01
+
+[	DB BGM_SE_FREQ]
+00ae91: 00
+
+[	DW 500]
+00ae92: f4 01
+
+[	DB BGM_SE_WAIT]
+00ae94: 03
+
+[	DB 1]
+00ae95: 01
+
+[	DB BGM_SE_FREQ]
+00ae96: 00
+
+[	DW 250]
+00ae97: fa 00
+
+[	DB BGM_SE_WAIT]
+00ae99: 03
+
+[	DB 1]
+00ae9a: 01
+
+[	DB BGM_SE_FREQ]
+00ae9b: 00
+
+[	DW 300]
+00ae9c: 2c 01
+
+[	DB BGM_SE_WAIT]
+00ae9e: 03
+
+[	DB 1]
+00ae9f: 01
+
+[	DB BGM_SE_FREQ]
+00aea0: 00
+
+[	DW 150]
+00aea1: 96 00
+
+[	DB BGM_SE_WAIT]
+00aea3: 03
+
+[	DB 1]
+00aea4: 01
+
+[	DB BGM_SE_FREQ]
+00aea5: 00
+
+[	DW 300]
+00aea6: 2c 01
+
+[	DB BGM_SE_WAIT]
+00aea8: 03
+
+[	DB 1]
+00aea9: 01
+
+[	DB BGM_SE_FREQ]
+00aeaa: 00
+
+[	DW 150]
+00aeab: 96 00
+
+[	DB BGM_SE_WAIT]
+00aead: 03
+
+[	DB 1]
+00aeae: 01
+
+[	DB BGM_SE_FREQ]
+00aeaf: 00
+
+[	DW 300]
+00aeb0: 2c 01
+
+[	DB BGM_SE_WAIT]
+00aeb2: 03
+
+[	DB 1]
+00aeb3: 01
+
+[	DB BGM_SE_FREQ]
+00aeb4: 00
+
+[	DW 150]
+00aeb5: 96 00
+
+[	DB BGM_SE_WAIT]
+00aeb7: 03
+
+[	DB 1]
+00aeb8: 01
+
+[	DB BGM_SE_END]
+00aeb9: 04
+
+[_SE_LASER :]
+	label address: 0x00aeba
+
+[	DB 1]
+00aeba: 01
+
+[	DB BGM_SE_VOL]
+00aebb: 01
+
+[	DB 15]
+00aebc: 0f
+
+[	DB BGM_SE_FREQ]
+00aebd: 00
+
+[	DW 300]
+00aebe: 2c 01
+
+[	DB BGM_SE_NOISE_FREQ]
+00aec0: 02
+
+[	DB 0 + 0X80]
+00aec1: 80
+
+[	DB BGM_SE_WAIT]
+00aec2: 03
+
+[	DB 10]
+00aec3: 0a
+
+[	DB BGM_SE_FREQ]
+00aec4: 00
+
+[	DW 30]
+00aec5: 1e 00
+
+[	DB BGM_SE_NOISE_FREQ]
+00aec7: 02
+
+[	DB 5 + 0X80]
+00aec8: 85
+
+[	DB BGM_SE_WAIT]
+00aec9: 03
+
+[	DW 30000]
+00aeca: 30 75
+
+[	DB BGM_SE_END]
+00aecc: 04
+
+[_SE_STOP :]
+	label address: 0x00aecd
+
+[	DB 0]
+00aecd: 00
+
+[	DB BGM_SE_END]
+00aece: 04
+
+[_SE_PRE_LASER :]
+	label address: 0x00aecf
+
+[	DB 1]
+00aecf: 01
+
+[	DB BGM_SE_VOL]
+00aed0: 01
+
+[	DB 15]
+00aed1: 0f
+
+[	DB BGM_SE_FREQ]
+00aed2: 00
+
+[	DW 1500]
+00aed3: dc 05
+
+[	DB BGM_SE_NOISE_FREQ]
+00aed5: 02
+
+[	DB 31 + 0X80]
+00aed6: 9f
+
+[	DB BGM_SE_WAIT]
+00aed7: 03
+
+[	DB 20]
+00aed8: 14
+
+[	DB BGM_SE_FREQ]
+00aed9: 00
+
+[	DW 1200]
+00aeda: b0 04
+
+[	DB BGM_SE_NOISE_FREQ]
+00aedc: 02
+
+[	DB 20 + 0X80]
+00aedd: 94
+
+[	DB BGM_SE_WAIT]
+00aede: 03
+
+[	DB 20]
+00aedf: 14
+
+[	DB BGM_SE_FREQ]
+00aee0: 00
+
+[	DW 900]
+00aee1: 84 03
+
+[	DB BGM_SE_NOISE_FREQ]
+00aee3: 02
+
+[	DB 15 + 0X80]
+00aee4: 8f
+
+[	DB BGM_SE_WAIT]
+00aee5: 03
+
+[	DB 20]
+00aee6: 14
+
+[	DB BGM_SE_FREQ]
+00aee7: 00
+
+[	DW 600]
+00aee8: 58 02
+
+[	DB BGM_SE_NOISE_FREQ]
+00aeea: 02
+
+[	DB 10 + 0X80]
+00aeeb: 8a
+
+[	DB BGM_SE_WAIT]
+00aeec: 03
+
+[	DB 300]
+00aeed: 2c
+
+[	DB BGM_SE_END]
+00aeee: 04
+
+[_SE_BOMB2 :]
+	label address: 0x00aeef
+
+[	DB 32]
+00aeef: 20
+
+[	DB BGM_SE_VOL]
+00aef0: 01
+
+[	DB 12]
+00aef1: 0c
+
+[	DB BGM_SE_FREQ]
+00aef2: 00
+
+[	DW 32768]
+00aef3: 00 80
+
+[	DB BGM_SE_NOISE_FREQ]
+00aef5: 02
+
+[	DB 20 + 0X80]
+00aef6: 94
+
+[	DB BGM_SE_WAIT]
+00aef7: 03
+
+[	DB 5]
+00aef8: 05
+
+[	DB BGM_SE_NOISE_FREQ]
+00aef9: 02
+
+[	DB 8 + 0X80]
+00aefa: 88
+
+[	DB BGM_SE_WAIT]
+00aefb: 03
+
+[	DB 5]
+00aefc: 05
+
+[	DB BGM_SE_NOISE_FREQ]
+00aefd: 02
+
+[	DB 28 + 0X80]
+00aefe: 9c
+
+[	DB BGM_SE_WAIT]
+00aeff: 03
+
+[	DB 5]
+00af00: 05
+
+[	DB BGM_SE_NOISE_FREQ]
+00af01: 02
+
+[	DB 12 + 0X80]
+00af02: 8c
+
+[	DB BGM_SE_WAIT]
+00af03: 03
+
+[	DB 5]
+00af04: 05
+
+[	DB BGM_SE_NOISE_FREQ]
+00af05: 02
+
+[	DB 31 + 0X80]
+00af06: 9f
+
+[	DB BGM_SE_WAIT]
+00af07: 03
+
+[	DB 10]
+00af08: 0a
+
+[	DB BGM_SE_NOISE_FREQ]
+00af09: 02
+
+[	DB 15 + 0X80]
+00af0a: 8f
+
+[	DB BGM_SE_WAIT]
+00af0b: 03
+
+[	DB 10]
+00af0c: 0a
+
+[	DB BGM_SE_END]
+00af0d: 04
+
+[BGM_DATA_TRANSFER_END :]
+	label address: 0x00af0e
+
+[BGM_TABLE :]
+	label address: 0x00af0e
+
+[	DW _BGM_STAGE1 - BGM_DATA_TRANSFER_START + 0X4000]
+00af0e: 00 40
+
+[	DW _BGM_STAGE2 - BGM_DATA_TRANSFER_START + 0X4000]
+00af10: 28 43
+
+[	DW _BGM_STAGE3 - BGM_DATA_TRANSFER_START + 0X4000]
+00af12: f8 46
+
+[	DW _BGM_STAGE4 - BGM_DATA_TRANSFER_START + 0X4000]
+00af14: 9a 48
+
+[	DW _BGM_STAGE5 - BGM_DATA_TRANSFER_START + 0X4000]
+00af16: 18 4c
+
+[	DW _BGM_STAGE6 - BGM_DATA_TRANSFER_START + 0X4000]
+00af18: 0c 4f
+
+[	DW _BGM_STAGE7 - BGM_DATA_TRANSFER_START + 0X4000]
+00af1a: 92 51
+
+[	DW _BGM_STAGE8 - BGM_DATA_TRANSFER_START + 0X4000]
+00af1c: a0 53
+
+[	DW _BGM_BOSS_BUZ - BGM_DATA_TRANSFER_START + 0X4000]
+00af1e: 5c 58
+
+[	DW _BGM_BOSS1 - BGM_DATA_TRANSFER_START + 0X4000]
+00af20: ff 58
+
+[	DW _BGM_CLEAR - BGM_DATA_TRANSFER_START + 0X4000]
+00af22: f6 5c
+
+[	DW _BGM_GAMEOVER - BGM_DATA_TRANSFER_START + 0X4000]
+00af24: 9f 5d
+
+[	DW _BGM_FINALBOSS - BGM_DATA_TRANSFER_START + 0X4000]
+00af26: 2e 5e
+
+[	DW _BGM_NAMEENTRY - BGM_DATA_TRANSFER_START + 0X4000]
+00af28: 8c 5f
+
+[SE_TABLE :]
+	label address: 0x00af2a
+
+[	DW _SE_DAMAGE - BGM_DATA_TRANSFER_START + 0X4000]
+00af2a: ac 60
+
+[	DW _SE_BOMB - BGM_DATA_TRANSFER_START + 0X4000]
+00af2c: cc 60
+
+[	DW _SE_GET_ITEM - BGM_DATA_TRANSFER_START + 0X4000]
+00af2e: eb 60
+
+[	DW _SE_NO_DAMAGE - BGM_DATA_TRANSFER_START + 0X4000]
+00af30: 17 61
+
+[	DW _SE_SHOT - BGM_DATA_TRANSFER_START + 0X4000]
+00af32: 30 61
+
+[	DW _SE_START - BGM_DATA_TRANSFER_START + 0X4000]
+00af34: 48 61
+
+[	DW _SE_NAME - BGM_DATA_TRANSFER_START + 0X4000]
+00af36: 8c 61
+
+[	DW _SE_LASER - BGM_DATA_TRANSFER_START + 0X4000]
+00af38: cc 61
+
+[	DW _SE_STOP - BGM_DATA_TRANSFER_START + 0X4000]
+00af3a: df 61
+
+[	DW _SE_PRE_LASER - BGM_DATA_TRANSFER_START + 0X4000]
+00af3c: e1 61
+
+[	DW _SE_BOMB2 - BGM_DATA_TRANSFER_START + 0X4000]
+00af3e: 01 62
+
+[BGM_TABLE_END :]
+	label address: 0x00af40
+
+[	INCLUDE ".//sca_graph_def_main.asm"] end
+
+[SCA_END_OF_PROGRAM :]
+	label address: 0x00af40
+
+<< label >>
+BACKGROUND_COLOR 35286 ( 0x89d6 )
+BACKGROUND_GRAPHIC_COLOR 35686 ( 0x8b66 )
+BACKGROUND_GRAPHIC_COLOR_END 36078 ( 0x8cee )
+BACKGROUND_GRAPHIC_PATTERN 35294 ( 0x89de )
+BACKGROUND_GRAPHIC_PATTERN_END 35686 ( 0x8b66 )
+BACKGROUND_INIT 33886 ( 0x845e )
+BACKGROUND_PATTERN 34886 ( 0x8846 )
+BACKGROUND_PATTERN_END 35286 ( 0x89d6 )
+BACKGROUND_SET_COLOR 34023 ( 0x84e7 )
+BACKGROUND_SET_COLOR_LOOP 34027 ( 0x84eb )
+BAKCLR 62442 ( 0xf3ea )
+BDRCLR 62443 ( 0xf3eb )
+BGM_BOSS1 33554 ( 0x8312 )
+BGM_BOSS_BUZ 33552 ( 0x8310 )
+BGM_CLEAR 33556 ( 0x8314 )
+BGM_DATA_TRANSFER_END 44814 ( 0xaf0e )
+BGM_DATA_TRANSFER_START 36078 ( 0x8cee )
+BGM_DRUM1_FONT 107 ( 0x6b )
+BGM_DRUM2_FONT 108 ( 0x6c )
+BGM_DRUM3_FONT 109 ( 0x6d )
+BGM_DRUM4_FONT 110 ( 0x6e )
+BGM_DRUM5_FONT 111 ( 0x6f )
+BGM_DRUM_1 96 ( 0x60 )
+BGM_DRUM_2 97 ( 0x61 )
+BGM_DRUM_3 98 ( 0x62 )
+BGM_DRUM_4 99 ( 0x63 )
+BGM_DRUM_5 100 ( 0x64 )
+BGM_FINALBOSS 33560 ( 0x8318 )
+BGM_GAMEOVER 33558 ( 0x8316 )
+BGM_JUMP 105 ( 0x69 )
+BGM_KEYOFF 101 ( 0x65 )
+BGM_NAMEENTRY 33562 ( 0x831a )
+BGM_PLAY_END 106 ( 0x6a )
+BGM_REST 102 ( 0x66 )
+BGM_SE_END 4 ( 0x4 )
+BGM_SE_FREQ 0 ( 0x0 )
+BGM_SE_NOISE_FREQ 2 ( 0x2 )
+BGM_SE_VOL 1 ( 0x1 )
+BGM_SE_WAIT 3 ( 0x3 )
+BGM_SOUND_FONT 104 ( 0x68 )
+BGM_STAGE1 33536 ( 0x8300 )
+BGM_STAGE2 33538 ( 0x8302 )
+BGM_STAGE3 33540 ( 0x8304 )
+BGM_STAGE4 33542 ( 0x8306 )
+BGM_STAGE5 33544 ( 0x8308 )
+BGM_STAGE6 33546 ( 0x830a )
+BGM_STAGE7 33548 ( 0x830c )
+BGM_STAGE8 33550 ( 0x830e )
+BGM_TABLE 44814 ( 0xaf0e )
+BGM_TABLE_END 44864 ( 0xaf40 )
+BGM_TONE_A1 9 ( 0x9 )
+BGM_TONE_A2 21 ( 0x15 )
+BGM_TONE_A3 33 ( 0x21 )
+BGM_TONE_A4 45 ( 0x2d )
+BGM_TONE_A5 57 ( 0x39 )
+BGM_TONE_A6 69 ( 0x45 )
+BGM_TONE_A7 81 ( 0x51 )
+BGM_TONE_A8 93 ( 0x5d )
+BGM_TONE_AS1 10 ( 0xa )
+BGM_TONE_AS2 22 ( 0x16 )
+BGM_TONE_AS3 34 ( 0x22 )
+BGM_TONE_AS4 46 ( 0x2e )
+BGM_TONE_AS5 58 ( 0x3a )
+BGM_TONE_AS6 70 ( 0x46 )
+BGM_TONE_AS7 82 ( 0x52 )
+BGM_TONE_AS8 94 ( 0x5e )
+BGM_TONE_B1 11 ( 0xb )
+BGM_TONE_B2 23 ( 0x17 )
+BGM_TONE_B3 35 ( 0x23 )
+BGM_TONE_B4 47 ( 0x2f )
+BGM_TONE_B5 59 ( 0x3b )
+BGM_TONE_B6 71 ( 0x47 )
+BGM_TONE_B7 83 ( 0x53 )
+BGM_TONE_B8 95 ( 0x5f )
+BGM_TONE_C1 0 ( 0x0 )
+BGM_TONE_C2 12 ( 0xc )
+BGM_TONE_C3 24 ( 0x18 )
+BGM_TONE_C4 36 ( 0x24 )
+BGM_TONE_C5 48 ( 0x30 )
+BGM_TONE_C6 60 ( 0x3c )
+BGM_TONE_C7 72 ( 0x48 )
+BGM_TONE_C8 84 ( 0x54 )
+BGM_TONE_CS1 1 ( 0x1 )
+BGM_TONE_CS2 13 ( 0xd )
+BGM_TONE_CS3 25 ( 0x19 )
+BGM_TONE_CS4 37 ( 0x25 )
+BGM_TONE_CS5 49 ( 0x31 )
+BGM_TONE_CS6 61 ( 0x3d )
+BGM_TONE_CS7 73 ( 0x49 )
+BGM_TONE_CS8 85 ( 0x55 )
+BGM_TONE_D1 2 ( 0x2 )
+BGM_TONE_D2 14 ( 0xe )
+BGM_TONE_D3 26 ( 0x1a )
+BGM_TONE_D4 38 ( 0x26 )
+BGM_TONE_D5 50 ( 0x32 )
+BGM_TONE_D6 62 ( 0x3e )
+BGM_TONE_D7 74 ( 0x4a )
+BGM_TONE_D8 86 ( 0x56 )
+BGM_TONE_DS1 3 ( 0x3 )
+BGM_TONE_DS2 15 ( 0xf )
+BGM_TONE_DS3 27 ( 0x1b )
+BGM_TONE_DS4 39 ( 0x27 )
+BGM_TONE_DS5 51 ( 0x33 )
+BGM_TONE_DS6 63 ( 0x3f )
+BGM_TONE_DS7 75 ( 0x4b )
+BGM_TONE_DS8 87 ( 0x57 )
+BGM_TONE_E1 4 ( 0x4 )
+BGM_TONE_E2 16 ( 0x10 )
+BGM_TONE_E3 28 ( 0x1c )
+BGM_TONE_E4 40 ( 0x28 )
+BGM_TONE_E5 52 ( 0x34 )
+BGM_TONE_E6 64 ( 0x40 )
+BGM_TONE_E7 76 ( 0x4c )
+BGM_TONE_E8 88 ( 0x58 )
+BGM_TONE_F1 5 ( 0x5 )
+BGM_TONE_F2 17 ( 0x11 )
+BGM_TONE_F3 29 ( 0x1d )
+BGM_TONE_F4 41 ( 0x29 )
+BGM_TONE_F5 53 ( 0x35 )
+BGM_TONE_F6 65 ( 0x41 )
+BGM_TONE_F7 77 ( 0x4d )
+BGM_TONE_F8 89 ( 0x59 )
+BGM_TONE_FS1 6 ( 0x6 )
+BGM_TONE_FS2 18 ( 0x12 )
+BGM_TONE_FS3 30 ( 0x1e )
+BGM_TONE_FS4 42 ( 0x2a )
+BGM_TONE_FS5 54 ( 0x36 )
+BGM_TONE_FS6 66 ( 0x42 )
+BGM_TONE_FS7 78 ( 0x4e )
+BGM_TONE_FS8 90 ( 0x5a )
+BGM_TONE_G1 7 ( 0x7 )
+BGM_TONE_G2 19 ( 0x13 )
+BGM_TONE_G3 31 ( 0x1f )
+BGM_TONE_G4 43 ( 0x2b )
+BGM_TONE_G5 55 ( 0x37 )
+BGM_TONE_G6 67 ( 0x43 )
+BGM_TONE_G7 79 ( 0x4f )
+BGM_TONE_G8 91 ( 0x5b )
+BGM_TONE_GS1 8 ( 0x8 )
+BGM_TONE_GS2 20 ( 0x14 )
+BGM_TONE_GS3 32 ( 0x20 )
+BGM_TONE_GS4 44 ( 0x2c )
+BGM_TONE_GS5 56 ( 0x38 )
+BGM_TONE_GS6 68 ( 0x44 )
+BGM_TONE_GS7 80 ( 0x50 )
+BGM_TONE_GS8 92 ( 0x5c )
+BGM_TRANSFER 34046 ( 0x84fe )
+BGM_VOL 103 ( 0x67 )
+CHGCPU 384 ( 0x180 )
+CHGMOD 95 ( 0x5f )
+CLIKSW 62427 ( 0xf3db )
+COLOR_TABLE1 8192 ( 0x2000 )
+COLOR_TABLE2 10240 ( 0x2800 )
+COLOR_TABLE3 12288 ( 0x3000 )
+ENASLT 36 ( 0x24 )
+EXPTBL 64705 ( 0xfcc1 )
+FILVRM 86 ( 0x56 )
+FORCLR 62441 ( 0xf3e9 )
+GTSTCK 213 ( 0xd5 )
+GTTRIG 216 ( 0xd8 )
+H_TIMI 64927 ( 0xfd9f )
+LDIRVM 92 ( 0x5c )
+MSXVER 45 ( 0x2d )
+PATTERN_GENERATOR1 0 ( 0x0 )
+PATTERN_GENERATOR2 2048 ( 0x800 )
+PATTERN_GENERATOR3 4096 ( 0x1000 )
+PATTERN_NAME1 6144 ( 0x1800 )
+PATTERN_NAME2 6400 ( 0x1900 )
+PATTERN_NAME3 6656 ( 0x1a00 )
+RAMAD1 62274 ( 0xf342 )
+RG1SAV 62432 ( 0xf3e0 )
+SCA_BGM_TABLE_ADR 33536 ( 0x8300 )
+SCA_END_OF_PROGRAM 44864 ( 0xaf40 )
+SCA_INFO_ENEMY_MOVE_H 15 ( 0xf )
+SCA_INFO_ENEMY_MOVE_L 14 ( 0xe )
+SCA_INFO_ENEMY_POWER 4 ( 0x4 )
+SCA_INFO_ENEMY_POWER3 20 ( 0x14 )
+SCA_INFO_ENEMY_POWER5 36 ( 0x24 )
+SCA_INFO_ENEMY_POWER7 52 ( 0x34 )
+SCA_INFO_ENEMY_REVERSE 0 ( 0x0 )
+SCA_INFO_ENEMY_SHOT_TIMING 2 ( 0x2 )
+SCA_INFO_ENEMY_SPRITE_NUM 7 ( 0x7 )
+SCA_INFO_ENEMY_STATE_H 6 ( 0x6 )
+SCA_INFO_ENEMY_STATE_H2 22 ( 0x16 )
+SCA_INFO_ENEMY_STATE_H3 38 ( 0x26 )
+SCA_INFO_ENEMY_STATE_L 5 ( 0x5 )
+SCA_INFO_ENEMY_STATE_L2 21 ( 0x15 )
+SCA_INFO_ENEMY_STATE_L3 37 ( 0x25 )
+SCA_INFO_ESHOT_CNT 7 ( 0x7 )
+SCA_INFO_ESHOT_DEN 5 ( 0x5 )
+SCA_INFO_ESHOT_DEN_IS_DX 4 ( 0x4 )
+SCA_INFO_ESHOT_NUM 6 ( 0x6 )
+SCA_INFO_ESHOT_X_SIG 0 ( 0x0 )
+SCA_INFO_ESHOT_Y_SIG 2 ( 0x2 )
+SCA_INFO_PLAYER_MOVE_VEC_TBL_H 5 ( 0x5 )
+SCA_INFO_PLAYER_MOVE_VEC_TBL_L 4 ( 0x4 )
+SCA_INFO_PLAYER_SHOT_POWER 6 ( 0x6 )
+SCA_INFO_SHOT_POWER 4 ( 0x4 )
+SCA_INFO_SIZE 8 ( 0x8 )
+SCA_INFO_XH 1 ( 0x1 )
+SCA_INFO_XH2 9 ( 0x9 )
+SCA_INFO_XH3 17 ( 0x11 )
+SCA_INFO_XH4 25 ( 0x19 )
+SCA_INFO_XH5 33 ( 0x21 )
+SCA_INFO_XH6 41 ( 0x29 )
+SCA_INFO_XH7 49 ( 0x31 )
+SCA_INFO_XH8 57 ( 0x39 )
+SCA_INFO_XL 0 ( 0x0 )
+SCA_INFO_XL2 8 ( 0x8 )
+SCA_INFO_XL3 16 ( 0x10 )
+SCA_INFO_XL4 24 ( 0x18 )
+SCA_INFO_XL5 32 ( 0x20 )
+SCA_INFO_XL6 40 ( 0x28 )
+SCA_INFO_XL7 48 ( 0x30 )
+SCA_INFO_XL8 56 ( 0x38 )
+SCA_INFO_YH 3 ( 0x3 )
+SCA_INFO_YH2 11 ( 0xb )
+SCA_INFO_YH3 19 ( 0x13 )
+SCA_INFO_YH4 27 ( 0x1b )
+SCA_INFO_YH5 35 ( 0x23 )
+SCA_INFO_YH6 43 ( 0x2b )
+SCA_INFO_YH7 51 ( 0x33 )
+SCA_INFO_YH8 59 ( 0x3b )
+SCA_INFO_YL 2 ( 0x2 )
+SCA_INFO_YL2 10 ( 0xa )
+SCA_INFO_YL3 18 ( 0x12 )
+SCA_INFO_YL4 26 ( 0x1a )
+SCA_INFO_YL5 34 ( 0x22 )
+SCA_INFO_YL6 42 ( 0x2a )
+SCA_INFO_YL7 50 ( 0x32 )
+SCA_INFO_YL8 58 ( 0x3a )
+SCA_MAIN 33792 ( 0x8400 )
+SCA_MAX_ENEMY_POWER 32 ( 0x20 )
+SCA_MIN_ENEMY_SHOT_INTERVAL 4 ( 0x4 )
+SCA_SHOT_COUNT 15 ( 0xf )
+SETWRT 83 ( 0x53 )
+SE_BOMB 33566 ( 0x831e )
+SE_BOMB2 33584 ( 0x8330 )
+SE_DAMAGE 33564 ( 0x831c )
+SE_GET_ITEM 33568 ( 0x8320 )
+SE_LASER 33578 ( 0x832a )
+SE_NAME 33576 ( 0x8328 )
+SE_NO_DAMAGE 33570 ( 0x8322 )
+SE_PRE_LASER 33582 ( 0x832e )
+SE_SHOT 33572 ( 0x8324 )
+SE_START 33574 ( 0x8326 )
+SE_STOP 33580 ( 0x832c )
+SE_TABLE 44842 ( 0xaf2a )
+SNSMAT 321 ( 0x141 )
+SPRITE_ATTRIBUTE 7680 ( 0x1e00 )
+SPRITE_COLOR 7168 ( 0x1c00 )
+SPRITE_COLOR_DATA 34854 ( 0x8826 )
+SPRITE_GENERATOR 14336 ( 0x3800 )
+SPRITE_INIT 33835 ( 0x842b )
+SPRITE_INIT_LOOP2 33841 ( 0x8431 )
+SPRITE_PATTERN 34086 ( 0x8526 )
+SPRITE_PATTERN_INIT 33874 ( 0x8452 )
+SPRITE_SET_COLOR 33856 ( 0x8440 )
+SPRITE_SET_COLOR_SKIP1 33866 ( 0x844a )
+STATFL 62439 ( 0xf3e7 )
+VDP_CMDREG_IO 153 ( 0x99 )
+VDP_PALREG_IO 154 ( 0x9a )
+VDP_REG_IO 155 ( 0x9b )
+VDP_VRAM_IO 152 ( 0x98 )
+WRTVRM 77 ( 0x4d )
+_BGM_BOSS1 42477 ( 0xa5ed )
+_BGM_BOSS_BUZ 42314 ( 0xa54a )
+_BGM_CLEAR 43492 ( 0xa9e4 )
+_BGM_FINALBOSS 43804 ( 0xab1c )
+_BGM_GAMEOVER 43661 ( 0xaa8d )
+_BGM_NAMEENTRY 44154 ( 0xac7a )
+_BGM_STAGE1 36078 ( 0x8cee )
+_BGM_STAGE2 36886 ( 0x9016 )
+_BGM_STAGE3 37862 ( 0x93e6 )
+_BGM_STAGE4 38280 ( 0x9588 )
+_BGM_STAGE5 39174 ( 0x9906 )
+_BGM_STAGE6 39930 ( 0x9bfa )
+_BGM_STAGE7 40576 ( 0x9e80 )
+_BGM_STAGE8 41102 ( 0xa08e )
+_SE_BOMB 44474 ( 0xadba )
+_SE_BOMB2 44783 ( 0xaeef )
+_SE_DAMAGE 44442 ( 0xad9a )
+_SE_GET_ITEM 44505 ( 0xadd9 )
+_SE_LASER 44730 ( 0xaeba )
+_SE_NAME 44666 ( 0xae7a )
+_SE_NO_DAMAGE 44549 ( 0xae05 )
+_SE_PRE_LASER 44751 ( 0xaecf )
+_SE_SHOT 44574 ( 0xae1e )
+_SE_START 44598 ( 0xae36 )
+_SE_STOP 44749 ( 0xaecd )

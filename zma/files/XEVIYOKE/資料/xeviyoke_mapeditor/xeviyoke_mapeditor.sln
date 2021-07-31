@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29230.47
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xeviyoke_mapeditor", "xeviyoke_mapeditor.csproj", "{2E8B180D-4E27-481E-9ED1-20FC4FB67B0C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2E8B180D-4E27-481E-9ED1-20FC4FB67B0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E8B180D-4E27-481E-9ED1-20FC4FB67B0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E8B180D-4E27-481E-9ED1-20FC4FB67B0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E8B180D-4E27-481E-9ED1-20FC4FB67B0C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {081CBA16-6ECD-4750-B686-8719D2CB7ACE}
+	EndGlobalSection
+EndGlobal

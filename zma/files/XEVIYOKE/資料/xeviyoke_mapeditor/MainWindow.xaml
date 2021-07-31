@@ -1,0 +1,27 @@
+﻿<Window x:Class="xeviyoke_mapeditor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:xeviyoke_mapeditor"
+        mc:Ignorable="d"
+        Title="XEVIyoke MapEditor" Height="500" Width="1100">
+    <Grid>
+        <Canvas x:Name="canvasMapParts" HorizontalAlignment="Left" Height="128" ClipToBounds="True" Margin="10,10,0,0" VerticalAlignment="Top" Width="512" MouseLeftButtonDown="CanvasMapParts_MouseLeftButtonDown" Background="Black">
+            <Image x:Name="imageMapParts" Source="./Page1.bmp" Width="512" Height="424"/>
+            <Rectangle Height="128" Width="512" StrokeThickness ="2" Stroke="Black" Canvas.Left="0" Canvas.Top="0"/>
+            <Rectangle x:Name="rectMapPartsCursor" Height="16" Width="16" StrokeThickness ="2" Stroke="Red" Canvas.Left="0" Canvas.Top="0"/>
+        </Canvas>
+        <Canvas x:Name="canvasEditArea" HorizontalAlignment="Left" Height="352" Margin="528,10,0,0" VerticalAlignment="Top" Width="512" Background="Black" MouseMove="CanvasEditArea_MouseMove" MouseLeftButtonDown="CanvasEditArea_MouseLeftButtonDown" MouseRightButtonDown="CanvasEditArea_MouseRightButtonDown">
+            <Image x:Name="imageEditArea" Width="512" Height="352"/>
+            <Rectangle Height="352" Width="512" StrokeThickness ="2" Stroke="Black" Canvas.Left="0" Canvas.Top="0"/>
+            <Rectangle x:Name="rectEditAreaCursor" Height="16" Width="16" StrokeThickness ="2" Stroke="Red" Canvas.Left="0" Canvas.Top="0"/>
+        </Canvas>
+        <Button x:Name="buttonLoadParts" Content="Load Parts Image" HorizontalAlignment="Left" Height="32" Margin="10,157,0,0" VerticalAlignment="Top" Width="144" Click="ButtonLoadParts_Click"/>
+        <Button x:Name="buttonSaveMap" Content="Save Map" HorizontalAlignment="Left" Height="32" Margin="10,293,0,0" VerticalAlignment="Top" Width="144" Click="ButtonSaveMap_Click"/>
+        <Button x:Name="buttonLoadMap" Content="Load Map" HorizontalAlignment="Left" Height="32" Margin="10,330,0,0" VerticalAlignment="Top" Width="144" Click="ButtonLoadMap_Click"/>
+        <Button x:Name="buttonScrollUp" Content="Up" HorizontalAlignment="Left" Height="32" Margin="528,367,0,0" VerticalAlignment="Top" Width="144" Click="ButtonScrollUp_Click"/>
+        <Button x:Name="buttonScrollDown" Content="Down" HorizontalAlignment="Left" Height="32" Margin="896,367,0,0" VerticalAlignment="Top" Width="144" Click="ButtonScrollDown_Click"/>
+        <Label x:Name="labelScrollPosY" Content="0" HorizontalAlignment="Left" Height="32" Margin="683,367,0,0" VerticalAlignment="Top" Width="202" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+    </Grid>
+</Window>

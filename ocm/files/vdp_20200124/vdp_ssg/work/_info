@@ -1,0 +1,73 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dC:/Users/hra/Downloads/DE0-CV/OCM-PLD/emsxcv/pld/src/video/vdp_ssg
+vtb
+DXx6 sv_std 3 std 0 22 AD7iAPLo6nTIKk<N0eo=D3
+Z1 !s110 1579816050
+!i10b 1
+!s100 JBNjzSa[DzjDZ9bz>lL9C1
+I09^6[8f0D]DSZCkm9BF=33
+Z2 VDg1SIo80bB@j0V0VzS_@n1
+!s105 tb_sv_unit
+S1
+R0
+w1579816040
+8tb.sv
+Ftb.sv
+L0 1
+Z3 OV;L;10.5b;63
+r1
+!s85 0
+31
+Z4 !s108 1579816050.000000
+!s107 tb.sv|
+!s90 tb.sv|
+!i113 1
+Z5 tCvgOpt 0
+vvdp_hvcounter
+!s110 1579816049
+!i10b 1
+!s100 8gUdo^1IfU<aGQ@LCNHWH0
+I@zL^DZTULoE:PG7QT@;l>2
+R2
+R0
+w1579704004
+8../vdp_hvcounter.v
+F../vdp_hvcounter.v
+L0 65
+R3
+r1
+!s85 0
+31
+!s108 1579816049.000000
+!s107 ../vdp_hvcounter.v|
+!s90 ../vdp_hvcounter.v|
+!i113 1
+R5
+vvdp_ssg
+R1
+!i10b 1
+!s100 Y]98GZ;>87HH_fYPXRLUO3
+IjYOA:MKIL4UHmJ48^239]0
+R2
+R0
+w1579815029
+8../vdp_ssg.v
+F../vdp_ssg.v
+L0 66
+R3
+r1
+!s85 0
+31
+R4
+!s107 ../vdp_ssg.v|
+!s90 ../vdp_ssg.v|
+!i113 1
+R5

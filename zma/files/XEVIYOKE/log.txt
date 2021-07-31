@@ -1,0 +1,4 @@
+Z80 Macro Assembler ZMA v1.0.5
+=====================================================
+Programmed by t.hara
+Success.

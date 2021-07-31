@@ -1,0 +1,55 @@
+; -----------------------------------------------------------------------------
+; STAGE 4 BGM " ESCAPE DANCE " by michelan-gelo.
+; -----------------------------------------------------------------------------
+
+
+; -----------------------------------------------------------------------------
+; sound font data
+; -----------------------------------------------------------------------------
+{
+
+	; @0 ----------------------------------------------------------------------
+	0	1	2	2	2	0	-2	-3	-3	-3	-2	0	2	2	2	1	
+	0	-2	-3	-3	-3	-1	1	2	3	2	1	-1	-3	-3	-3	-2	
+	255					; AR
+	2					; DR
+	224					; SL
+	1					; SR
+	30					; RR
+	20					; ビブラート遅延時間
+	0					; ノイズ周波数
+	0					; ドラム用基準周波数
+
+}
+
+
+; -----------------------------------------------------------------------------
+; ch.0 (main part)
+; -----------------------------------------------------------------------------
+{
+	q8@0v14t178l8
+	$
+	o4egaega4o5e4d4c4o4b4gdfgdfg4o5d4c4o4b4g4d
+	ce-fce-f4o5c4o4b-4a4f4de2cfre1r8
+	egaega4.o5v12egaega4.o4v14dfgdfg4.o5v12dfgdfg4.
+	o4v14ce-fce-f4o5c4o4b-4a4f4de1o5c16r16c16r16r8o4b2r8
+	a1r1r1o5edcdo4boe4.
+}
+
+; -----------------------------------------------------------------------------
+; ch.1 (base part)
+; -----------------------------------------------------------------------------
+{
+	q8@0v14t178l16
+	$
+	o1arararararararararararo2aro1aro2aro1aro2ar o1grgrgrgrgrgrgrgrgrgrgro2gro1gro2gro1gro2gr
+	o1frfrfrfrfrfrfrfrfrfrfro2fro1fro2fro1fro2fr o1ererererererererererero2ero1ero2ero1ero2er
+	o1arararararararararararo2aro1aro2aro1aro2ar o1grgrgrgrgrgrgrgrgrgrgro2gro1gro2gro1gro2gr
+	o1frfrfrfrfrfrfrfrfrfrfro2fro1fro2fro1fro2fr o1ererererererererererero2ero1ero2ero1ero2er
+	o1arararararararararararararararar ararararararararo2erererercrcro1brbr
+}
+; -----------------------------------------------------------------------------
+; ch.2 (void)
+; -----------------------------------------------------------------------------
+{
+}

@@ -1,0 +1,14 @@
+..\mc\release\mc.exe stage1_bgm.txt ..\src\stage1_bgm.asm
+..\mc\release\mc.exe stage2_bgm.txt ..\src\stage2_bgm.asm
+..\mc\release\mc.exe stage3_bgm.txt ..\src\stage3_bgm.asm
+..\mc\release\mc.exe stage4_bgm.txt ..\src\stage4_bgm.asm
+..\mc\release\mc.exe stage5_bgm.txt ..\src\stage5_bgm.asm
+..\mc\release\mc.exe stage6_bgm.txt ..\src\stage6_bgm.asm
+..\mc\release\mc.exe stage7_bgm.txt ..\src\stage7_bgm.asm
+..\mc\release\mc.exe stage8_bgm.txt ..\src\stage8_bgm.asm
+..\mc\release\mc.exe boss_bgm.txt ..\src\boss_bgm.asm
+..\mc\release\mc.exe clear_bgm.txt ..\src\clear_bgm.asm
+..\mc\release\mc.exe warning_bgm.txt ..\src\warning_bgm.asm
+..\mc\release\mc.exe gameover_bgm.txt ..\src\gameover_bgm.asm
+..\mc\release\mc.exe finalboss_bgm.txt ..\src\finalboss_bgm.asm
+..\mc\release\mc.exe nameentry_bgm.txt ..\src\nameentry_bgm.asm

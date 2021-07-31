@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="Shift_JIS">
+		<title>HRA's room</title>
+		<link href="../mystyle.css" rel="stylesheet" type="text/css">
+	</head>
+	<body id="contents_main">
+		MegaFlashROM SCC+ SD (MSXCartridgeShop販売版) の使い方に関する備忘録<br>
+		<br>
+		<hr>
+		■ROMdisk の書換<br>
+		FlashROM上に2DDディスクイメージが書き込んであり、これが A: の ROMdisk として使えるようになっています。<br>
+		書き込み禁止なので、通常の COPYコマンドなどでファイルを書き込むことは出来ません。<br>
+		これを、自分用にカスタマイズしてみます。<br>
+		最初に、A: の内容をまるまる microSDカードにバックアップしておいてください。<br>
+		<br>
+		まず、2DDディスクイメージを作成してください。NEXTORはDOS2互換なので、DOS2フォーマットが良いです。<br>
+		↓こちらで公開されている MSX Floppy Disk Manager を使うと楽に作れます。<br>
+		<br>
+		<a href="https://sonono.net/blog/">[外部リンク] 温故知新 Carrying knowledge into new fields!</a><br>
+		<br>
+		NEXTOR.SYS, COMMAND2.COM 等、DOSのシステムファイルのコピーは忘れずに行ってください。<br>
+		出来たディスクイメージを microSDカードへ書き込みます。<br>
+		その microSDカードを挿入した MegaFlashROM SCC+ SD で MSX を起動し、コマンドプロンプトから下記を打ちます。<br>
+		<br>
+		＞OPFXSD MFR.DSK /ID<br>
+		<br>
+		これで、MFR.DSK の内容が ROMdisk になります。<br>
+		A: の COMMAND2.COM を見失ってエラーで戻れなくなることもありますが、進捗バー ( .... → oooo な表示) が最後まで到達<br>
+		していれば、書き込めているので、リセットすればOKです。<br>
+		<br>
+	</body>
+</html>
