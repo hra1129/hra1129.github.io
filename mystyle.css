@@ -1,0 +1,37 @@
+html, body {
+	background-color: #0010E0;
+	color: #ffffff;
+}
+
+contents_main {
+	background-color: #0000cd;
+	color: #ffffff;
+}
+
+contents_warning {
+	background-color: #0000cd;
+	color: #ffffff;
+	font-size: small;
+}
+
+h1 {
+	background-color: #0000cd;
+	color: #ffffff;
+	font-size: small;
+}
+
+table {
+	background-color: #0000cd;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+a {
+	color: #F0E000;
+	text-decoration: underline;
+}
+
+a:hover {
+	color: #F04000;
+	text-decoration: underline;
+}
