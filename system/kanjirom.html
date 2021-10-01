@@ -60,7 +60,7 @@
 		<br>
 		<hr>
 		≪ 漢字ROMアクセスブロック回路 ≫<br>
-		<img width=240 src="image/kanji_block.png"><br>
+		<a href="./image/kanji_block.png"><img width=240 src="image/kanji_block.png"></a><br>
 		<br>
 		漢字ROMのI/Oは D8h, D9h, DAh, DBh なので<br>
 		　D8h = 11011000<br>
@@ -72,7 +72,7 @@
 		です。<br>
 		<br>
 		信号の行き先を確認してみます。<br>
-		<img width=240 src="image/kanji_block_mark.png"><br>
+		<a href="./image/kanji_block_mark.png"><img width=240 src="image/kanji_block_mark.png"></a><br>
 		まず、マルで囲った部分によって IOREQ# がマスクされるのがわかります。<br>
 		<br>
 		IC43 の出力は、 ~(~(A7 & A6 & A4 & /M1)) & ~A5 となっています。<br>
