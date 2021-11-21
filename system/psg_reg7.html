@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+<html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="utf-8">
+		<title>HRA's room</title>
+		<link href="../mystyle.css" rel="stylesheet" type="text/css">
+	</head>
+	<body id="contents_main">
+		PSG Register#7<br>
+		<hr>
+		≪要約≫<br>
+		　(1) BASICのSOUND文で設定する場合は気にしなくて良い<br>
+		　(2) BIOS の WRTPSG で R#7 に書き込む場合は上位 2bit が 10 になる値にしなければならない<br>
+		　(3) I/O A0h-A1h で R#7 に直接書き込む場合も上位 2bit が 10 になる値にしなければならない<br>
+		<br>
+		<hr>
+		PSG R#7 の上位2bitは、bit6 は PSGのポートA, bit7 は PSGのポートB の入出力方向を指定するレジスタです。<br>
+		MSX では、必ずポートAは入力、ポートBは出力で使います。<br>
+		そのため、一部のMSX1や、殆どのMSX2では、この2bitが実装されておらず無視されるようです。<br>
+		一方で AY-3-8910等 PSG単体で搭載しているMSXでは無視されず設定されてしまいます。<br>
+		<br>
+		PSGのポートAには、ジョイスティックポート1と2が接続されています。<br>
+		1と2のどちらがポートAに現れるかを、ポートBのbit6で選択するのですが、PSGレジスタ初期化などでうっかり R#7 に 0 を設定<br>
+		すると、ポートBまで入力になってしまって、選択信号が出力されなくなってしまいます。<br>
+		すると、ポートA側が不安定になり、適切な値が読めなくなります。<br>
+		<br>
+		プルアップされていて FFh になる機種が多いと思いますが、そうでない機種もあるかもしれません。<br>
+		その場合、ボタンが押されると対応ビットが0になるので、何も押されてないように見えるわけですね。<br>
+		<br>
+		GTSTCK や GTTRIG 等の BIOSルーチンは、ポートA(R#14), ポートB(R#15) にしかアクセスに行きませんので、<br>
+		R#7 = 0 にしてると「PSG単体で搭載しているMSX」では「ジョイパッドの状態が読めない」という現象が発生します。<br>
+		MSX Engine などの統合ICでは、PSG互換回路を統合IC内に内蔵しており、R#7 上位 2bit が実装されていないケースが多い<br>
+		ようで、そのような統合ICを搭載している MSX1 や MSX2 では、R#7 = 0 でもジョイパッドの状態が読めてしまいます。<br>
+		統合IC搭載マシンで動作確認をしている場合は、特に R#7 の上位に 10じゃない値を指定していないか要注意です。<br>
+		<br>
+		<hr>
+		MSX-BASICのSOUND分は自動的に補正される<br>
+		<br>
+		<img src="image/psg_reg7.png"></br>
+		OpenMSXでSOUND 7,0 とした後に、デバッガで PSG Register を表示させたところ。<br>
+		(現バージョンは、リアルタイムで表示が追従しないようなので、何か書き込んだら PSG Register を開き直すと反映されます)<br>
+		<br>
+		<hr>
+		WRTPSG(0093h) の中身を見てみます。<br>
+		<br>
+		MX-101 の ROMを吸い出して、中身を見てみると 0093h には JP 1102h があり、1102h は下記のようなシンプルなコードに<br>
+		なっていました。<br>
+		<br>
+		<table><td><tr><pre>
+                        RM1102:
+1102: F3                    DI
+1103: D3 A0                 OUT     (A0h),A
+1105: F5                    PUSH    AF
+1106: 7B                    LD      A,E
+1107: D3 A1                 OUT     (A1h),A
+1109: FB                    EI
+110A: F1                    POP     AF
+110B: C9                    RET
+		</pre></tr></td></table>
+		<br>
+		<br>
+		指定された値を、素直に A0h(レジスタ番号), A1h(書き込み値) に出力しているだけなので加工は行われません。<br>
+		<br>
+		<hr>
+		直接I/Oで書き込む場合に何も加工されないのは言うまでも無いですね。<br>
+		<br>
+		<hr>
+		ということで、R#7 に何か書き込む場合は、上位2bitは "10固定" となるように注意して下さい。<br>
+		<br>
+		2021年11月22日 更新<br>
+		<a href="./body.html">[戻る]</a><br>
+	</body>
+</html>
